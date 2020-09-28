@@ -4,9 +4,11 @@
    
     "variables": {
         "mspOfferName": {
+            type": "string",
             "value": "Bistech"
         },
         "mspOfferDescription": {
+            type": "string",
             "value": "Microsoft Azure Support from Bistech"
         },
         "managedByTenantId": {
@@ -25,13 +27,15 @@
                     "principalIdDisplayName": "Bistech Reader"
                 }
             ]
-        }
+        },
+        "mspRegistrationName": "[guid(variables('mspOfferName'))]",
+        "mspAssignmentName": "[guid(variables('mspOfferName'))]"
     },
     "resources": [
         {
             "type": "Microsoft.ManagedServices/registrationDefinitions",
             "apiVersion": "2019-09-01",
-            "name": "[guid(variables('mspOfferName'))]",
+            "name": "[variables('mspRegistrationName')]",
             "properties": {
                 "registrationDefinitionName": "[variables('mspOfferName')]",
                 "description": "[variables('mspOfferDescription')]",
@@ -42,7 +46,7 @@
         {
             "type": "Microsoft.ManagedServices/registrationAssignments",
             "apiVersion": "2019-09-01",
-            "name": "[guid(variables('mspOfferName'))]",
+            "name": "[variables('mspAssignmentName')]",
             "dependsOn": [
                 "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspOfferName'))]"
             ],
