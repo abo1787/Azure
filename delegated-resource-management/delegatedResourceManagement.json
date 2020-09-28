@@ -35,7 +35,7 @@
         {
             "type": "Microsoft.ManagedServices/registrationDefinitions",
             "apiVersion": "2019-09-01",
-            "name": "[variables('mspRegistrationName')]",
+            "name": "[guid(variables('mspOfferName'))]",
             "properties": {
                 "registrationDefinitionName": "[variables('mspOfferName')]",
                 "description": "[variables('mspOfferDescription')]",
@@ -46,7 +46,7 @@
         {
             "type": "Microsoft.ManagedServices/registrationAssignments",
             "apiVersion": "2019-09-01",
-            "name": "[variables('mspAssignmentName')]",
+            "name": "[guid(variables('mspOfferName'))]",
             "dependsOn": [
                 "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspOfferName'))]"
             ],
