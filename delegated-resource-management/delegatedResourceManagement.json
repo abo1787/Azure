@@ -4,11 +4,11 @@
    
     "variables": {
         "mspOfferName": {
-            type": "string",
+            "type": "string",
             "value": "Bistech"
         },
         "mspOfferDescription": {
-            type": "string",
+            "type": "string",
             "value": "Microsoft Azure Support from Bistech"
         },
         "managedByTenantId": {
