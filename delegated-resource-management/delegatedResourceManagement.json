@@ -4,7 +4,7 @@
    
     "variables": {
         "mspOfferName": {
-            "value": "Bisteh"
+            "value": "Bistech"
         },
         "mspOfferDescription": {
             "value": "Microsoft Azure Support from Bistech"
@@ -31,7 +31,7 @@
         {
             "type": "Microsoft.ManagedServices/registrationDefinitions",
             "apiVersion": "2019-09-01",
-            "name": "[variables('mspRegistrationName')]",
+            "name": "[variables('mspOfferName')]",
             "properties": {
                 "registrationDefinitionName": "[variables('mspOfferName')]",
                 "description": "[variables('mspOfferDescription')]",
