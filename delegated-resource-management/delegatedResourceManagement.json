@@ -27,9 +27,7 @@
                     "principalIdDisplayName": "Bistech Reader"
                 }
             ]
-        },
-        "mspRegistrationName": "[guid(variables('mspOfferName'))]",
-        "mspAssignmentName": "[guid(variables('mspOfferName'))]"
+        }
     },
     "resources": [
         {
