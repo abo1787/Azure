@@ -11,4 +11,4 @@ The templates shownn below can be used to onboard customer resources into Bistec
 
 Name | Description   | Auto-deploy   |
 -----| ------------- |--------------- | 
-| Lighthouse - Subscription Management | onboard a *subscription* | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FLighthouse%2F%delegated-resource-management%2FdelegatedResourceManagement.json)
+| Lighthouse - Subscription Management | onboard a *subscription* | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FLighthouse%2Fdelegated-resource-management%2FdelegatedResourceManagement.json)
