@@ -1,21 +1,35 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
-   
-    "variables": {
+    "parameters": {
         "mspOfferName": {
             "type": "string",
-            "value": "Bistech"
+            "metadata": {
+                "description": "MSP Offer Name"
+            },
+            "defaultValue": "Bistech"
+
         },
         "mspOfferDescription": {
             "type": "string",
-            "value": "Microsoft Azure Support from Bistech"
+            "metadata": {
+                "description": "MSP Offer Description"
+            },
+            "defaultValue": "Microsoft Azure Support from Bistech"
         },
         "managedByTenantId": {
-            "value": "b12753fc-ed2c-4284-9161-4d563f9cb350"
+            "type": "string",
+            "metadata": {
+                "description": "Tenant Id for Service Prodider (Bistech)"
+            },
+            "defaultValue": "b12753fc-ed2c-4284-9161-4d563f9cb350"
         },
         "authorizations": {
-            "value": [
+            "type": "array",
+            "metadata": {
+                "description": "Specify an array of objects, containing tuples of Azure Active Directory principalId, a Azure roleDefinitionId, and an optional principalIdDisplayName. The roleDefinition specified is granted to the principalId in the provider's Active Directory and the principalIdDisplayName is visible to customers."
+            },
+            "defaultValue": [
                 {
                     "principalId": "9801e0d1-8569-4382-8e38-b2734d39dc31",
                     "roleDefinitionId": "b24988ac-6180-42a0-ab88-20f7382dd24c",
@@ -25,42 +39,46 @@
                     "principalId": "bd246b10-91c1-4464-b2aa-330de22fd3ee",
                     "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
                     "principalIdDisplayName": "Bistech Reader"
-                }
+                }   
             ]
-        }
+        }              
+    },
+    "variables": {
+        "mspRegistrationName": "[guid(parameters('mspOfferName'))]",
+        "mspAssignmentName": "[guid(parameters('mspOfferName'))]"
     },
     "resources": [
         {
             "type": "Microsoft.ManagedServices/registrationDefinitions",
             "apiVersion": "2019-09-01",
-            "name": "[guid(variables('mspOfferName'))]",
+            "name": "[variables('mspRegistrationName')]",
             "properties": {
-                "registrationDefinitionName": "[variables('mspOfferName')]",
-                "description": "[variables('mspOfferDescription')]",
-                "managedByTenantId": "[variables('managedByTenantId')]",
-                "authorizations": "[variables('authorizations')]"
+                "registrationDefinitionName": "[parameters('mspOfferName')]",
+                "description": "[parameters('mspOfferDescription')]",
+                "managedByTenantId": "[parameters('managedByTenantId')]",
+                "authorizations": "[parameters('authorizations')]"
             }
         },
         {
             "type": "Microsoft.ManagedServices/registrationAssignments",
             "apiVersion": "2019-09-01",
-            "name": "[guid(variables('mspOfferName'))]",
+            "name": "[variables('mspAssignmentName')]",
             "dependsOn": [
-                "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspOfferName'))]"
+                "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
             ],
             "properties": {
-                "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspOfferName'))]"
+                "registrationDefinitionId": "[resourceId('Microsoft.ManagedServices/registrationDefinitions/', variables('mspRegistrationName'))]"
             }
         }
     ],
     "outputs": {
         "mspOfferName": {
             "type": "string",
-            "value": "[concat('Managed by', ' ', variables('mspOfferName'))]"
+            "value": "[concat('Managed by', ' ', parameters('mspOfferName'))]"
         },
         "authorizations": {
             "type": "array",
-            "value": "[variables('authorizations')]"
+            "value": "[parameters('authorizations')]"
         }
     }
 }
