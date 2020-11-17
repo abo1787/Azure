@@ -27,7 +27,13 @@
             }
         },
         "osDiskType": {
-            "type": "string"
+            "type": "string",
+            "allowedValues": [
+                "Standard_LRS",
+                "StandardSSD_LRS",
+                "Premium_LRS"
+            ],
+            "defaultValue": "Premium_LRS"
         },
         "LocalAdminUsername": {
             "type": "string"
