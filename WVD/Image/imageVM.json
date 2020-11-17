@@ -1,1 +1,126 @@
-
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "VMName": {
+            "type": "string"
+        },
+        "vmSize":{
+            "type": "string"
+        },
+        "osVersion":{
+            "type": "string",
+            "allowedValues": [
+                "20h2-evd",
+                "20h2-evd-o365pp",
+                "20h1-evd",
+                "20h1-evd-o365pp",
+                "19h2-evd",
+                "19h2-evd-o365pp",
+                "20h1-ent",
+                "20h2-ent",
+                "19h2-ent"
+            ],
+            "defaultValue": "20h2-evd",
+            "metadata": {
+                "description": "The OS type for the VM. EVD is Multi-Session, ENT is Enterprise (Single Session), o365pp is the image installed with the M365 Apps"
+            }
+        },
+        "osDiskType": {
+            "type": "string"
+        },
+        "LocalAdminUsername": {
+            "type": "string"
+        },
+        "LocalAdminPassword": {
+            "type": "securestring"
+        },
+        "VNETName": {
+            "type": "string"
+        },
+        "subnetName": {
+            "type": "string"
+        }
+    },
+    "variables": {        
+        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('subnetName'))]",
+        "networkInterfaceName": "[concat(parameters('VMName'),'_nic_01')]",
+        "location" : "[resourceGroup().location]"
+    },
+     "resources": [               
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2019-02-01",
+            "name": "[variables('networkInterfaceName')]",
+            "location": "[variables('location')]",
+            "properties": {
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "properties": {
+                            "subnet":{ 
+                                "id": "[variables('SubnetRef')]"
+                            },
+                            "privateIPAllocationMethod": "Dynamic"
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2019-03-01",
+            "name": "[parameters('VMName')]",
+            "location": "[variables('location')]",
+            "dependsOn": [
+                "[concat('Microsoft.Network/networkInterfaces/', parameters('networkInterfaceName'))]"
+            ],
+            "properties": {
+                "hardwareProfile": {
+                    "vmSize": "[parameters('vmSize')]"
+                },
+                "osProfile": {
+                    "computerName": "[parameters('VMName')]",
+                    "adminUsername": "[parameters('localadminUsername')]",
+                    "adminPassword": "[parameters('localadminPassword')]",
+                    "windowsConfiguration": {
+                        "enableAutomaticUpdates": true,
+                        "provisionVMAgent": true,
+                        "patchSettings": {
+                            "patchMode": "AutomaticByOS"
+                        }
+                    } 
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "MicrosoftWindowsDesktop",
+                        "offer": "Windows-10",
+                        "sku": "[parameters('osVersion')]",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "name": "[concat(parameters('VMName'),'_OsDisk_01')]",
+                        "caching": "ReadOnly",
+                        "createOption": "FromImage",
+                        "managedDisk": {
+                            "storageAccountType": "[parameters('osDiskType')]"
+                        }
+                    }
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('networkInterfaceName'))]"
+                        }
+                    ]
+                },
+                "licenseType": "Windows_Client",
+                "diagnosticsProfile": {
+                    "bootDiagnostics": {
+                        "enabled": true
+                    }
+                }
+            }
+        }
+    ]
+}
