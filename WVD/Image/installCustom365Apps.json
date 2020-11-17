@@ -4,6 +4,9 @@
     "parameters": {
         "vmName": {
             "type": "string"
+        },
+        "configFile": {
+            "type": "string"
         }
     },
     "functions": [],
@@ -25,7 +28,7 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installCustom365Apps.ps1"
                     ],
-                    "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File installCustom365Apps.ps1"
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File installCustom365Apps.ps1 -ConfigFile ', parameters('configFile'))]"
                 }
             }
         }
