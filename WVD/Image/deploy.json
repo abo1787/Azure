@@ -3,10 +3,16 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vmName": {
-            "type": "string"
+            "type": "string",
+            "metadata": {
+                "description": "The name for the VM"
+            }
         },
         "vmSize": {
-            "type": "string"
+            "type": "string",
+            "metadata": {
+                "description": "The machine size e.g. Standard_NV12s_v3"
+            }
         },
         "osVersion": {
             "type": "string",
@@ -30,7 +36,10 @@
                 "StandardSSD_LRS",
                 "Premium_LRS"
             ],
-            "defaultValue": "Premium_LRS"
+            "defaultValue": "Premium_LRS",
+            "metadata": {
+                "description": "The disk type for the OS disk"
+            }
         },
         "LocalAdminUsername": {
             "type": "string"
