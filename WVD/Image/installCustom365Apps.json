@@ -5,14 +5,15 @@
         "vmName": {
             "type": "string"
         },
-        "configFile": {
+        "install365Apps": {
+            "type": "string"
+        },
+        "location" : {
             "type": "string"
         }
     },
     "functions": [],
-    "variables": {
-        "location": "[resourceGroup().location]"
-    },
+    "variables": {},
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -28,7 +29,7 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installCustom365Apps.ps1"
                     ],
-                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File installCustom365Apps.ps1 -ConfigFile ', parameters('configFile'))]"
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File installCustom365Apps.ps1 -AppsToInstall ', parameters('install365Apps'))]"
                 }
             }
         }
