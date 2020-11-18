@@ -110,7 +110,7 @@ $M365ArchivePath = Join-Path $PSScriptRoot "OfficeDeploy.zip"
 Expand-Archive -Path $M365ArchivePath -DestinationPath $PSScriptRoot
 
 $ExecutableName = "OfficeDeploy\setup.exe"
-$FSLogixExePath = Join-Path $PSScriptRoot $ExecutableName
+$M365ExePath = Join-Path $PSScriptRoot $ExecutableName
 
 # Set switches to use correct config file
 if($appsToInstall -eq "All"){
@@ -138,5 +138,5 @@ if($appsToInstall -eq "All except Publisher"){
     $switches = "/configure .\OfficeDeploy\Configuration_NoPublisher.xml"
 }
 
-$Installer = Start-Process -FilePath $FSLogixExePath -ArgumentList $Switches -Wait -PassThru
+$Installer = Start-Process -FilePath $M365ExePath -ArgumentList $Switches -Wait -PassThru
 LogInfo("The exit code is $($Installer.ExitCode)")
