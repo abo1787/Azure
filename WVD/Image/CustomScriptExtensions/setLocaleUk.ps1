@@ -9,6 +9,8 @@ param (
 
 #####################################
 
+Start-Transcript -Path 'C:\languagelog.txt'
+
 ##########
 # Helper #
 ##########
@@ -116,3 +118,5 @@ Set-Culture en-GB
 LogInfo("The language script has been ran")
 
 Restart-Computer -Force
+
+Stop-Transcript
