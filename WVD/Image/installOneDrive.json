@@ -4,18 +4,19 @@
     "parameters": {
         "vmName": {
             "type": "string"
+        },
+        "location" : {
+            "type": "string"
         }
     },
     "functions": [],
-    "variables": {
-        "location": "[resourceGroup().location]"
-    },
+    "variables": {},
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
             "apiVersion": "2018-06-01",
             "name": "[concat(parameters('vmName'), '/PSExtensionInstall')]",
-            "location": "[variables('location')]",
+            "location": "[parameters('location')]",
             "properties": {
                 "publisher": "Microsoft.Compute",
                 "type": "CustomScriptExtension",
