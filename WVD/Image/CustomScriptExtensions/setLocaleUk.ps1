@@ -9,7 +9,7 @@ param (
 
 #####################################
 
-Start-Transcript -Path 'C:\languagelog.txt'
+$langLog = "C:\languagelog.txt"
 
 ##########
 # Helper #
@@ -103,8 +103,12 @@ function Set-Logger {
 
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\UKLocale" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
+Add-Content -Path $langLog -Value "Script has started"
+
 $Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$xmlFileName"
+
+Add-Content -Path $langLog -Value "Should have downloaded xml file. PSScriptroot is $PSScriptRoot and XML file is $xmlFileName"
 
 # Set Locale, language etc. 
 & $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"setLocaleUk.xml`""
@@ -118,5 +122,3 @@ Set-Culture en-GB
 LogInfo("The language script has been ran")
 
 Restart-Computer -Force
-
-Stop-Transcript
