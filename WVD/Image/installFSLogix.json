@@ -4,12 +4,13 @@
     "parameters": {
         "vmName": {
             "type": "string"
+        },
+        "location" : {
+            "type": "string"
         }
     },
     "functions": [],
-    "variables": {
-        "location": "[resourceGroup().location]"
-    },
+    "variables": {},
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
