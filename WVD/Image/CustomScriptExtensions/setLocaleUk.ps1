@@ -111,13 +111,16 @@ Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$xmlFileName"
 Add-Content -Path $langLog -Value "Should have downloaded xml file. PSScriptroot is $PSScriptRoot and XML file is $xmlFileName"
 
 # Set Locale, language etc. 
-& $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"setLocaleUk.xml`""
+& $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$PSScriptRoot\$xmlFileName`""
 
 # Set Timezone
 & tzutil /s "GMT Standard Time"
 
 # Set languages/culture
 Set-Culture en-GB
+Set-WinSystemLocale en-GB
+Set-WinHomeLocation -GeoId 242
+Set-WinUserLanguageList en-GB -Force
 
 LogInfo("The language script has been ran")
 
