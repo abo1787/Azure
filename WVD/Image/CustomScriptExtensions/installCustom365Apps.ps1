@@ -6,7 +6,7 @@ param (
     [string] $ExecutableName = "OfficeDeploy.zip",
 
     [Parameter(mandatory = $false)]
-	[string]$appsToInstall
+	[string]$AppsToInstall
 
 )
 
