@@ -29,7 +29,7 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installCustom365Apps.ps1"
                     ],
-                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File installCustom365Apps.ps1 -AppsToInstall ', parameters('install365Apps'))]"
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File installCustom365Apps.ps1 ', parameters('install365Apps'))]"
                 }
             }
         }
