@@ -114,3 +114,5 @@ Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$xmlFileName"
 Set-Culture en-GB
 
 LogInfo("The language script has been ran")
+
+Restart-Computer -Force
