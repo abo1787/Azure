@@ -102,8 +102,6 @@ function Set-Logger {
 
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\M365Apps" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
-LogInfo("Apps to Install is $AppstoInstall")
-
 $Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/OfficeDeploy.zip"
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
 $M365ArchivePath = Join-Path $PSScriptRoot "OfficeDeploy.zip"
@@ -139,4 +137,4 @@ if($appsToInstall -eq "All except Publisher"){
 }
 
 $Installer = Start-Process -FilePath $M365ExePath -ArgumentList $Switches -Wait -PassThru
-LogInfo("The exit code is $($Installer.ExitCode)")
+LogInfo("The exit code is $($Installer.ExitCode) and Apps to install is $AppsToInstall")
