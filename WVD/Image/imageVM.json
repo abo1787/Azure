@@ -38,6 +38,9 @@
         "LocalAdminPassword": {
             "type": "securestring"
         },
+        "VirtualNetworkResourceGroup": {
+            "type": "string"
+        },
         "VirtualNetworkName": {
             "type": "string"
         },
@@ -50,7 +53,6 @@
     },
     "variables": { 
         "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
         "networkInterfaceName": "[concat(parameters('VMName'),'_nic_01')]"
     },
      "resources": [               
@@ -65,7 +67,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "subnet":{ 
-                                "id": "[variables('subnetRef')]"
+                                "id": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]"
                             },
                             "privateIPAllocationMethod": "Dynamic"
                         }
@@ -79,7 +81,7 @@
             "name": "[parameters('VMName')]",
             "location": "[parameters('location')]",
             "dependsOn": [
-                "[concat('Microsoft.Network/networkInterfaces/', variables('networkInterfaceName'))]"
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('networkInterfaceName'))]"
             ],
             "properties": {
                 "hardwareProfile": {
