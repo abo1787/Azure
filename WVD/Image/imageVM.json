@@ -49,14 +49,14 @@
         }
     },
     "variables": { 
-        "vnetId": "[parameters('virtualNetworkName')]",     
+        "vnetId": "[resourceId('Microsoft.Network/networkInterfaces', parameters('virtualNetworkName')]",
         "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
         "networkInterfaceName": "[concat(parameters('VMName'),'_nic_01')]"
     },
      "resources": [               
         {
             "type": "Microsoft.Network/networkInterfaces",
-            "apiVersion": "2019-02-01",
+            "apiVersion": "2018-10-01",
             "name": "[variables('networkInterfaceName')]",
             "location": "[parameters('location')]",
             "properties": {
@@ -65,7 +65,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "subnet":{ 
-                                "id": "[variables('SubnetRef')]"
+                                "id": "[variables('subnetRef')]"
                             },
                             "privateIPAllocationMethod": "Dynamic"
                         }
