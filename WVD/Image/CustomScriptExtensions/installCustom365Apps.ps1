@@ -3,12 +3,10 @@ param (
     
     [Parameter(Mandatory = $false)]
     [ValidateNotNullOrEmpty()]
-    [string] $ExecutableName = "OfficeDeploy.zip",
-
-    [Parameter(mandatory = $false)]
-	[string]$AppsToInstall
-
+    [string] $ExecutableName = "OfficeDeploy.zip"
 )
+
+$AppsToInstall  = $Args[0]
 
 #####################################
 
