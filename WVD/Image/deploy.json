@@ -73,7 +73,6 @@
         }
     },
     "variables": {
-        "finalOsVersion": "[if(equals(parameters('install365Apps'), 'All'), concat(parameters('osVersion'), '-o365-pp'), parameters('osVersion'))]",
         "location": "[resourceGroup().location]",
         "imageVMTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/imageVM.json",
         "custom365AppsTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installCustom365Apps.json",
@@ -100,7 +99,7 @@
                         "value": "[parameters('vmSize')]"
                     },
                     "osVersion": {
-                        "value": "[variables('finalOsVersion')]"
+                        "value": "[variables('osVersion')]"
                     },
                     "osDiskType": {
                         "value": "[parameters('osDiskType')]"
