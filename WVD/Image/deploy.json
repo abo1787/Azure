@@ -47,7 +47,7 @@
         "LocalAdminPassword": {
             "type": "securestring"
         },
-        "VNETName": {
+        "VirtualNetworkName": {
             "type": "string"
         },
         "subnetName": {
@@ -108,8 +108,8 @@
                     "LocalAdminPassword": {
                         "value": "[parameters('LocalAdminPassword')]"
                     },
-                    "VNETName": {
-                        "value": "[parameters('VNETName')]"
+                    "VirtualNetworkName": {
+                        "value": "[parameters('VirtualNetworkName')]"
                     },
                     "subnetName": {
                         "value": "[parameters('subnetName')]"
