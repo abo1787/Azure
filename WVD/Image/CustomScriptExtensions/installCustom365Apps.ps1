@@ -111,25 +111,25 @@ $M365ExePath = Join-Path $PSScriptRoot $ExecutableName
 if($appsToInstall -eq "All"){
     $switches = "/configure .\OfficeDeploy\Configuration_AllApps.xml"
 }
-if($appsToInstall -eq "All except Access"){
+if($appsToInstall -eq "No_Access"){
     $switches = "/configure .\OfficeDeploy\Configuration_NoAccess.xml"
 }
-if($appsToInstall -eq "All except Access,OneNote"){
+if($appsToInstall -eq "No_Access_OneNote"){
     $switches = "/configure .\OfficeDeploy\Configuration_NoAccessOneNote.xml"
 }
-if($appsToInstall -eq "All except Access,Publisher"){
+if($appsToInstall -eq "No_Access_Publisher"){
     $switches = "/configure .\OfficeDeploy\Configuration_NoAccessPublisher.xml"
 }
-if($appsToInstall -eq "All except Access,OneNote,Publisher"){
+if($appsToInstall -eq "No_Access_OneNote_Publisher"){
     $switches = "/configure .\OfficeDeploy\Configuration_NoAccessPublisherOneNote.xml"
 }
-if($appsToInstall -eq "All except OneNote"){
+if($appsToInstall -eq "No_OneNote"){
     $switches = "/configure .\OfficeDeploy\Configuration_NoOneNote.xml"
 }
-if($appsToInstall -eq "All except OneNote,Publisher"){
+if($appsToInstall -eq "No_OneNote_Publisher"){
     $switches = "/configure .\OfficeDeploy\Configuration_NoOneNotePublisher.xml"
 }
-if($appsToInstall -eq "All except Publisher"){
+if($appsToInstall -eq "No_Publisher"){
     $switches = "/configure .\OfficeDeploy\Configuration_NoPublisher.xml"
 }
 
