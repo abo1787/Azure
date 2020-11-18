@@ -99,7 +99,7 @@
                         "value": "[parameters('vmSize')]"
                     },
                     "osVersion": {
-                        "value": "[variables('osVersion')]"
+                        "value": "[parameters('osVersion')]"
                     },
                     "osDiskType": {
                         "value": "[parameters('osDiskType')]"
