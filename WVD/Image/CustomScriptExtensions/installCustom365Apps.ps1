@@ -1,12 +1,9 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param (
     
-    [Parameter(Mandatory = $false)]
-    [ValidateNotNullOrEmpty()]
+    [string] $appsToInstall,
     [string] $ExecutableName = "OfficeDeploy.zip"
 )
-
-$AppsToInstall  = $Args[0]
 
 #####################################
 
