@@ -38,7 +38,7 @@
         "LocalAdminPassword": {
             "type": "securestring"
         },
-        "VNETName": {
+        "VirtualNetworkName": {
             "type": "string"
         },
         "subnetName": {
@@ -48,8 +48,9 @@
             "type": "string"
         }
     },
-    "variables": {        
-        "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets/', parameters('VNETName'),parameters('subnetName'))]",
+    "variables": { 
+        "vnetId": "[parameters('virtualNetworkName')]",     
+        "subnetRef": "[concat(variables('vnetId'), '/subnets/', parameters('subnetName'))]",
         "networkInterfaceName": "[concat(parameters('VMName'),'_nic_01')]"
     },
      "resources": [               
@@ -90,10 +91,7 @@
                     "adminPassword": "[parameters('localadminPassword')]",
                     "windowsConfiguration": {
                         "enableAutomaticUpdates": true,
-                        "provisionVMAgent": true,
-                        "patchSettings": {
-                            "patchMode": "AutomaticByOS"
-                        }
+                        "provisionVMAgent": true
                     } 
                 },
                 "storageProfile": {
