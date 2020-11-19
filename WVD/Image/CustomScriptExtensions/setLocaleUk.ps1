@@ -117,9 +117,9 @@ else{
 # Get Local Experience Pack
     Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
     $LangArchivePath = Join-Path $PSScriptRoot "en-GB.zip"
-    $LangPackName = "en-gb\LanguageExperiencePack.en-GB.Neutral.appx"
+    $LangPackName = "en-GB\LanguageExperiencePack.en-GB.Neutral.appx"
     $LangPackPath = Join-Path $PSScriptRoot $LangPackName
-    $LicenseName = "en-gb\License.xml"
+    $LicenseName = "en-GB\License.xml"
     $LicensePath = Join-Path $PSScriptRoot $LicenseName
     
     Add-Content $mylogfile -Value "Downloaded language packs"
