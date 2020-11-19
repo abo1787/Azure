@@ -98,9 +98,8 @@ function Set-Logger {
 
 $mylogfile = "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\userlog.txt"
 
-$dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
-Add-Content $mylogfile -Value "$dateTime Starting script"
-Add-Content $mylogfile -Value "$dateTime PSScriptRoot is $PSScriptRoot"
+Add-Content $mylogfile -Value "Starting script"
+Add-Content $mylogfile -Value "PSScriptRoot is $PSScriptRoot"
 
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\UKLocale" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
@@ -116,38 +115,27 @@ else{
 }
 
 # Get Local Experience Pack
-try {
     Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
     $LangArchivePath = Join-Path $PSScriptRoot "en-GB.zip"
     $LangPackName = "en-gb\LanguageExperiencePack.en-gb.Neutral.appx"
     $LangPackPath = Join-Path $PSScriptRoot $LangPackName
     $LicenseName = "en-gb\License.xml"
     $LicensePath = Join-Path $PSScriptRoot $LicenseName
-
-    $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
+    
     Add-Content $mylogfile -Value "Downloaded language packs"
     Add-Content $mylogfile -Value "LangArchivePath is $LangArchivePath"
     Add-Content $mylogfile -Value "LangPackPath is $LangPackPath"
     Add-Content $mylogfile -Value "LicensePath is $LicensePath"
-}
-catch{
-    $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
-    Add-Content $mylogfile -Value "Couldnt download language packs"
-}
-
+    
 # Provision Local Experience Pack
-try{
     Unblock-File –Path $LangArchivePath –ErrorAction SilentlyContinue
     Expand-Archive -Path $LangArchivePath -DestinationPath $PSScriptRoot
     Add-AppxProvisionedPackage –Online –PackagePath $LangPackPath –LicensePath $LicensePath
     Add-Content $mylogfile -Value "Added AppXPackage"
-}
-catch{
-    Add-Content $mylogfile -Value "Couldnt install language packs"
-}
+
 # Install optional features for primary language
-$UKCapabilities = Get-WindowsCapability –Online | Where {$_.Name -match "$PrimaryLanguage" -and $_.State -ne "Installed"}
-$UKCapabilities | foreach {
+$UKCapabilities = Get-WindowsCapability –Online | Where-Object {$_.Name -match "$PrimaryLanguage" -and $_.State -ne "Installed"}
+$UKCapabilities | ForEach-Object {
     Add-WindowsCapability –Online –Name $_.Name
     Add-Content $mylogfile -Value "Adding capability $($_.Name)"
 }
