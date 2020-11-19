@@ -181,5 +181,3 @@ Set-WinUserLanguageList en-GB -Force
 $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
 Add-Content $mylogfile -Value "$dateTime Trying to run control.exe next"
 
-# Set Timezone
-& tzutil /s "GMT Standard Time"
