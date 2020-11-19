@@ -70,6 +70,38 @@
                 "No_Publisher"
             ],
             "defaultValue": "None"
+        },
+        "installOneDrive": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes"
+        },
+        "installTeams": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes"
+        },
+        "installFSLogix": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes"
+        },
+        "setUKLanguage": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes"
         }
     },
     "variables": {
@@ -154,6 +186,7 @@
             }
         },
         {
+            "condition": "[not(equals(parameters('installOneDrive'), 'No'))]",
             "name": "[concat(parameters('vmName'), '-OneDrive')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
@@ -177,6 +210,7 @@
             }
         },
         {
+            "condition": "[not(equals(parameters('installTeams'), 'No'))]",
             "name": "[concat(parameters('vmName'), '-Teams')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
@@ -200,6 +234,7 @@
             }
         },
         {
+            "condition": "[not(equals(parameters('installFSLogix'), 'No'))]",
             "name": "[concat(parameters('vmName'), '-FSLogix')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
@@ -223,6 +258,7 @@
             }
         },
         {
+            "condition": "[not(equals(parameters('setUKLanguage'), 'No'))]",
             "name": "[concat(parameters('vmName'), '-LanguageUk')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
