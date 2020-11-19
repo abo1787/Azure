@@ -117,7 +117,7 @@ else{
 # Get Local Experience Pack
     Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
     $LangArchivePath = Join-Path $PSScriptRoot "en-GB.zip"
-    $LangPackName = "en-gb\LanguageExperiencePack.en-gb.Neutral.appx"
+    $LangPackName = "en-gb\LanguageExperiencePack.en-GB.Neutral.appx"
     $LangPackPath = Join-Path $PSScriptRoot $LangPackName
     $LicenseName = "en-gb\License.xml"
     $LicensePath = Join-Path $PSScriptRoot $LicenseName
@@ -126,6 +126,7 @@ else{
     Add-Content $mylogfile -Value "LangArchivePath is $LangArchivePath"
     Add-Content $mylogfile -Value "LangPackPath is $LangPackPath"
     Add-Content $mylogfile -Value "LicensePath is $LicensePath"
+    Add-Content $mylogfile -Value "Primary Language is $PrimaryLanguage"
     
 # Provision Local Experience Pack
     Unblock-File –Path $LangArchivePath –ErrorAction SilentlyContinue
