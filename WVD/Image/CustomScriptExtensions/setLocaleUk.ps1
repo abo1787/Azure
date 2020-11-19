@@ -114,14 +114,14 @@ else{
 }
 
 # Provision Local Experience Pack
-$DownloadedFile = "$env:LOCALAPPDATA\en-GB.zip"
+$DownloadedFile = "$PSScriptRoot\en-GB.zip"
 Try
 {
     $WebClient = New-Object System.Net.WebClient
     $WebClient.DownloadFile($Uri, $DownloadedFile)
     Unblock-File –Path $DownloadedFile –ErrorAction SilentlyContinue
-    Expand-Archive –Path $DownloadedFile –DestinationPath $env:LOCALAPPDATA –Force –ErrorAction Stop
-    Add-AppxProvisionedPackage –Online –PackagePath "$env:LOCALAPPDATA\en-gb\LanguageExperiencePack.en-gb.Neutral.appx" –LicensePath "$env:LOCALAPPDATA\en-gb\License.xml"
+    Expand-Archive –Path $DownloadedFile –DestinationPath $PSScriptRoot –Force –ErrorAction Stop
+    Add-AppxProvisionedPackage –Online –PackagePath "$PSScriptRoot\en-gb\LanguageExperiencePack.en-gb.Neutral.appx" –LicensePath "$PSScriptRoot\en-gb\License.xml"
     Remove-Item –Path $DownloadedFile –Force –ErrorAction SilentlyContinue
 }
 Catch
@@ -174,9 +174,9 @@ $XML = @"
  </gs:GlobalizationServices>
 "@
 
-New-Item –Path $env:TEMP –Name "en-GB.xml" –ItemType File –Value $XML –Force
+New-Item –Path $PSScriptRoot –Name "en-GB.xml" –ItemType File –Value $XML –Force
 
-$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$env:Temp\en-GB.xml""" –NoNewWindow –PassThru –Wait
+$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$PSScriptRoot\en-GB.xml""" –NoNewWindow –PassThru –Wait
 $Process.ExitCode
 
 # Set Timezone
