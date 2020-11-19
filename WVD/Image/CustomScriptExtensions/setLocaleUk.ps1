@@ -96,6 +96,12 @@ function Set-Logger {
 }
 #endregion
 
+$logfile = "C:\langLog.txt"
+
+$dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
+Add-Content $logfile -Value "$dateTime Starting script"
+Add-Content $logfile -Value "$dateTime PSScriptRoot is $PSScriptRoot"
+
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\UKLocale" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
 # Language codes
@@ -110,23 +116,43 @@ else{
 }
 
 # Get Local Experience Pack
-Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
-$LangArchivePath = Join-Path $PSScriptRoot "en-GB.zip"
-$LangPackName = "en-gb\LanguageExperiencePack.en-gb.Neutral.appx"
-$LangPackPath = Join-Path $PSScriptRoot $LangPackName
-$LicenseName = "en-gb\License.xml"
-$LicensePath = Join-Path $PSScriptRoot $LicenseName
+try {
+    Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
+    $LangArchivePath = Join-Path $PSScriptRoot "en-GB.zip"
+    $LangPackName = "en-gb\LanguageExperiencePack.en-gb.Neutral.appx"
+    $LangPackPath = Join-Path $PSScriptRoot $LangPackName
+    $LicenseName = "en-gb\License.xml"
+    $LicensePath = Join-Path $PSScriptRoot $LicenseName
+
+    $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
+    Add-Content $logfile -Value "$dateTime Downloaded language packs"
+    Add-Content $logfile -Value "$dateTime LangArchivePath is $LangArchivePath"
+    Add-Content $logfile -Value "$dateTime LangPackPath is $LangPackPath"
+    Add-Content $logfile -Value "$dateTime LicensePath is $LicensePath"
+}
+catch{
+    $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
+    Add-Content $logfile -Value "$dateTime Couldnt download language packs"
+}
 
 # Provision Local Experience Pack
-Unblock-File –Path $LangArchivePath –ErrorAction SilentlyContinue
-Expand-Archive -Path $LangArchivePath -DestinationPath $PSScriptRoot
-Add-AppxProvisionedPackage –Online –PackagePath $LangPackPath –LicensePath $LicensePath
-#Remove-Item –Path $LangArchivePath –Force –ErrorAction SilentlyContinue
-
+try{
+    Unblock-File –Path $LangArchivePath –ErrorAction SilentlyContinue
+    Expand-Archive -Path $LangArchivePath -DestinationPath $PSScriptRoot
+    Add-AppxProvisionedPackage –Online –PackagePath $LangPackPath –LicensePath $LicensePath
+    #Remove-Item –Path $LangArchivePath –Force –ErrorAction SilentlyContinue
+    $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
+    Add-Content $logfile -Value "$dateTime Added AppXPackage"
+}
+catch{
+    $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
+    Add-Content $logfile -Value "$dateTime Couldnt install language packs"
+}
 # Install optional features for primary language
 $UKCapabilities = Get-WindowsCapability –Online | Where {$_.Name -match "$PrimaryLanguage" -and $_.State -ne "Installed"}
 $UKCapabilities | foreach {
     Add-WindowsCapability –Online –Name $_.Name
+    Add-Content $logfile -Value "Adding capability $($_.Name)"
 }
 
 $LanguageList = Get-WinUserLanguageList
@@ -139,13 +165,24 @@ $xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/Cust
 Invoke-WebRequest -Uri $xmlUri -OutFile "$($PSScriptRoot)\$xmlFile"
 $xmlPath = Join-Path $PSScriptRoot $xmlFile
 
+$dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
+Add-Content $logfile -Value "$dateTime Downloading XML file"
+Add-Content $logfile -Value "$dateTime XML Path is $xmlPath"
+
+$dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
+Add-Content $logfile -Value "$dateTime Setting cultures"
+
 # Set Languages/Culture
 Set-Culture en-GB
 Set-WinSystemLocale en-GB
 Set-WinHomeLocation -GeoId 242
 Set-WinUserLanguageList en-GB -Force
 
-& $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$xmlPath`""
+$dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
+Add-Content $logfile -Value "$dateTime Trying to run control.exe next"
+
+$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:`"$xmlPath`"" –NoNewWindow –PassThru –Wait
+$Process.ExitCode
 
 # Set Timezone
 & tzutil /s "GMT Standard Time"
