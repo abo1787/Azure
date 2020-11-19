@@ -144,8 +144,8 @@ Set-Culture en-GB
 Set-WinSystemLocale en-GB
 Set-WinHomeLocation -GeoId 242
 Set-WinUserLanguageList en-GB -Force
-$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$xmlPath""" –NoNewWindow –PassThru –Wait
-$Process.ExitCode
+
+& $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$xmlPath`""
 
 # Set Timezone
 & tzutil /s "GMT Standard Time"
