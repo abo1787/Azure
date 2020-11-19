@@ -108,15 +108,17 @@ else{
     $Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/LangPacks/2004/en-GB.zip"
 }
 
+# Get Local Experience Pack
+$DownloadedFile = "C:\Windows\Temp\en-GB.zip"
+Invoke-WebRequest -Uri $Uri -OutFile $DownloadedFile
+
 # Provision Local Experience Pack
-$DownloadedFile = "$PSScriptRoot\en-GB.zip"
+
 Try
 {
-    $WebClient = New-Object System.Net.WebClient
-    $WebClient.DownloadFile($Uri, $DownloadedFile)
     Unblock-File –Path $DownloadedFile –ErrorAction SilentlyContinue
-    Expand-Archive –Path $DownloadedFile –DestinationPath $PSScriptRoot –Force –ErrorAction Stop
-    Add-AppxProvisionedPackage –Online –PackagePath "$PSScriptRoot\en-gb\LanguageExperiencePack.en-gb.Neutral.appx" –LicensePath "$PSScriptRoot\en-gb\License.xml"
+    Expand-Archive –Path $DownloadedFile –DestinationPath "C:\Windows\Temp" –Force –ErrorAction Stop
+    Add-AppxProvisionedPackage –Online –PackagePath "C:\Windows\Temp\en-gb\LanguageExperiencePack.en-gb.Neutral.appx" –LicensePath "C:\Windows\Temp\en-gb\License.xml"
     #Remove-Item –Path $DownloadedFile –Force –ErrorAction SilentlyContinue
 }
 Catch
@@ -136,14 +138,14 @@ Set-WinUserLanguageList $LanguageList -force
 
 # Get xml File
 $xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
-Invoke-WebRequest -Uri $xmlUri -OutFile "$($PSScriptRoot)\setLocaleUk.xml"
+Invoke-WebRequest -Uri $xmlUri -OutFile "C:\Windows\Temp\setLocaleUk.xml"
 
 # Set Languages/Culture
 Set-Culture en-GB
 Set-WinSystemLocale en-GB
 Set-WinHomeLocation -GeoId 242
 Set-WinUserLanguageList en-GB -Force
-$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$PSScriptRoot\setLocaleUk.xml""" –NoNewWindow –PassThru –Wait
+$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""C:\Windows\Temp\setLocaleUk.xml""" –NoNewWindow –PassThru –Wait
 $Process.ExitCode
 
 # Set Timezone
