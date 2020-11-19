@@ -1,8 +1,7 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param (
     
-    [string] $osVersion,
-    [string] $xmlFileName = "setLocaleUk.xml"
+    [string] $osVersion
 )
 
 #####################################
@@ -174,7 +173,8 @@ $XML = @"
  </gs:GlobalizationServices>
 "@
 
-New-Item $PSScriptRoot –Name "en-GB.xml" –ItemType File –Value $XML –Force
+$xmlFileName = "$PSScriptRoot\en-GB.xml"
+$XML | Set-Content $xmlFileName
 
 $Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$PSScriptRoot\en-GB.xml""" –NoNewWindow –PassThru –Wait
 $Process.ExitCode
