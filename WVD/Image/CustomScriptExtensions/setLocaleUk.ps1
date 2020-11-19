@@ -181,9 +181,6 @@ Set-WinUserLanguageList en-GB -Force
 $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
 Add-Content $mylogfile -Value "$dateTime Trying to run control.exe next"
 
-#$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:`"$xmlPath`"" –NoNewWindow –PassThru –Wait
-#$Process.ExitCode
-
 # Set Timezone
 & tzutil /s "GMT Standard Time"
 
