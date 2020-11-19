@@ -183,7 +183,3 @@ Add-Content $mylogfile -Value "$dateTime Trying to run control.exe next"
 
 # Set Timezone
 & tzutil /s "GMT Standard Time"
-
-LogInfo("The language script has finished. The osVersion was $osVersion. The vm will now be restarted")
-
-Restart-Computer -Force
