@@ -99,10 +99,6 @@ Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension
 
 # Language codes
 $PrimaryLanguage = "en-GB"
-$SecondaryLanguage = "en-US"
-$PrimaryInputCode = "0809:00000809"
-$SecondaryInputCode = "0409:00000409"
-$PrimaryGeoID = "242"
 
 # Check osVersion to set correct Language Pack version
 if($osVersion -eq "19h2-evd" -or $osVersion -eq "19h2-ent"){
@@ -138,44 +134,11 @@ $LanguageList = Get-WinUserLanguageList
 $LanguageList.Add("en-gb")
 Set-WinUserLanguageList $LanguageList -force
 
-# Apply custom XML to set administrative language defaults
-$XML = @"
-<gs:GlobalizationServices xmlns:gs="urn:longhornGlobalizationUnattend">
- 
-<!– user list –> 
-    <gs:UserList>
-        <gs:User UserID="Current" CopySettingsToDefaultUserAcct="true" CopySettingsToSystemAcct="true"/> 
-    </gs:UserList>
- 
-    <!– GeoID –>
-    <gs:LocationPreferences> 
-        <gs:GeoID Value="$PrimaryGeoID"/>
-    </gs:LocationPreferences>
- 
-    <gs:MUILanguagePreferences>
-        <gs:MUILanguage Value="$PrimaryLanguage"/>
-        <gs:MUIFallback Value="$SecondaryLanguage"/>
-    </gs:MUILanguagePreferences>
+# Get xml File
+$xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
+Invoke-WebRequest -Uri $xmlUri -OutFile "$($PSScriptRoot)\$ExecutableName"
 
-    <!– system locale –>
-    <gs:SystemLocale Name="$PrimaryLanguage"/>
- 
-    <!– input preferences –>
-    <gs:InputPreferences>
-        <gs:InputLanguageID Action="add" ID="$PrimaryInputCode" Default="true"/>
-        <gs:InputLanguageID Action="add" ID="$SecondaryInputCode"/>
-      </gs:InputPreferences>
- 
-    <!– user locale –>
-    <gs:UserLocale>
-        <gs:Locale Name="$PrimaryLanguage" SetAsCurrent="true" ResetAllSettings="false"/>
-    </gs:UserLocale>
- </gs:GlobalizationServices>
-"@
-
-$xmlFileName = "$PSScriptRoot\en-GB.xml"
-$XML | Set-Content $xmlFileName
-
+# Set Languages/Culture
 $Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$PSScriptRoot\en-GB.xml""" –NoNewWindow –PassThru –Wait
 $Process.ExitCode
 
