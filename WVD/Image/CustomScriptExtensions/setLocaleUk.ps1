@@ -1,7 +1,8 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param (
     
-    [string] $osVersion
+    [string] $osVersion,
+    [string] $ExecutableName = "en-GB.zip"
 )
 
 #####################################
@@ -109,22 +110,18 @@ else{
 }
 
 # Get Local Experience Pack
-$DownloadedFile = "C:\Windows\Temp\en-GB.zip"
-Invoke-WebRequest -Uri $Uri -OutFile $DownloadedFile
+Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
+$LangArchivePath = Join-Path $PSScriptRoot "en-GB.zip"
+$LangPackName = "en-gb\LanguageExperiencePack.en-gb.Neutral.appx"
+$LangPackPath = Join-Path $PSScriptRoot $LangPackName
+$LicenseName = "en-gb\License.xml"
+$LicensePath = Join-Path $PSScriptRoot $LicenseName
 
 # Provision Local Experience Pack
-
-Try
-{
-    Unblock-File –Path $DownloadedFile –ErrorAction SilentlyContinue
-    Expand-Archive –Path $DownloadedFile –DestinationPath "C:\Windows\Temp" –Force –ErrorAction Stop
-    Add-AppxProvisionedPackage –Online –PackagePath "C:\Windows\Temp\en-gb\LanguageExperiencePack.en-gb.Neutral.appx" –LicensePath "C:\Windows\Temp\en-gb\License.xml"
-    #Remove-Item –Path $DownloadedFile –Force –ErrorAction SilentlyContinue
-}
-Catch
-{
-    Write-Host "Failed to install Local Experience Pack: $_"
-}
+Unblock-File –Path $LangArchivePath –ErrorAction SilentlyContinue
+Expand-Archive -Path $LangArchivePath -DestinationPath $PSScriptRoot
+Add-AppxProvisionedPackage –Online –PackagePath $LangPackPath –LicensePath $LicensePath
+#Remove-Item –Path $LangArchivePath –Force –ErrorAction SilentlyContinue
 
 # Install optional features for primary language
 $UKCapabilities = Get-WindowsCapability –Online | Where {$_.Name -match "$PrimaryLanguage" -and $_.State -ne "Installed"}
@@ -137,15 +134,17 @@ $LanguageList.Add("en-gb")
 Set-WinUserLanguageList $LanguageList -force
 
 # Get xml File
+$xmlFile = "setLocaleUk.xml"
 $xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
-Invoke-WebRequest -Uri $xmlUri -OutFile "C:\Windows\Temp\setLocaleUk.xml"
+Invoke-WebRequest -Uri $xmlUri -OutFile "$($PSScriptRoot)\$xmlFile"
+$xmlPath = Join-Path $PSScriptRoot $xmlFile
 
 # Set Languages/Culture
 Set-Culture en-GB
 Set-WinSystemLocale en-GB
 Set-WinHomeLocation -GeoId 242
 Set-WinUserLanguageList en-GB -Force
-$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""C:\Windows\Temp\setLocaleUk.xml""" –NoNewWindow –PassThru –Wait
+$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$xmlPath""" –NoNewWindow –PassThru –Wait
 $Process.ExitCode
 
 # Set Timezone
