@@ -125,14 +125,14 @@ try {
     $LicensePath = Join-Path $PSScriptRoot $LicenseName
 
     $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
-    Add-Content $mylogfile -Value "$dateTime Downloaded language packs"
-    Add-Content $mylogfile -Value "$dateTime LangArchivePath is $LangArchivePath"
-    Add-Content $mylogfile -Value "$dateTime LangPackPath is $LangPackPath"
-    Add-Content $mylogfile -Value "$dateTime LicensePath is $LicensePath"
+    Add-Content $mylogfile -Value "Downloaded language packs"
+    Add-Content $mylogfile -Value "LangArchivePath is $LangArchivePath"
+    Add-Content $mylogfile -Value "LangPackPath is $LangPackPath"
+    Add-Content $mylogfile -Value "LicensePath is $LicensePath"
 }
 catch{
     $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
-    Add-Content $mylogfile -Value "$dateTime Couldnt download language packs"
+    Add-Content $mylogfile -Value "Couldnt download language packs"
 }
 
 # Provision Local Experience Pack
@@ -140,13 +140,10 @@ try{
     Unblock-File –Path $LangArchivePath –ErrorAction SilentlyContinue
     Expand-Archive -Path $LangArchivePath -DestinationPath $PSScriptRoot
     Add-AppxProvisionedPackage –Online –PackagePath $LangPackPath –LicensePath $LicensePath
-    #Remove-Item –Path $LangArchivePath –Force –ErrorAction SilentlyContinue
-    $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
-    Add-Content $mylogfile -Value "$dateTime Added AppXPackage"
+    Add-Content $mylogfile -Value "Added AppXPackage"
 }
 catch{
-    $dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
-    Add-Content $mylogfile -Value "$dateTime Couldnt install language packs"
+    Add-Content $mylogfile -Value "Couldnt install language packs"
 }
 # Install optional features for primary language
 $UKCapabilities = Get-WindowsCapability –Online | Where {$_.Name -match "$PrimaryLanguage" -and $_.State -ne "Installed"}
@@ -157,27 +154,13 @@ $UKCapabilities | foreach {
 
 $LanguageList = Get-WinUserLanguageList
 $LanguageList.Add("en-gb")
-Set-WinUserLanguageList $LanguageList -force
+Set-WinUserLanguageList $LanguageList -Force
 
 # Get xml File
 $xmlFile = "setLocaleUk.xml"
 $xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
 Invoke-WebRequest -Uri $xmlUri -OutFile "$($PSScriptRoot)\$xmlFile"
 $xmlPath = Join-Path $PSScriptRoot $xmlFile
-
-$dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
-Add-Content $mylogfile -Value "$dateTime Downloading XML file"
-Add-Content $mylogfile -Value "$dateTime XML Path is $xmlPath"
-
-$dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
-Add-Content $mylogfile -Value "$dateTime Setting cultures"
-
-# Set Languages/Culture
-Set-Culture en-GB
-Set-WinSystemLocale en-GB
-Set-WinHomeLocation -GeoId 242
-Set-WinUserLanguageList en-GB -Force
-
-$dateTime = Get-Date -Format dd-MM-yy-HH:mm:ss
-Add-Content $mylogfile -Value "$dateTime Trying to run control.exe next"
+Add-Content $mylogfile -Value "Downloading XML file"
+Add-Content $mylogfile -Value "XML Path is $xmlPath"
 
