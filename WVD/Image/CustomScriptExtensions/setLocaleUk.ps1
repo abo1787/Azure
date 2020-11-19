@@ -174,7 +174,7 @@ $XML = @"
  </gs:GlobalizationServices>
 "@
 
-New-Item –Path $PSScriptRoot –Name "en-GB.xml" –ItemType File –Value $XML –Force
+New-Item $PSScriptRoot –Name "en-GB.xml" –ItemType File –Value $XML –Force
 
 $Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$PSScriptRoot\en-GB.xml""" –NoNewWindow –PassThru –Wait
 $Process.ExitCode
