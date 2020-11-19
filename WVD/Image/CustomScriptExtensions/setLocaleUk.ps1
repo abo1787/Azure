@@ -117,7 +117,7 @@ Try
     Unblock-File –Path $DownloadedFile –ErrorAction SilentlyContinue
     Expand-Archive –Path $DownloadedFile –DestinationPath $PSScriptRoot –Force –ErrorAction Stop
     Add-AppxProvisionedPackage –Online –PackagePath "$PSScriptRoot\en-gb\LanguageExperiencePack.en-gb.Neutral.appx" –LicensePath "$PSScriptRoot\en-gb\License.xml"
-    Remove-Item –Path $DownloadedFile –Force –ErrorAction SilentlyContinue
+    #Remove-Item –Path $DownloadedFile –Force –ErrorAction SilentlyContinue
 }
 Catch
 {
@@ -136,20 +136,18 @@ Set-WinUserLanguageList $LanguageList -force
 
 # Get xml File
 $xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
-Invoke-WebRequest -Uri $xmlUri -OutFile "$($PSScriptRoot)\$ExecutableName"
+Invoke-WebRequest -Uri $xmlUri -OutFile "$($PSScriptRoot)\setLocaleUk.xml"
 
 # Set Languages/Culture
-$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$PSScriptRoot\en-GB.xml""" –NoNewWindow –PassThru –Wait
+Set-Culture en-GB
+Set-WinSystemLocale en-GB
+Set-WinHomeLocation -GeoId 242
+Set-WinUserLanguageList en-GB -Force
+$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$PSScriptRoot\setLocaleUk.xml""" –NoNewWindow –PassThru –Wait
 $Process.ExitCode
 
 # Set Timezone
 & tzutil /s "GMT Standard Time"
-
-# Set languages/culture
-#Set-Culture en-GB
-#Set-WinSystemLocale en-GB
-#Set-WinHomeLocation -GeoId 242
-#Set-WinUserLanguageList en-GB -Force
 
 LogInfo("The language script has finished. The osVersion was $osVersion. The vm will now be restarted")
 
