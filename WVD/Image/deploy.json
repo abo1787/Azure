@@ -61,13 +61,13 @@
             "allowedValues": [
                 "None",
                 "All",
-                "All except Access",
-                "All except Access,OneNote",
-                "All except Access,Publisher",
-                "All except Access,OneNote,Publisher",
-                "All except OneNote",
-                "All except OneNote,Publisher",
-                "All except Publisher"
+                "No_Access",
+                "No_Access_OneNote",
+                "No_Access_Publisher",
+                "No_Access_OneNote_Publisher",
+                "No_OneNote",
+                "No_OneNote_Publisher",
+                "No_Publisher"
             ],
             "defaultValue": "None"
         }
@@ -82,7 +82,7 @@
     },
     "resources": [
         {
-            "name": "[concat(parameters('vmName'), 'ImageVM')]",
+            "name": "[concat(parameters('vmName'), '-ImageVM')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
             "properties": {
@@ -127,11 +127,11 @@
         },
         {
             "condition": "[not(equals(parameters('install365Apps'), 'None'))]",
-            "name": "[concat(parameters('vmName'), 'Custom365Apps')]",
+            "name": "[concat(parameters('vmName'), '-Custom365Apps')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2015-01-01",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), 'ImageVM')]"
+                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-ImageVM')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -153,11 +153,11 @@
             }
         },
         {
-            "name": "[concat(parameters('vmName'), 'OneDrive')]",
+            "name": "[concat(parameters('vmName'), '-OneDrive')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), 'Custom365Apps')]"
+                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-Custom365Apps')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -176,11 +176,11 @@
             }
         },
         {
-            "name": "[concat(parameters('vmName'), 'Teams')]",
+            "name": "[concat(parameters('vmName'), '-Teams')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), 'OneDrive')]"
+                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-OneDrive')]"
             ],
             "properties": {
                 "mode": "Incremental",
@@ -199,11 +199,11 @@
             }
         },
         {
-            "name": "[concat(parameters('vmName'), 'FSLogix')]",
+            "name": "[concat(parameters('vmName'), '-FSLogix')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
             "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), 'Teams')]"
+                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-Teams')]"
             ],
             "properties": {
                 "mode": "Incremental",
