@@ -1,17 +1,12 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param (
     
-    [Parameter(Mandatory = $false)]
-    [ValidateNotNullOrEmpty()]
+    [string] $osVersion,
     [string] $xmlFileName = "setLocaleUk.xml"
-
 )
 
 #####################################
 
-$langLog = "C:\languagelog.txt"
-
-##########
 # Helper #
 ##########
 #region Functions
@@ -103,25 +98,96 @@ function Set-Logger {
 
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\UKLocale" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
-Add-Content -Path $langLog -Value "Script has started"
+# Language codes
+$PrimaryLanguage = "en-GB"
+$SecondaryLanguage = "en-US"
+$PrimaryInputCode = "0809:00000809"
+$SecondaryInputCode = "0409:00000409"
+$PrimaryGeoID = "242"
 
-$Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
-Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$xmlFileName"
+# Check osVersion to set correct Language Pack version
+if($osVersion -eq "19h2-evd" -or $osVersion -eq "19h2-ent"){
+    $Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/LangPacks/1909/en-GB.zip"
+}
+else{
+    $Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/LangPacks/2004/en-GB.zip"
+}
 
-Add-Content -Path $langLog -Value "Should have downloaded xml file. PSScriptroot is $PSScriptRoot and XML file is $xmlFileName"
+# Provision Local Experience Pack
+$DownloadedFile = "$env:LOCALAPPDATA\en-GB.zip"
+Try
+{
+    $WebClient = New-Object System.Net.WebClient
+    $WebClient.DownloadFile($Uri, $DownloadedFile)
+    Unblock-File –Path $DownloadedFile –ErrorAction SilentlyContinue
+    Expand-Archive –Path $DownloadedFile –DestinationPath $env:LOCALAPPDATA –Force –ErrorAction Stop
+    Add-AppxProvisionedPackage –Online –PackagePath "$env:LOCALAPPDATA\en-gb\LanguageExperiencePack.en-gb.Neutral.appx" –LicensePath "$env:LOCALAPPDATA\en-gb\License.xml"
+    Remove-Item –Path $DownloadedFile –Force –ErrorAction SilentlyContinue
+}
+Catch
+{
+    Write-Host "Failed to install Local Experience Pack: $_"
+}
 
-# Set Locale, language etc. 
-& $env:SystemRoot\System32\control.exe "intl.cpl,,/f:`"$PSScriptRoot\$xmlFileName`""
+# Install optional features for primary language
+$UKCapabilities = Get-WindowsCapability –Online | Where {$_.Name -match "$PrimaryLanguage" -and $_.State -ne "Installed"}
+$UKCapabilities | foreach {
+    Add-WindowsCapability –Online –Name $_.Name
+}
+
+$LanguageList = Get-WinUserLanguageList
+$LanguageList.Add("en-gb")
+Set-WinUserLanguageList $LanguageList -force
+
+# Apply custom XML to set administrative language defaults
+$XML = @"
+<gs:GlobalizationServices xmlns:gs="urn:longhornGlobalizationUnattend">
+ 
+<!– user list –> 
+    <gs:UserList>
+        <gs:User UserID="Current" CopySettingsToDefaultUserAcct="true" CopySettingsToSystemAcct="true"/> 
+    </gs:UserList>
+ 
+    <!– GeoID –>
+    <gs:LocationPreferences> 
+        <gs:GeoID Value="$PrimaryGeoID"/>
+    </gs:LocationPreferences>
+ 
+    <gs:MUILanguagePreferences>
+        <gs:MUILanguage Value="$PrimaryLanguage"/>
+        <gs:MUIFallback Value="$SecondaryLanguage"/>
+    </gs:MUILanguagePreferences>
+
+    <!– system locale –>
+    <gs:SystemLocale Name="$PrimaryLanguage"/>
+ 
+    <!– input preferences –>
+    <gs:InputPreferences>
+        <gs:InputLanguageID Action="add" ID="$PrimaryInputCode" Default="true"/>
+        <gs:InputLanguageID Action="add" ID="$SecondaryInputCode"/>
+      </gs:InputPreferences>
+ 
+    <!– user locale –>
+    <gs:UserLocale>
+        <gs:Locale Name="$PrimaryLanguage" SetAsCurrent="true" ResetAllSettings="false"/>
+    </gs:UserLocale>
+ </gs:GlobalizationServices>
+"@
+
+New-Item –Path $env:TEMP –Name "en-GB.xml" –ItemType File –Value $XML –Force
+
+$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:""$env:Temp\en-GB.xml""" –NoNewWindow –PassThru –Wait
+$Process.ExitCode
 
 # Set Timezone
 & tzutil /s "GMT Standard Time"
 
 # Set languages/culture
-Set-Culture en-GB
-Set-WinSystemLocale en-GB
-Set-WinHomeLocation -GeoId 242
-Set-WinUserLanguageList en-GB -Force
+#Set-Culture en-GB
+#Set-WinSystemLocale en-GB
+#Set-WinHomeLocation -GeoId 242
+#Set-WinUserLanguageList en-GB -Force
 
-LogInfo("The language script has been ran")
+LogInfo("The language script has finished. The osVersion was $osVersion. The vm will now be restarted")
 
 Restart-Computer -Force
