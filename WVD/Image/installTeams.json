@@ -7,6 +7,17 @@
         },
         "location" : {
             "type": "string"
+        },
+        "hostType" : {
+            "type": "string",
+            "allowedValues": [
+                "MultiSession",
+                "SingleSession"
+            ],
+            "defaultValue": "MultiSession",
+            "metadata": {
+                "description": "The OS type for the VM. EVD is Multi-Session, ENT is Enterprise (Single Session), o365pp is the image installed with the M365 Apps"
+            }
         }
     },
     "functions": [],
@@ -26,7 +37,7 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installTeams.ps1"
                     ],
-                    "commandToExecute": "powershell.exe -ExecutionPolicy Unrestricted -File installTeams.ps1"
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File installTeams.ps1 , parameters('hostType'))]"
                 }
             }
         }
