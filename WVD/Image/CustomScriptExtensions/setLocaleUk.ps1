@@ -9,6 +9,7 @@ $LicensePath = Join-Path $filePath $LicenseName
 
 # Provision Local Experience Pack
 try{
+    Write-Output "Adding en-GB Language Pack"
     Add-AppxProvisionedPackage -Online -PackagePath $LangPackPath -LicensePath $LicensePath
 }
 catch{
