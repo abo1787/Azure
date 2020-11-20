@@ -37,7 +37,7 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installTeams.ps1"
                     ],
-                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File installTeams.ps1 , parameters('hostType'))]"
+                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File installTeams.ps1 ', parameters('hostType'))]"
                 }
             }
         }
