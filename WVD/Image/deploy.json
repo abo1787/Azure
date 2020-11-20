@@ -111,7 +111,8 @@
         "OneDriveTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installOneDrive.json",
         "TeamsTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installTeams.json",
         "FSLogixTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installFSLogix.json",
-        "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json"
+        "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json",
+        "hostType": "[if(contains(parameters('osVersion'), 'evd'), 'MultiSession', 'SingleSession')]"
     },
     "resources": [
         {
@@ -229,6 +230,9 @@
                     },
                     "location": {
                         "value": "[variables('location')]"
+                    },
+                    "hostType": {
+                        "value": "[variables('hostType')]"
                     }
                 }
             }
