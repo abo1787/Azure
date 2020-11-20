@@ -1,3 +1,6 @@
+# Set the ExecutionPolicy
+Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -Confirm:$false
+
 # Set variables
 $PrimaryLanguage = "en-GB"
 $filePath = "C:\Windows\Temp\setLocaleUk"
