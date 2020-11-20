@@ -14,3 +14,4 @@ Creates a VM from a Marketplace Image and gives you options to customize it by i
 Name | Description   | Auto-deploy   |
 -----| ------------- |--------------- | 
 | Create Image VM | Create a VM from a Marketplace Image and customize it with required software relevant to WVD | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FWVD%2FImage%2Fdeploy.json)
+| Install M365 Apps Standalone | Install specified M365 Apps on an already provisioned VM | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FWVD%2FImage%2FinstallCustom365Apps.json)
