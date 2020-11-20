@@ -108,7 +108,7 @@ else{
 
 # Get Local Experience Pack
     $filePath = "C:\Windows\Temp\setLocaleUk"
-    Invoke-WebRequest -Uri $Uri -OutFile $filePath
+    Invoke-WebRequest -Uri $Uri -OutFile "$filePath\en-GB.zip"
     $LangArchivePath = Join-Path $filePath "en-GB.zip"
     
 # Prepare Local Experience Pack
@@ -116,7 +116,7 @@ else{
 
 # Get xml File
 $xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
-Invoke-WebRequest -Uri $xmlUri -OutFile $filePath
+Invoke-WebRequest -Uri $xmlUri -OutFile "$filePath\setLocaleUk.xml"
 
 # Get Locale Script
 $localeUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.ps1"
