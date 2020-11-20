@@ -21,8 +21,13 @@ catch{
 # Install optional features for primary language
 $UKCapabilities = Get-WindowsCapability -Online | Where-Object {$_.Name -match "$PrimaryLanguage" -and $_.State -ne "Installed"}
 $UKCapabilities | ForEach-Object {
-    Add-WindowsCapability -Online -Name $_.Name
     Write-Output "Adding capability $($_.Name)"
+    try{
+        Add-WindowsCapability -Online -Name $_.Name
+    }
+    catch{
+        Write-Output "Error Adding capability $($_.Name)"
+    }
 }
 
 $LanguageList = Get-WinUserLanguageList
