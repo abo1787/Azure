@@ -112,7 +112,6 @@ else{
     $LangArchivePath = Join-Path $filePath "en-GB.zip"
     
 # Prepare Local Experience Pack
-    Unblock-File –Path $LangArchivePath –ErrorAction SilentlyContinue
     Expand-Archive -Path $LangArchivePath -DestinationPath $filePath
 
 # Get xml File
