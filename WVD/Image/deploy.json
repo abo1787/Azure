@@ -95,7 +95,7 @@
             ],
             "defaultValue": "Yes"
         },
-        "setUKLanguage": {
+        "downloadUKLanguage": {
             "type": "string",
             "allowedValues": [
                 "Yes",
@@ -111,7 +111,7 @@
         "OneDriveTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installOneDrive.json",
         "TeamsTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installTeams.json",
         "FSLogixTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installFSLogix.json",
-        "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/setLocaleUk.json"
+        "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json"
     },
     "resources": [
         {
@@ -258,7 +258,7 @@
             }
         },
         {
-            "condition": "[not(equals(parameters('setUKLanguage'), 'No'))]",
+            "condition": "[not(equals(parameters('downloadUKLanguage'), 'No'))]",
             "name": "[concat(parameters('vmName'), '-LanguageUk')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
