@@ -9,7 +9,19 @@
             "type": "string"
         },
         "osVersion": {
-            "type": "string"
+            "type": "string",
+            "allowedValues": [
+                "20h2-evd",
+                "20h1-evd",
+                "19h2-evd",
+                "20h1-ent",
+                "20h2-ent",
+                "19h2-ent"
+            ],
+            "defaultValue": "20h2-evd",
+            "metadata": {
+                "description": "The OS type for the VM. EVD is Multi-Session, ENT is Enterprise (Single Session)"
+            }
         }
     },
     "functions": [],
