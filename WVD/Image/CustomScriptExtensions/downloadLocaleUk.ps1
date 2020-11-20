@@ -125,3 +125,6 @@ Invoke-WebRequest -Uri $xmlUri -OutFile "$filePath\setLocaleUk.xml"
 # Get Locale Script
 $localeUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.ps1"
 Invoke-WebRequest -Uri $localeUri -OutFile "$filePath\setLocaleUk.ps1"
+
+# Set script link on Desktop
+New-Item -ItemType SymbolicLink -Path "C:\Users\Public\Desktop" -Name "setLocaleUk.lnk" -Value "C:\Windows\Temp\setLocaleUk\setLocaleUk.ps1"
