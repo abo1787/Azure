@@ -16,7 +16,7 @@ Installs specified M365 Apps on an already provisioned VM. You have to choice to
 Installs the OneDrive Machine-Wide Installer on an already provisioned VM
 
 #### Install Teams Standalone
-Installs the Teams Machine-Wide Installer and Web-RTC AV redirection on an already provisioned VM. Sets the IsWVDEnvironment registry key
+Installs the Teams Machine-Wide Installer and Web-RTC AV redirection on an already provisioned VM. Sets the 'IsWVDEnvironment' registry key
 
 #### Install FSLogix Standalone
 Installs FSLogix on an already provisioned VM
