@@ -2,7 +2,9 @@
 
 Windows Virtual Desktop is a desktop and app virtualization service that runs on the cloud
 
-This repository contains scripts to create WVD Resources and the 'Deploy to Azure' buttons shown below can be used to create these resources
+This repository contains scripts to create WVD Resources and deploy Automation
+
+The 'Deploy to Azure' buttons shown below can be used to create these resources
 
 #### Create Image VM
 Creates a VM from a Marketplace Image and gives you options to customize it by installing M365 Apps, Teams (Machine-Wide Installer), OneDrive (Machine-Wide Installer), FSLogix and downloading the scripts and files required to set the system to UK rather than US
