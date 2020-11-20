@@ -1,5 +1,5 @@
 # Set the ExecutionPolicy
-Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope CurrentUser -Force -Confirm:$false
+Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force -Confirm:$false
 
 # Set variables
 $PrimaryLanguage = "en-GB"
