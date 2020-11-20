@@ -12,16 +12,16 @@ $LicensePath = Join-Path $filePath $LicenseName
 
 # Provision Local Experience Pack
 try{
-    Add-AppxProvisionedPackage –Online –PackagePath $LangPackPath –LicensePath $LicensePath
+    Add-AppxProvisionedPackage -Online -PackagePath $LangPackPath -LicensePath $LicensePath
 }
 catch{
-    Write-Output "Error - Couldn't install AppXPackage" -ErrorAction Stop
+    Write-Output "Error - Couldnt install AppXPackage" -ErrorAction Stop
 }
 
 # Install optional features for primary language
-$UKCapabilities = Get-WindowsCapability –Online | Where-Object {$_.Name -match "$PrimaryLanguage" -and $_.State -ne "Installed"}
+$UKCapabilities = Get-WindowsCapability -Online | Where-Object {$_.Name -match "$PrimaryLanguage" -and $_.State -ne "Installed"}
 $UKCapabilities | ForEach-Object {
-    Add-WindowsCapability –Online –Name $_.Name
+    Add-WindowsCapability -Online -Name $_.Name
     Write-Output "Adding capability $($_.Name)"
 }
 
@@ -40,7 +40,7 @@ $xmlFile = "setLocaleUk.xml"
 $xmlPath = Join-Path $filePath $xmlFile
 
 # Set Language Admin Defaults
-$Process = Start-Process –FilePath Control.exe –ArgumentList "intl.cpl,,/f:`"$xmlPath`"" –NoNewWindow –PassThru –Wait
+$Process = Start-Process -FilePath Control.exe -ArgumentList "intl.cpl,,/f:`"$xmlPath`"" -NoNewWindow -PassThru -Wait
 $Process.ExitCode
 
 # Set Timezone
