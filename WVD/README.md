@@ -10,19 +10,19 @@ The 'Deploy to Azure' buttons shown below can be used to create these resources
 Creates a VM from a Marketplace Image and gives you options to customize it by installing M365 Apps, Teams (Machine-Wide Installer), OneDrive (Machine-Wide Installer), FSLogix and downloading the scripts and files required to set the system to UK rather than US
 
 #### Install M365 Apps Standalone
-Installs specified M365 Apps on an already provisioned VM. You have to choice to exclude certain Apps from being installed (Access, Publisher etc)
+Installs specified M365 Apps on an existing VM. You have to choice to exclude certain Apps from being installed (Access, Publisher etc)
 
 #### Install OneDrive Standalone
-Installs the OneDrive Machine-Wide Installer on an already provisioned VM
+Installs the OneDrive Machine-Wide Installer on an existing VM
 
 #### Install Teams Standalone
-Installs the Teams Machine-Wide Installer and Web-RTC AV redirection on an already provisioned VM. Sets the 'IsWVDEnvironment' registry key if it is a Multi-Session environment
+Installs the Teams Machine-Wide Installer and Web-RTC AV redirection on an existing VM. Sets the 'IsWVDEnvironment' registry key if it is a Multi-Session environment
 
 #### Install FSLogix Standalone
-Installs FSLogix on an already provisioned VM
+Installs FSLogix on an existing VM
 
 #### Install UK Language Pack Standalone
-Downloads the UK Language Packs and associated scripts to an already provisioned VM. Run the 'setLocaleUk' script on the desktop to complete the setup.
+Downloads the UK Language Packs and associated scripts to an existing VM. Run the 'setLocaleUk' script on the desktop to complete the setup.
 
 ## Deploy to Azure buttons
 
