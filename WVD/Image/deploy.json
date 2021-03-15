@@ -87,14 +87,6 @@
             ],
             "defaultValue": "Yes"
         },
-        "installFSLogix": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "Yes"
-        },
         "downloadUKLanguage": {
             "type": "string",
             "allowedValues": [
@@ -113,6 +105,7 @@
         "FSLogixTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installFSLogix.json",
         "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json",
         "hostType": "[if(contains(parameters('osVersion'), 'evd'), 'MultiSession', 'SingleSession')]"
+        "installFSLogix": "No"
     },
     "resources": [
         {
@@ -238,7 +231,7 @@
             }
         },
         {
-            "condition": "[not(equals(parameters('installFSLogix'), 'No'))]",
+            "condition": "[not(equals(variables('installFSLogix'), 'No'))]",
             "name": "[concat(parameters('vmName'), '-FSLogix')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
