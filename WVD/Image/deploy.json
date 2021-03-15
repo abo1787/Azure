@@ -104,7 +104,7 @@
         "TeamsTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installTeams.json",
         "FSLogixTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installFSLogix.json",
         "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json",
-        "hostType": "[if(contains(parameters('osVersion'), 'evd'), 'MultiSession', 'SingleSession')]"
+        "hostType": "[if(contains(parameters('osVersion'), 'evd'), 'MultiSession', 'SingleSession')]",
         "installFSLogix": "No"
     },
     "resources": [
