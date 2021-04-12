@@ -14,23 +14,14 @@
                 "description": "The name of the Runbook"
             }
         },
-        "_artifactsLocation": {
+        "scriptUri": {
             "type": "string",
             "metadata": {
-                "description": "The base URI where artifacts required by this template are located."
-            },
-            "defaultValue": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Automation/Scaling/automation_WVDScaling_ARM_AA.ps1"
-        },
-        "_artifactsLocationSasToken": {
-            "type": "securestring",
-            "metadata": {
-                "description": "The sasToken required to access _artifactsLocation when they're located in a storage account with private access."
-            },
-            "defaultValue": ""
+                "description": "The uri for the runbook script"
+            }
         }
     },
     "variables": {
-        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Automation/Scaling/automation_WVDScaling_ARM_AA.ps1",
         "sku": "Free"
     },
     "resources": [
@@ -57,7 +48,7 @@
                         "logProgress": "false",
                         "logVerbose": "false",
                         "publishContentLink": {
-                            "uri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Automation/Scaling/automation_WVDScaling_ARM_AA.ps1"
+                            "uri": "[parameters('scriptUri')]"
                         }
                     },
                     "dependsOn": [
@@ -66,12 +57,11 @@
                 }
             ]
         }
-
     ],
     "outputs": {
         "scripturivalidate": {
             "type": "string",
-            "value": "[variables('scriptUri')]"
+            "value": "[parameters('scriptUri')]"
         }
     }
 }
