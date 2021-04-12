@@ -20,12 +20,6 @@
 				"description": "Webhook URI of automation account"
 			}
 		},
-		"recurrenceInterval": {
-			"type": "int",
-			"metadata": {
-				"description": "Specifies the recurrence interval of the job in minutes"
-			}
-		},
 		"azureBlobAccountName": {
 			"type": "string",
 			"defaultValue": "",
