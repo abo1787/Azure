@@ -1,4 +1,46 @@
+<# 
+.SYNOPSIS
+    This script automates the powering on and off of session hosts within a WVD hostpool. 
 
+.DESCRIPTION
+    This script is designed to help organisations to both save compute costs for their WVD environment by ensuring only the required amount of resource is running at 
+    the time and ensure that there are enough resources available to satisfy user density. The runbook is ran on a specified schedule, usually every 15 minutes, and 
+    performs the following steps:
+      1.	Receives all the parameters in from the scaling parameters file
+      2.	Checks the current day and time against the specified ‘WorkDays’ and ‘Peak Start/End Times’
+      3.	Sets the appropriate Peak/Off Peak parameters, Load-Balancing method and ‘Maximum Sessions per Host’ based on Step 2
+      4.	Checks all hosts in the pool and where the ‘Maintenance Tag’ value is set to True, sets these hosts into ‘Drain Mode’ if they are not already. These hosts are ignored when performing the rest of the calculations and will have no action taken on them.
+      5.	Checks to see if the number of available hosts is less than the minimum required as set in the parameter file, and if true, starts valid hosts to reach this number
+      6.	If it has just transitioned from Peak into Off-Peak hours, checks for the presence of a non-zero value in the ‘LimitSecondsToForceLogOffUser’ parameter and if true:
+        a.	Puts all available hosts into ‘Drain Mode’
+        b.	Sends the log off message to all users and waits for the timer to expire
+        c.	Logs out any remaining users that have not logged out themselves
+        d.	Shuts down all available hosts until the Off-Peak minimum required as set in the parameter file
+        e.	Reverts ‘Drain Mode’ on these hosts to allow connections again
+      7.	Checks to see if any available host has surpassed the ‘Scale Factor’ and if true:
+        a.	Checks for available capacity on other running hosts
+        b.	If none is found, another host is started if there is a valid host available to start
+      8.	Check for any available host that has 0 sessions and if true:
+        a.	Ensure that if this host were to be shut down, the minimum required hosts value would still be met
+        b.	Checks for available capacity on other running hosts if this host were to be shut down
+        c.	Shuts down the host if a & b both pass the test
+      9.	Writes logs to Log Analytics
+
+.NOTES
+    Author  : Dave Pierson
+    Version : 3.0.20
+
+    # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
+    # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
+    # AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL 
+    # THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, 
+    # INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT 
+    # NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, 
+    # DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY 
+    # THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
+    # (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
+    # OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+#>
 
 param(
   [Parameter(mandatory = $false)]
@@ -528,7 +570,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
   }
   # Get all available (not in maintenance mode) running hosts and write to WVDAvailableRunningHosts log
   $logMessage = @{ 
-    hostpoolName_s = $HostpoolName; 
+    hostpoolName_s          = $HostpoolName; 
     availableRunningHosts_d = $NumberOfRunningHost
   }
   Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDAvailableRunningHosts_CL"
@@ -990,7 +1032,7 @@ else {
   }
   # Get all available (not in maintenance mode) running hosts and write to WVDAvailableRunningHosts log
   $logMessage = @{ 
-    hostpoolName_s = $HostpoolName; 
+    hostpoolName_s          = $HostpoolName; 
     availableRunningHosts_d = $NumberOfRunningHost
   }
   Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDAvailableRunningHosts_CL"
@@ -1045,8 +1087,8 @@ foreach ($RunningSessionHost in $RunningSessionHosts) {
 }
 
 $logMessage = @{ 
-  hostpoolName_s      = $HostpoolName;
-  runningHosts_d       = $NumberOfRunningSessionHost
+  hostpoolName_s = $HostpoolName;
+  runningHosts_d = $NumberOfRunningSessionHost
 }
 Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDRunningHosts_CL"
 
