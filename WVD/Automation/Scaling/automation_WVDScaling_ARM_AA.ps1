@@ -69,7 +69,7 @@ function Convert-UTCtoLocalTime {
   else {
     $TimeDifferenceHours = $TimeDifferenceInHours
   }
-  #Azure is using UTC time, justify it to the local time
+  # Azure is using UTC time, justify it to the local time
   $ConvertedTime = $UniversalTime.AddHours($TimeDifferenceHours).AddMinutes($TimeDifferenceMinutes)
   return $ConvertedTime
 }
@@ -77,36 +77,31 @@ function Convert-UTCtoLocalTime {
 # Function to add logs to Log Analytics Workspace
 function Add-LogEntry {
   param(
-    [Object]$LogMessageObj,
-    [string]$LogAnalyticsWorkspaceId,
-    [string]$LogAnalyticsPrimaryKey,
-    [string]$LogType,
-    $TimeDifferenceInHours
+    [Object]$logMessageObj,
+    [string]$logAnalyticsWorkspaceId,
+    [string]$logAnalyticsPrimaryKey,
+    [string]$logType
   )
 
-  if ($LogAnalyticsWorkspaceId -ne $null) {
-
-    foreach ($Key in $LogMessage.Keys) {
-      switch ($Key.substring($Key.Length - 2)) {
-        '_s' { $sep = '"'; $trim = $Key.Length - 2 }
-        '_t' { $sep = '"'; $trim = $Key.Length - 2 }
-        '_b' { $sep = ''; $trim = $Key.Length - 2 }
-        '_d' { $sep = ''; $trim = $Key.Length - 2 }
-        '_g' { $sep = '"'; $trim = $Key.Length - 2 }
-        default { $sep = '"'; $trim = $Key.Length }
-      }
-      $LogData = $LogData + '"' + $Key.substring(0, $trim) + '":' + $sep + $LogMessageObj.Item($Key) + $sep + ','
+  foreach ($key in $logMessage.Keys) {
+    switch ($key.substring($key.Length - 2)) {
+      '_s' { $sep = '"'; $trim = $key.Length - 2 }
+      '_t' { $sep = '"'; $trim = $key.Length - 2 }
+      '_b' { $sep = ''; $trim = $key.Length - 2 }
+      '_d' { $sep = ''; $trim = $key.Length - 2 }
+      '_g' { $sep = '"'; $trim = $key.Length - 2 }
+      default { $sep = '"'; $trim = $key.Length }
     }
-
-    $TimeStamp = Convert-UTCtoLocalTime -TimeDifferenceInHours $TimeDifferenceInHours
-    $LogData = $LogData + '"TimeStamp":"' + $timestamp + '"'
-    $json = "{$($LogData)}"
-    $PostResult = Send-OMSAPIIngestionFile -CustomerId $LogAnalyticsWorkspaceId -SharedKey $LogAnalyticsPrimaryKey -Body "$json" -LogType $LogType -TimeStampField "TimeStamp"
-    
-    if ($PostResult -ne "Accepted") {
-      Write-Error "Error posting to OMS - $PostResult"
-    }
+    $logData = $logData + '"' + $key.substring(0, $trim) + '":' + $sep + $logMessageObj.Item($key) + $sep + ','
   }
+
+  $json = "{$($logData)}"
+  $postResult = Send-OMSAPIIngestionFile -CustomerId $logAnalyticsWorkspaceId -SharedKey $logAnalyticsPrimaryKey -Body "$json" -LogType $logType
+    
+  if ($postResult -ne "Accepted") {
+    Write-Error "Error when posting data to Log Analytics - $postResult"
+  }
+  
 }
 
 # Construct Begin time and End time for the Peak/Off-Peak periods from UTC to local time
@@ -531,9 +526,12 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
       }
     }
   }
-  # Get all available hosts and write to WVDAvailableHosts log
-  $LogMessage = @{ hostpoolName_s = $HostpoolName; logmessage_s = "$NumberOfRunningHost" }
-  Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $LogAnalyticsPrimaryKey -LogType "WVDAvailableHosts_CL" -TimeDifferenceInHours $TimeDifference
+  # Get all available (not in maintenance mode) running hosts and write to WVDAvailableRunningHosts log
+  $logMessage = @{ 
+    hostpoolName_s = $HostpoolName; 
+    availableRunningHosts_d = $NumberOfRunningHost
+  }
+  Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDAvailableRunningHosts_CL"
 }
 else {
 
@@ -571,7 +569,7 @@ else {
   # Check if it is within PeakToOffPeakTransitionTime after the end of Peak time and set the Peak to Off-Peak transition trigger if true
   $peakToOffPeakTransitionTrigger = $false
 
-  if (($CurrentDateTime -ge $EndPeakDateTime) -and ($CurrentDateTime -le $peakToOffPeakTransitionTime)){
+  if (($CurrentDateTime -ge $EndPeakDateTime) -and ($CurrentDateTime -le $peakToOffPeakTransitionTime)) {
     $peakToOffPeakTransitionTrigger = $True
   }
 
@@ -621,7 +619,7 @@ else {
         }
         catch {
           Write-Error "Failed to send message to user with error: $($_.exception.message)"
-        exit
+          exit
         }
         $ExistingSession = $ExistingSession + 1
       }
@@ -990,9 +988,12 @@ else {
       }
     }
   }
-  # Get all available hosts and write to WVDAvailableHosts log
-  $LogMessage = @{ hostpoolName_s = $HostpoolName; logmessage_s = "$NumberOfRunningHost" }
-  Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $LogAnalyticsPrimaryKey -LogType "WVDAvailableHosts_CL" -TimeDifferenceInHours $TimeDifference
+  # Get all available (not in maintenance mode) running hosts and write to WVDAvailableRunningHosts log
+  $logMessage = @{ 
+    hostpoolName_s = $HostpoolName; 
+    availableRunningHosts_d = $NumberOfRunningHost
+  }
+  Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDAvailableRunningHosts_CL"
 }
 
 if (($global:spareCapacity -eq $False -or !$global:spareCapacity) -and ($global:capacityTrigger -eq $True)) { 
@@ -1023,14 +1024,17 @@ foreach ($job in $failedJobs) {
 
 Write-Output "All job checks completed"
 Write-Output "Ending Hosts Scale Optimization"
-Write-Output "Writing to User/Host logs in Log Analytics"
+Write-Output "Posting data to Log Analytics"
 
-# Get all active users and write to WVDUserSessions log
+# Get all user sessions and write to WVDUserSessions log
 $CurrentActiveUsers = Get-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Select-Object UserPrincipalName, Name, SessionState | Sort-Object Name | Out-String
-$LogMessage = @{ hostpoolName_s = $HostpoolName; logmessage_s = "$CurrentActiveUsers" }
-Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $LogAnalyticsPrimaryKey -LogType "WVDUserSessions_CL" -TimeDifferenceInHours $TimeDifference
+$logMessage = @{ 
+  hostpoolName_s = $HostpoolName;
+  userSessions_s = "$CurrentActiveUsers"
+}
+Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDUserSessions_CL"
 
-# Get all active hosts regardless of Maintenance Mode and write to WVDActiveHosts log
+# Get all running hosts regardless of Maintenance Mode and write to WVDRunningHosts log
 $RunningSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
 $NumberOfRunningSessionHost = 0
 foreach ($RunningSessionHost in $RunningSessionHosts) {
@@ -1040,8 +1044,11 @@ foreach ($RunningSessionHost in $RunningSessionHosts) {
   }
 }
 
-$LogMessage = @{ hostpoolName_s = $HostpoolName; logmessage_s = "$NumberOfRunningSessionHost" }
-Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $LogAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $LogAnalyticsPrimaryKey -LogType "WVDActiveHosts_CL" -TimeDifferenceInHours $TimeDifference
+$logMessage = @{ 
+  hostpoolName_s      = $HostpoolName;
+  runningHosts_d       = $NumberOfRunningSessionHost
+}
+Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDRunningHosts_CL"
 
 
 Write-Output "-------------------- Ending script --------------------"
