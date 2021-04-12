@@ -154,7 +154,7 @@
 			}
 		},
 		"tags": {
-			"displayName": "LogicApp"
+			"displayName": "[parameters('logicAppName')"
 		}
 		}
 	]
