@@ -57,7 +57,7 @@
                         "logProgress": "false",
                         "logVerbose": "false",
                         "publishContentLink": {
-                            "uri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Automation/Scaling/automation_WVDScaling_ARM_AA.ps1",
+                            "uri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Automation/Scaling/automation_WVDScaling_ARM_AA.ps1"
                         }
                     },
                     "dependsOn": [
