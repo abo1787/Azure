@@ -1,0 +1,170 @@
+{
+	"$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"logicAppName": {
+			"type": "string",
+			"metadata": {
+				"description": "The name of the logic app to create."
+			}
+		},
+		"logicAppLocation": {
+			"type": "string",
+			"metadata": {
+				"description": "The location of the logic app resource group."
+			}
+		},
+		"webhookURI": {
+			"type": "string",
+			"metadata": {
+				"description": "Webhook URI of automation account"
+			}
+		},
+		"recurrenceInterval": {
+			"type": "int",
+			"metadata": {
+				"description": "Specifies the recurrence interval of the job in minutes"
+			}
+		},
+		"azureBlobAccountName": {
+			"type": "string",
+			"defaultValue": "",
+			"metadata": {
+				"description": "Name of the storage account the connector should use."
+			}
+		},
+		"azureblobAccessKey": {
+			"type": "securestring",
+			"metadata": {
+				"description": "Specify a valid primary/secondary storage account access key."
+			}
+		},
+		"azureblobFilePath": {
+			"type": "string",
+			"metadata": {
+				"description": "Filepath to the Azure blob scaling params file"
+			}
+		},
+		"convertedPath": {
+			"type": "string",
+			"metadata": {
+				"description": "Converted Filepath to the Azure blob storage account"
+			}
+		},
+		"hostPoolName": {
+			"type": "string",
+			"metadata": {
+				"description": "Name of the host pool"
+			}
+		}
+	},
+	"variables": {
+		"azureBlobConnectionName": "azureblob",
+		"azureBlobConnectionDisplayName": "[concat('Blob_Connection_', parameters('azureBlobAccountName'))]"
+	},
+	"resources": [
+		{
+			"type": "Microsoft.Web/connections",
+			"apiVersion": "2016-06-01",
+			"name": "[variables('azureBlobConnectionName')]",
+			"location": "[parameters('logicAppLocation')]",
+			"properties": {
+				"api": {
+					"id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'azureblob')]"
+				},
+				"displayName": "[variables('azureBlobConnectionDisplayName')]",
+				"parameterValues": {
+					"accountName": "[parameters('azureBlobAccountName')]",
+					"accessKey": "[parameters('azureBlobAccessKey')]"
+				}
+			}
+		},
+		{
+			"type": "Microsoft.Logic/workflows",
+			"apiVersion": "2016-06-01",
+			"name": "[parameters('logicAppName')]",
+			"location": "[parameters('logicAppLocation')]",
+			"dependsOn": ["[resourceId('Microsoft.Web/connections', variables('azureblobConnectionName'))]"],
+			"properties": {
+				"state": "Disabled",
+				"definition": {
+					"$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+					"contentVersion": "1.0.0.0",
+					"parameters": {
+						"$connections": {
+							"defaultValue": {},
+							"type": "Object"
+						}
+					},
+					"triggers": {
+                        "Recurrence": {
+                            "recurrence": {
+                                "frequency": "Day",
+                                "interval": 1,
+                                "schedule": {
+                                    "hours": [
+                                        "3"
+                                    ],
+                                    "minutes": [
+                                        0
+                                    ]
+                                },
+                                "timeZone": "GMT Standard Time"
+                            },
+                            "type": "Recurrence"
+                        }
+                    },
+					"actions": {
+						"Get_blob_content": {
+							"type": "ApiConnection",
+							"inputs": {
+								"host": {
+									"connection": {
+										"name": "@parameters('$connections')['azureblob']['connectionId']"
+									}
+								},	
+								"method": "get",
+								"path": "[parameters('azureblobFilePath')]",
+								"queries": {
+								"inferContentType": true
+								}
+							},
+							"metadata": {
+                    						"[parameters('convertedPath')]": "[concat('/wvd-automation/', parameters('hostPoolName'), '.json')]"
+                					},
+							"runAfter": {}
+						},
+						"HTTP": {
+							"inputs": {
+								"body": "@body('Get_blob_content')",
+								"method": "POST",
+								"uri": "[parameters('webhookURI')]"
+							},
+							"runAfter": {
+								"Get_blob_content": [
+									"Succeeded"
+								]
+							},
+							"type": "Http"
+						}
+					},
+					"outputs": {}
+				},
+			"parameters": {
+				"$connections": {
+					"value": {
+						"azureblob": {
+							"id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'azureblob')]",
+							"connectionId": "[resourceId('Microsoft.Web/connections', variables('azureblobConnectionName'))]",
+							"connectionName": "[variables('azureblobConnectionName')]"
+						}
+					}
+				}
+			}
+		},
+		"tags": {
+			"displayName": "[parameters('logicAppName')"
+		}
+		}
+	]
+}
