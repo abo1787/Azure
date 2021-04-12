@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.0.1
+    Version : 1.0.2
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -121,6 +121,7 @@ $skuName = $vmSize -replace 'Standard_'
 $skuName = $skuName -replace '_', ' '
 
 # Get Azure price list for all reserved VM instance SKUs matching VM size
+Write-Output "Retrieving Reserved Instance prices for machine type '$vmSize'..."
 $reservedAzurePriceSkus = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Reservation' and skuName eq '$skuName'" -UseBasicParsing | ConvertFrom-Json
 
 if (!$reservedAzurePriceSkus.Items) {
@@ -134,6 +135,7 @@ $reservedVMCostUSD3YearTerm = $reservedAzurePriceSkus.Items | Where-Object { $_.
 $hourlyReservedCostUSD3YearTerm = $reservedVMCostUSD3YearTerm / 26280
 
 # Get Azure price list for PAYG VM instances matching VM size
+Write-Output "Retrieving PAYG prices for machine type '$vmSize'..."
 $azurePrices = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Consumption' and skuName eq '$skuName'" -UseBasicParsing | ConvertFrom-Json
 
 if (!$azurePrices.Items) {
@@ -144,7 +146,7 @@ if (!$azurePrices.Items) {
 $meterId = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty meterId
 
 # Check for any reserved instances of the machine type contained in resource group
-Write-Output "Checking for any reserved instances for VM size $vmSize"
+Write-Output "Checking for any reserved instances of VM size $vmSize..."
 $reservedInstances1YearTerm = 0
 $reservedInstances3YearTerm = 0
 $reservationOrders = Get-AzReservationOrderId -ErrorAction SilentlyContinue
@@ -202,10 +204,12 @@ $authHeader = @{
 }
 
 # Invoke the REST API and pull in billing data for previous day
+Write-Output "Retrieving billing information for billing day $billingDay..."
 $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$billingDay&endDate=$billingDay&api-version=2019-10-01"
 $meterTypeSpendCurrentBillingPeriod = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
 
 # Filter billing data for compute type and retrieve costs
+Write-Output "All information retrieved, calculating costs now..."
 $vmCosts = $meterTypeSpendCurrentBillingPeriod.value.properties | Where-Object { $_.meterId -Like $meterId } | Select-Object date, instanceName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
 $conversionRate = $vmCosts.exchangeRate | Select-Object -First 1
 $hourlyVMCostUSD = $vmCosts.unitPrice | Select-Object -First 1
