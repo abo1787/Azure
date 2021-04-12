@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.0.0
+    Version : 1.0.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -121,7 +121,7 @@ $skuName = $vmSize -replace 'Standard_'
 $skuName = $skuName -replace '_', ' '
 
 # Get Azure price list for all reserved VM instance SKUs matching VM size
-$reservedAzurePriceSkus = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Reservation' and skuName eq '$skuName'" | ConvertFrom-Json
+$reservedAzurePriceSkus = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Reservation' and skuName eq '$skuName'" -UseBasicParsing | ConvertFrom-Json
 
 if (!$reservedAzurePriceSkus.Items) {
     Write-Error "Azure Retail Prices API has not returned any data for VM size '$vmSize' in location '$vmLocation' with price type of 'Reservation' and SKU name '$skuName' so the script was terminated"
@@ -134,7 +134,7 @@ $reservedVMCostUSD3YearTerm = $reservedAzurePriceSkus.Items | Where-Object { $_.
 $hourlyReservedCostUSD3YearTerm = $reservedVMCostUSD3YearTerm / 26280
 
 # Get Azure price list for PAYG VM instances matching VM size
-$azurePrices = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Consumption' and skuName eq '$skuName'" | ConvertFrom-Json
+$azurePrices = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Consumption' and skuName eq '$skuName'" -UseBasicParsing | ConvertFrom-Json
 
 if (!$azurePrices.Items) {
     Write-Error "Azure Retail Prices API has not returned any data for VM size '$vmSize' in location '$vmLocation' with price type of 'Consumption' and SKU name '$skuName' so the script was terminated"
@@ -203,7 +203,7 @@ $authHeader = @{
 
 # Invoke the REST API and pull in billing data for previous day
 $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$billingDay&endDate=$billingDay&api-version=2019-10-01"
-$meterTypeSpendCurrentBillingPeriod = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader | ConvertFrom-Json
+$meterTypeSpendCurrentBillingPeriod = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
 
 # Filter billing data for compute type and retrieve costs
 $vmCosts = $meterTypeSpendCurrentBillingPeriod.value.properties | Where-Object { $_.meterId -Like $meterId } | Select-Object date, instanceName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
@@ -336,7 +336,7 @@ if ($weeklyDates -contains $todayDayOnly) {
             }
             # Invoke the REST API and pull in billing data for missing day
             $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$missingDay&endDate=$missingDay&api-version=2019-10-01"
-            $meterTypeSpendCurrentBillingPeriod = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader | ConvertFrom-Json
+            $meterTypeSpendCurrentBillingPeriod = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
 
             # Filter billing data for compute type and retrieve costs
             $vmCosts = $meterTypeSpendCurrentBillingPeriod.value.properties | Where-Object { $_.meterId -Like $meterId } | Select-Object date, instanceName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
