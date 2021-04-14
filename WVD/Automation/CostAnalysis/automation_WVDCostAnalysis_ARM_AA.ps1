@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.0.3
+    Version : 1.0.4
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -50,6 +50,7 @@ $resourceGroupName = $Input.ResourceGroupName
 $logAnalyticsWorkspaceId = $Input.LogAnalyticsWorkspaceId
 $logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
 $connectionAssetName = $Input.ConnectionAssetName
+$hostpoolName = $Input.HostPoolName
 
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
@@ -168,10 +169,10 @@ if ($reservationOrders.Id) {
         $reservedInstancesTerm = $reservedInstancesTerm -replace "[^0-9]"
 
         if ($reservedInstancesTerm -eq 1) { 
-            $reservedInstances1YearTerm += $reservedMachineType.Quantity.Count 
+            $reservedInstances1YearTerm += $reservedMachineType.Quantity
         }
         else { 
-            $reservedInstances3YearTerm += $reservedMachineType.Quantity.Count
+            $reservedInstances3YearTerm += $reservedMachineType.Quantity
         }
     }   
 
@@ -184,7 +185,7 @@ if ($reservationOrders.Id) {
     }
 }
 
-if (!$reservedInstances1YearTerm -or !$reservedInstances3YearTerm) {
+if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
     Write-Output "No reserved instances found for VM size $vmSize"
 }
 
@@ -206,11 +207,19 @@ $authHeader = @{
 # Invoke the REST API and pull in billing data for previous day
 Write-Output "Retrieving billing information for billing day $billingDay..."
 $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$billingDay&endDate=$billingDay&api-version=2019-10-01"
-$meterTypeSpendCurrentBillingPeriod = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
+$billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
+
+$vmCosts = @()
+$vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
+
+while ($billingInfo.nextLink) {
+    $nextLink = $billingInfo.nextLink
+    $billingInfo = Invoke-WebRequest -Uri $nextLink -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
+    $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
+}
 
 # Filter billing data for compute type and retrieve costs
 Write-Output "All information retrieved, calculating costs now..."
-$vmCosts = $meterTypeSpendCurrentBillingPeriod.value.properties | Where-Object { $_.meterId -Like $meterId } | Select-Object date, instanceName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
 $conversionRate = $vmCosts.exchangeRate | Select-Object -First 1
 $hourlyVMCostUSD = $vmCosts.unitPrice | Select-Object -First 1
 $hourlyVMCostBillingCurrency = $hourlyVMCostUSD * $conversionRate
@@ -221,9 +230,10 @@ $billingDaySpendUSD = $vmCosts.quantity | Measure-Object -Sum | Select-Object -E
 $billingDaySpendUSD = $billingDaySpendUSD * $hourlyVMCostUSD
 $billingDaySpend = $billingDaySpendUSD * $conversionRate
 
-# Get VM count and calculate hours runtime
-$allVms = $vms.Count
-$fullDailyRunHours = $allVms * 24
+# Get VM count from hostpool and calculate hours runtime if all machines were powered on 24/7 - we have to use the Hostpool to enumerate vms
+# rather than billing as powered off hosts will not show on the billing data due to no compute charge
+$allVms = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName
+$fullDailyRunHours = $allVms.Count * 24
 
 # Calculate costs for PAYG 24/7 running
 $fullPAYGDailyRunHoursPriceUSD = $fullDailyRunHours * $hourlyVMCostUSD
@@ -236,10 +246,10 @@ $fullDailyReservedHoursPriceBillingCurrency1YearTerm = $fullDailyRunHours * $hou
 $fullDailyReservedHoursPriceBillingCurrency3YearTerm = $fullDailyRunHours * $hourlyReservedCostBillingCurrency3YearTerm
 
 # Calculate costs for owned Reserved Instances and add to Billing Spend
-$billingCost1YearTermUSD = $reservedInstances1YearTerm * $fullDailyReservedHoursPriceUSD1YearTerm
-$billingCost3YearTermUSD = $reservedInstances3YearTerm * $fullDailyReservedHoursPriceUSD3YearTerm
-$billingCost1YearTermBillingCurrency = $reservedInstances1YearTerm * $fullReservedHoursPriceBillingCurrency1YearTerm
-$billingCost3YearTermBillingCurrency = $reservedInstances3YearTerm * $fullReservedHoursPriceBillingCurrency3YearTerm
+$billingCost1YearTermUSD = $reservedInstances1YearTerm * $hourlyReservedCostUSD1YearTerm * 24
+$billingCost3YearTermUSD = $reservedInstances3YearTerm * $hourlyReservedCostUSD3YearTerm * 24
+$billingCost1YearTermBillingCurrency = $reservedInstances1YearTerm * $hourlyReservedCostBillingCurrency1YearTerm * 24
+$billingCost3YearTermBillingCurrency = $reservedInstances3YearTerm * $hourlyReservedCostBillingCurrency3YearTerm * 24
 $billingDaySpend = $billingDaySpend + $billingCost1YearTermBillingCurrency + $billingCost3YearTermBillingCurrency
 $billingDaySpendUSD = $billingDaySpendUSD + $billingCost1YearTermUSD + $billingCost3YearTermUSD 
 
@@ -277,26 +287,28 @@ $totalSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDaySpendUSD
 $totalSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDaySpend
 
 # Compare daily cost vs all VMs running as Reserved Instances
-$allReservedSavings1YearTermUSD = $billingDaySpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm - $reservationSavings1YearTermUSD
-$allReservedSavings3YearTermUSD = $billingDaySpendUSD - $fullDailyReservedHoursPriceUSD3YearTerm - $reservationSavings3YearTermUSD
-$allReservedSavings1YearTermBillingCurrency = $billingDaySpend - $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $reservationSavings1YearTermBillingCurrency
-$allReservedSavings3YearTermBillingCurrency = $billingDaySpend - $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $reservationSavings3YearTermBillingCurrency
+$allReservedSavings1YearTermUSD = $fullDailyReservedHoursPriceUSD1YearTerm - $billingDaySpendUSD
+$allReservedSavings3YearTermUSD = $fullDailyReservedHoursPriceUSD3YearTerm - $billingDaySpendUSD
+$allReservedSavings1YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $billingDaySpend
+$allReservedSavings3YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $billingDaySpend
 
 # Post data to Log Analytics
 $logMessage = @{ 
-    billingDay_s                                   = $billingDay;
-    resourceGroupName_s                            = $resourceGroupName;
-    billingDaySpendUSD_d                           = $billingDaySpendUSD;
-    billingDaySpend_d                              = $billingDaySpend;
-    hoursSaved_d                                   = $automationHoursSaved; 
-    totalSavingsReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
-    totalSavingsReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
-    totalSavingsUSD_d                              = $totalSavingsUSD;
-    totalSavingsBillingCurrency_d                  = $totalSavingsBillingCurrency;
-    allReservedSavings1YearTermUSD_d               = $allReservedSavings1YearTermUSD;
-    allReservedSavings3YearTermUSD_d               = $allReservedSavings3YearTermUSD;
-    allReservedSavings1YearTermBillingCurrency_d   = $allReservedSavings1YearTermBillingCurrency;
-    allReservedSavings3YearTermBillingCurrency_d   = $allReservedSavings3YearTermBillingCurrency
+    billingDay_s                                       = $billingDay;
+    resourceGroupName_s                                = $resourceGroupName;
+    billingDaySpendUSD_d                               = $billingDaySpendUSD;
+    billingDaySpend_d                                  = $billingDaySpend;
+    hoursSaved_d                                       = $automationHoursSaved; 
+    savingsFromOwnedReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
+    savingsFromOwnedReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
+    totalSavingsUSD_d                                  = $totalSavingsUSD;
+    totalSavingsBillingCurrency_d                      = $totalSavingsBillingCurrency;
+    ifAllReservedSavings1YearTermUSD_d                 = $allReservedSavings1YearTermUSD;
+    ifAllReservedSavings3YearTermUSD_d                 = $allReservedSavings3YearTermUSD;
+    ifAllReservedSavings1YearTermBillingCurrency_d     = $allReservedSavings1YearTermBillingCurrency;
+    ifAllReservedSavings3YearTermBillingCurrency_d     = $allReservedSavings3YearTermBillingCurrency;
+    usageHours_d                                       = $usageHours;
+    hostPoolName_s                                     = $hostpoolName
 }
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDBilling_CL"
 
@@ -326,7 +338,7 @@ if ($weeklyDates -contains $todayDayOnly) {
     if ($missingDays) {
         foreach ($missingDay in $missingDays) {
 
-            Write-Output "Found no data for date $missingDay. Retrieving billing data now and posting to Log Analytics..."
+            Write-Output "Found no data for date $missingDay. Retrieving billing data now..."
 
             # Get token for API call
             $azContext = Get-AzContext
@@ -340,10 +352,19 @@ if ($weeklyDates -contains $todayDayOnly) {
             }
             # Invoke the REST API and pull in billing data for missing day
             $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$missingDay&endDate=$missingDay&api-version=2019-10-01"
-            $meterTypeSpendCurrentBillingPeriod = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
+            $billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
+
+            $vmCosts = @()
+            $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
+            
+            while ($billingInfo.nextLink) {
+                $nextLink = $billingInfo.nextLink
+                $billingInfo = Invoke-WebRequest -Uri $nextLink -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
+                $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
+            }
 
             # Filter billing data for compute type and retrieve costs
-            $vmCosts = $meterTypeSpendCurrentBillingPeriod.value.properties | Where-Object { $_.meterId -Like $meterId } | Select-Object date, instanceName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
+            Write-Output "All information retrieved for date $missingDay, calculating costs now..."
             $usageHours = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
             $billingDaySpendUSD = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
             $billingDaySpendUSD = $billingDaySpendUSD * $hourlyVMCostUSD
@@ -364,27 +385,28 @@ if ($weeklyDates -contains $todayDayOnly) {
             $totalSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDaySpend
 
             # Compare daily cost vs all VMs running as Reserved Instances
-            $allReservedSavings1YearTermUSD = $billingDaySpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm - $reservationSavings1YearTermUSD
-            $allReservedSavings3YearTermUSD = $billingDaySpendUSD - $fullDailyReservedHoursPriceUSD3YearTerm - $reservationSavings3YearTermUSD
-            $allReservedSavings1YearTermBillingCurrency = $billingDaySpend - $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $reservationSavings1YearTermBillingCurrency
-            $allReservedSavings3YearTermBillingCurrency = $billingDaySpend - $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $reservationSavings3YearTermBillingCurrency
+            $allReservedSavings1YearTermUSD = $fullDailyReservedHoursPriceUSD1YearTerm - $billingDaySpendUSD
+            $allReservedSavings3YearTermUSD = $fullDailyReservedHoursPriceUSD3YearTerm - $billingDaySpendUSD
+            $allReservedSavings1YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $billingDaySpend
+            $allReservedSavings3YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $billingDaySpend
 
             # Post data to Log Analytics
             $logMessage = @{ 
-                billingDay_s                                   = $missingDay;
-                resourceGroupName_s                            = $resourceGroupName; 
-                billingDaySpendUSD_d                           = $billingDaySpendUSD;
-                billingDaySpend_d                              = $billingDaySpend;
-                hoursSaved_d                                   = $automationHoursSaved; 
-                totalSavingsReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
-                totalSavingsReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
-                totalSavingsUSD_d                              = $totalSavingsUSD;
-                totalSavingsBillingCurrency_d                  = $totalSavingsBillingCurrency;
-                allReservedSavings1YearTermUSD_d               = $allReservedSavings1YearTermUSD;
-                allReservedSavings3YearTermUSD_d               = $allReservedSavings3YearTermUSD;
-                allReservedSavings1YearTermBillingCurrency_d   = $allReservedSavings1YearTermBillingCurrency;
-                allReservedSavings3YearTermBillingCurrency_d   = $allReservedSavings3YearTermBillingCurrency;
-                usageHours_d                                   = $usageHours
+                billingDay_s                                       = $missingDay;
+                resourceGroupName_s                                = $resourceGroupName;
+                billingDaySpendUSD_d                               = $billingDaySpendUSD;
+                billingDaySpend_d                                  = $billingDaySpend;
+                hoursSaved_d                                       = $automationHoursSaved; 
+                savingsFromOwnedReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
+                savingsFromOwnedReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
+                totalSavingsUSD_d                                  = $totalSavingsUSD;
+                totalSavingsBillingCurrency_d                      = $totalSavingsBillingCurrency;
+                ifAllReservedSavings1YearTermUSD_d                 = $allReservedSavings1YearTermUSD;
+                ifAllReservedSavings3YearTermUSD_d                 = $allReservedSavings3YearTermUSD;
+                ifAllReservedSavings1YearTermBillingCurrency_d     = $allReservedSavings1YearTermBillingCurrency;
+                ifAllReservedSavings3YearTermBillingCurrency_d     = $allReservedSavings3YearTermBillingCurrency;
+                usageHours_d                                       = $usageHours;
+                hostPoolName_s                                     = $hostpoolName
             }
             Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDBilling_CL"
         }
