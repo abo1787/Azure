@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 3.0.20
+    Version : 3.1.01
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -44,49 +44,49 @@
 
 param(
   [Parameter(mandatory = $false)]
-  [object]$WebHookData
+  [object]$webHookData
 )
 # If the runbook was called from a Webhook, the WebhookData will not be null.
-if ($WebHookData) {
+if ($webHookData) {
 
   # Collect properties of WebhookData
-  $WebhookName = $WebHookData.WebhookName
-  $WebhookHeaders = $WebHookData.RequestHeader
-  $WebhookBody = $WebHookData.RequestBody
+  $webhookName = $webHookData.WebhookName
+  $webhookHeaders = $webHookData.RequestHeader
+  $webhookBody = $webHookData.RequestBody
 
   # Collect individual headers. Input converted from JSON.
-  $From = $WebhookHeaders.From
-  $Input = (ConvertFrom-Json -InputObject $WebhookBody)
+  $from = $webhookHeaders.From
+  $input = (ConvertFrom-Json -InputObject $webhookBody)
 }
 else {
   Write-Error -Message 'Runbook was not started from Webhook' -ErrorAction stop
 }
 
-$AADTenantId = $Input.AADTenantId
-$SubscriptionID = $Input.SubscriptionID
-$ResourceGroupName = $Input.ResourceGroupName
-$HostpoolName = $Input.hostPoolName
-$WorkDays = $Input.workDays
-$BeginPeakTime = $Input.beginPeakTime
-$EndPeakTime = $Input.endPeakTime
-$TimeDifferenceInHours = $Input.TimeDifferenceInHours
-$PeakLoadBalancingType = $Input.PeakLoadBalancingType
-$OffPeakLoadBalancingType = $Input.OffPeakLoadBalancingType
-$peakMaxSessions = $Input.peakMaxSessions
+$aadTenantId = $Input.AADTenantId
+$subscriptionID = $Input.SubscriptionID
+$resourceGroupName = $Input.ResourceGroupName
+$hostpoolName = $Input.HostPoolName
+$workDays = $Input.WorkDays
+$beginPeakTime = $Input.BeginPeakTime
+$endPeakTime = $Input.EndPeakTime
+$timeDifferenceInHours = $Input.TimeDifferenceInHours
+$peakLoadBalancingType = $Input.PeakLoadBalancingType
+$offPeakLoadBalancingType = $Input.OffPeakLoadBalancingType
+$peakMaxSessions = $Input.PeakMaxSessions
 $offpeakMaxSessions = $Input.OffPeakMaxSessions
-$peakScaleFactor = $Input.peakScaleFactor
-$offpeakScaleFactor = $Input.offpeakScaleFactor
-$peakMinimumNumberOfRDSH = $Input.peakMinimumNumberOfRDSH
-$offpeakMinimumNumberOfRDSH = $Input.offpeakMinimumNumberOfRDSH
-$minimumNumberFastScale = $Input.minimumNumberFastScale
-$jobTimeout = $Input.jobTimeout
-$LimitSecondsToForceLogOffUser = $Input.LimitSecondsToForceLogOffUser
-$LogOffMessageTitle = $Input.LogOffMessageTitle
-$LogOffMessageBody = $Input.LogOffMessageBody
-$MaintenanceTagName = $Input.MaintenanceTagName
-$LogAnalyticsWorkspaceId = $Input.LogAnalyticsWorkspaceId
-$LogAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
-$ConnectionAssetName = $Input.ConnectionAssetName
+$peakScaleFactor = $Input.PeakScaleFactor
+$offpeakScaleFactor = $Input.OffpeakScaleFactor
+$peakMinimumNumberOfRDSH = $Input.PeakMinimumNumberOfRDSH
+$offpeakMinimumNumberOfRDSH = $Input.OffpeakMinimumNumberOfRDSH
+$minimumNumberFastScale = $Input.MinimumNumberFastScale
+$jobTimeout = $Input.JobTimeout
+$limitSecondsToForceLogOffUser = $Input.LimitSecondsToForceLogOffUser
+$logOffMessageTitle = $Input.LogOffMessageTitle
+$logOffMessageBody = $Input.LogOffMessageBody
+$maintenanceTagName = $Input.MaintenanceTagName
+$logAnalyticsWorkspaceId = $Input.LogAnalyticsWorkspaceId
+$logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
+$connectionAssetName = $Input.ConnectionAssetName
 
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
@@ -99,21 +99,21 @@ $ErrorActionPreference = "Stop"
 # Function for converting UTC to Local time
 function Convert-UTCtoLocalTime {
   param(
-    $TimeDifferenceInHours
+    $timeDifferenceInHours
   )
 
-  $UniversalTime = (Get-Date).ToUniversalTime()
-  $TimeDifferenceMinutes = 0
-  if ($TimeDifferenceInHours -match ":") {
-    $TimeDifferenceHours = $TimeDifferenceInHours.Split(":")[0]
-    $TimeDifferenceMinutes = $TimeDifferenceInHours.Split(":")[1]
+  $universalTime = (Get-Date).ToUniversalTime()
+  $timeDifferenceMinutes = 0
+  if ($timeDifferenceInHours -match ":") {
+    $timeDifferenceHours = $timeDifferenceInHours.Split(":")[0]
+    $timeDifferenceMinutes = $timeDifferenceInHours.Split(":")[1]
   }
   else {
-    $TimeDifferenceHours = $TimeDifferenceInHours
+    $timeDifferenceHours = $timeDifferenceInHours
   }
   # Azure is using UTC time, justify it to the local time
-  $ConvertedTime = $UniversalTime.AddHours($TimeDifferenceHours).AddMinutes($TimeDifferenceMinutes)
-  return $ConvertedTime
+  $convertedTime = $universalTime.AddHours($timeDifferenceHours).AddMinutes($timeDifferenceMinutes)
+  return $convertedTime
 }
 
 # Function to add logs to Log Analytics Workspace
@@ -147,51 +147,49 @@ function Add-LogEntry {
 }
 
 # Construct Begin time and End time for the Peak/Off-Peak periods from UTC to local time
-$TimeDifference = [string]$TimeDifferenceInHours
-$CurrentDateTime = Convert-UTCtoLocalTime -TimeDifferenceInHours $TimeDifference
+$timeDifference = [string]$timeDifferenceInHours
+$currentDateTime = Convert-UTCtoLocalTime -TimeDifferenceInHours $timeDifference
 
 # Collect the credentials from Azure Automation Account Assets
-$Connection = Get-AutomationConnection -Name $ConnectionAssetName
+$connection = Get-AutomationConnection -Name $connectionAssetName
 
 # Authenticate to Azure 
 Clear-AzContext -Force
-$AZAuthentication = Connect-AzAccount -ApplicationId $Connection.ApplicationId -TenantId $AADTenantId -CertificateThumbprint $Connection.CertificateThumbprint -ServicePrincipal
-if ($AZAuthentication -eq $null) {
+$azAuthentication = Connect-AzAccount -ApplicationId $connection.ApplicationId -TenantId $aadTenantId -CertificateThumbprint $connection.CertificateThumbprint -ServicePrincipal
+if ($azAuthentication -eq $null) {
   Write-Error "Failed to authenticate to Azure using the Automation Account $($_.exception.message)"
   exit
 } 
 else {
-  $AzObj = $AZAuthentication | Out-String
-  Write-Output "Authenticated to Azure using the Automation Account `n$AzObj"
+  Write-Output "Successfully authenticated to Azure using the Automation Account"
 }
 
 # Set the Azure context with Subscription
-$AzContext = Set-AzContext -SubscriptionId $SubscriptionID
-if ($AzContext -eq $null) {
-  Write-Error "Subscription '$SubscriptionID' does not exist. Ensure that you have entered the correct values"
+$azContext = Set-AzContext -SubscriptionId $subscriptionID
+if ($azContext -eq $null) {
+  Write-Error "Subscription '$subscriptionID' does not exist. Ensure that you have entered the correct values"
   exit
 } 
 else {
-  $AzSubObj = $AzContext | Out-String
-  Write-Output "Set the Azure Context to the correct Subscription `n$AzSubObj"
+  Write-Output "Set the Azure Context to the subscription named '$($azContext.Subscription.Name)' with Id '$($azContext.Subscription.Id)'"
 }
 
 # Convert Datetime format
-$BeginPeakDateTime = [datetime]::Parse($CurrentDateTime.ToShortDateString() + ' ' + $BeginPeakTime)
-$EndPeakDateTime = [datetime]::Parse($CurrentDateTime.ToShortDateString() + ' ' + $EndPeakTime)
+$beginPeakDateTime = [datetime]::Parse($currentDateTime.ToShortDateString() + ' ' + $beginPeakTime)
+$endPeakDateTime = [datetime]::Parse($currentDateTime.ToShortDateString() + ' ' + $endPeakTime)
 
 # Check the calculated end peak time is later than begin peak time in case of going between days
-if ($EndPeakDateTime -lt $BeginPeakDateTime) {
-  if ($CurrentDateTime -lt $EndPeakDateTime) { $BeginPeakDateTime = $BeginPeakDateTime.AddDays(-1) } else { $EndPeakDateTime = $EndPeakDateTime.AddDays(1) }
+if ($endPeakDateTime -lt $beginPeakDateTime) {
+  if ($currentDateTime -lt $endPeakDateTime) { $beginPeakDateTime = $beginPeakDateTime.AddDays(-1) } else { $endPeakDateTime = $endPeakDateTime.AddDays(1) }
 }
 
 # Create the time period for the Peak to Off Peak Transition period
-$peakToOffPeakTransitionTime = $EndPeakDateTime.AddMinutes(15)
+$peakToOffPeakTransitionTime = $endPeakDateTime.AddMinutes(15)
 
 # Check given hostpool name exists
-$HostpoolInfo = Get-AzWvdHostPool -ResourceGroupName $ResourceGroupName -Name $HostpoolName
-if ($HostpoolInfo -eq $null) {
-  Write-Error "Hostpoolname '$HostpoolName' does not exist. Ensure that you have entered the correct values"
+$hostpoolInfo = Get-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName
+if ($hostpoolInfo -eq $null) {
+  Write-Error "Hostpoolname '$hostpoolName' does not exist. Ensure that you have entered the correct values"
   exit
 }	
 
@@ -199,91 +197,88 @@ if ($HostpoolInfo -eq $null) {
 $today = (Get-Date).DayOfWeek
 
 # Compare Work Days and Peak Hours, and set up appropriate load balancing type based on PeakLoadBalancingType & OffPeakLoadBalancingType
-if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakDateTime) -and ($WorkDays -contains $today)) {
+if (($currentDateTime -ge $beginPeakDateTime -and $currentDateTime -le $endPeakDateTime) -and ($workDays -contains $today)) {
+  Write-Output "It is currently Peak hours"
+  if ($hostpoolInfo.LoadBalancerType -ne $peakLoadBalancingType) {
+    Write-Output "Changing Hostpool Load Balance Type to: $peakLoadBalancingType Load Balancing"
 
-  if ($HostpoolInfo.LoadBalancerType -ne $PeakLoadBalancingType) {
-    Write-Output "Changing Hostpool Load Balance Type to: $PeakLoadBalancingType Load Balancing"
-
-    if ($PeakLoadBalancingType -eq "DepthFirst") {                
-      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $HostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $HostpoolInfo.MaxSessionLimit
+    if ($peakLoadBalancingType -eq "DepthFirst") {                
+      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $hostpoolInfo.MaxSessionLimit | Out-Null
     }
     else {
-      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $HostpoolName -LoadBalancerType 'BreadthFirst' -MaxSessionLimit $HostpoolInfo.MaxSessionLimit
+      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'BreadthFirst' -MaxSessionLimit $hostpoolInfo.MaxSessionLimit | Out-Null
     }
-    Write-Output "Hostpool Load Balance Type in Peak Hours is: $PeakLoadBalancingType Load Balancing"
   }
   # Compare MaxSessionLimit of hostpool to peakMaxSessions value and adjust if necessary
-  if ($HostpoolInfo.MaxSessionLimit -ne $peakMaxSessions) {
+  if ($hostpoolInfo.MaxSessionLimit -ne $peakMaxSessions) {
     Write-Output "Changing Hostpool Peak MaxSessionLimit to: $peakMaxSessions"
 
-    if ($PeakLoadBalancingType -eq "DepthFirst") {
-      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $HostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $peakMaxSessions
+    if ($peakLoadBalancingType -eq "DepthFirst") {
+      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $peakMaxSessions | Out-Null
     }
     else {
-      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $HostpoolName -LoadBalancerType 'BreadthFirst' -MaxSessionLimit $peakMaxSessions
+      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'BreadthFirst' -MaxSessionLimit $peakMaxSessions | Out-Null
     }
   }
 }
 else {
-  if ($HostpoolInfo.LoadBalancerType -ne $OffPeakLoadBalancingType) {
-    Write-Output "Changing Hostpool Load Balance Type to: $OffPeakLoadBalancingType Load Balancing"
+  Write-Output "It is currently Off-Peak hours"
+  if ($hostpoolInfo.LoadBalancerType -ne $offPeakLoadBalancingType) {
+    Write-Output "Changing Hostpool Load Balance Type to: $offPeakLoadBalancingType Load Balancing"
         
-    if ($OffPeakLoadBalancingType -eq "DepthFirst") {                
-      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $HostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $HostpoolInfo.MaxSessionLimit
+    if ($offPeakLoadBalancingType -eq "DepthFirst") {                
+      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $hostpoolInfo.MaxSessionLimit | Out-Null
     }
     else {
-      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $HostpoolName -LoadBalancerType 'BreadthFirst' -MaxSessionLimit $HostpoolInfo.MaxSessionLimit
+      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'BreadthFirst' -MaxSessionLimit $hostpoolInfo.MaxSessionLimit | Out-Null
     }
-    Write-Output "Hostpool Load Balance Type in Off-Peak Hours is: $OffPeakLoadBalancingType Load Balancing"
   }
   # Compare MaxSessionLimit of hostpool to offpeakMaxSessions value and adjust if necessary
-  if ($HostpoolInfo.MaxSessionLimit -ne $offpeakMaxSessions) {
+  if ($hostpoolInfo.MaxSessionLimit -ne $offpeakMaxSessions) {
     Write-Output "Changing Hostpool Off-Peak MaxSessionLimit to: $offpeakMaxSessions"
 
-    if ($PeakLoadBalancingType -eq "DepthFirst") {
-      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $HostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $offpeakMaxSessions
+    if ($peakLoadBalancingType -eq "DepthFirst") {
+      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $offpeakMaxSessions | Out-Null
     }
     else {
-      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $HostpoolName -LoadBalancerType 'BreadthFirst' -MaxSessionLimit $offpeakMaxSessions
+      Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'BreadthFirst' -MaxSessionLimit $offpeakMaxSessions | Out-Null
     }
   }
 }
 
 # Check for VM's with maintenance tag set to True & ensure connections are set as not allowed
-$AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
+Write-Output "Checking virtual machine maintenance tags and updating drain modes based on results"
+$allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName
 
-foreach ($SessionHost in $AllSessionHosts) {
+foreach ($sessionHost in $allSessionHosts) {
 
-  $SessionHostName = $SessionHost.Name
-  $SessionHostName = $SessionHostName.Split("/")[1]
-  $VMName = $SessionHostName.Split(".")[0]
-  $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
+  $sessionHostName = $sessionHost.Name
+  $sessionHostName = $sessionHostName.Split("/")[1]
+  $vmName = $sessionHostName.Split(".")[0]
+  $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
 
-  if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-    Write-Output "The host $VMName is in Maintenance mode, so is not allowing any further connections"
-    Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$False -ErrorAction SilentlyContinue
+  if ($vmInfo.Tags.ContainsKey($maintenanceTagName) -and $vmInfo.Tags.ContainsValue($True)) {
+    Write-Output "The host $vmName is in Maintenance mode, so is not allowing any further connections"
+    Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName -Name $sessionHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
   }
   else {
-    Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue
+    Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName -Name $sessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
   }
 }
 
-Write-Output "Starting WVD Hosts Scale Optimization"
-
-# Check the Hostpool Load Balancer type
-$HostpoolInfo = Get-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostPoolName
-Write-Output "Hostpool Load Balancing Type is: $($HostpoolInfo.LoadBalancerType)"
+# Check the Hostpool Load Balancer type and Maximum Sessions
+$hostpoolInfo = Get-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostPoolName
+$hostpoolMaxSessionLimit = $hostpoolInfo.MaxSessionLimit
+Write-Output "Hostpool Load Balancing Type: $($hostpoolInfo.LoadBalancerType)"
+Write-Output "Hostpool Maximum Session Limit per Host: $($hostpoolMaxSessionLimit)"
 
 # Check if it's peak hours
 if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakDateTime) -and ($WorkDays -contains $today)) {
 
-  # Gather hostpool maximum sessions and calculate Scalefactor for each host.										  
-  $HostpoolMaxSessionLimit = $HostpoolInfo.MaxSessionLimit
+  # Calculate Scalefactor for each host.										  
   $ScaleFactorEachHost = $HostpoolMaxSessionLimit * $peakScaleFactor
   $SessionhostLimit = [math]::Floor($ScaleFactorEachHost)
 
-  Write-Output "It is currently: Peak hours"
-  Write-Output "Hostpool Maximum Session Limit: $($HostpoolMaxSessionLimit)"
   Write-Output "Checking current Host availability and workloads..."
 
   # Get all session hosts in the host pool
@@ -300,7 +295,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
     $SessionHostName = $SessionHost.Name
     $SessionHostName = $SessionHostName.Split("/")[1]
     $VMName = $SessionHostName.Split(".")[0]
-    Write-Output "Host:$VMName, Current sessions:$($SessionHost.Session), Status:$($SessionHost.Status), Allow New Sessions:$($SessionHost.AllowNewSession)"
+    Write-Output "Host: $VMName, Current sessions: $($SessionHost.Session), Status: $($SessionHost.Status), Allow New Sessions: $($SessionHost.AllowNewSession)"
 
     if ($SessionHost.Status -eq "Available" -and $SessionHost.AllowNewSession -eq $True) {
       $NumberOfRunningHost = $NumberOfRunningHost + 1
@@ -568,22 +563,13 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
       }
     }
   }
-  # Get all available (not in maintenance mode) running hosts and write to WVDAvailableRunningHosts log
-  $logMessage = @{ 
-    hostpoolName_s          = $HostpoolName; 
-    availableRunningHosts_d = $NumberOfRunningHost
-  }
-  Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDAvailableRunningHosts_CL"
 }
 else {
 
-  # Gathering hostpool maximum session and calculating Scalefactor for each host.										  
-  $HostpoolMaxSessionLimit = $HostpoolInfo.MaxSessionLimit
+  # Calculate Scalefactor for each host.										  
   $ScaleFactorEachHost = $HostpoolMaxSessionLimit * $offpeakScaleFactor
   $SessionhostLimit = [math]::Floor($ScaleFactorEachHost)
 
-  Write-Output "It is currently: Off-Peak hours"
-  Write-Output "Hostpool Maximum Session Limit: $($HostpoolMaxSessionLimit)"
   Write-Output "Checking current Host availability and workloads..."
 
   # Get all session hosts in the host pool
@@ -1030,12 +1016,6 @@ else {
       }
     }
   }
-  # Get all available (not in maintenance mode) running hosts and write to WVDAvailableRunningHosts log
-  $logMessage = @{ 
-    hostpoolName_s          = $HostpoolName; 
-    availableRunningHosts_d = $NumberOfRunningHost
-  }
-  Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDAvailableRunningHosts_CL"
 }
 
 if (($global:spareCapacity -eq $False -or !$global:spareCapacity) -and ($global:capacityTrigger -eq $True)) { 
@@ -1065,18 +1045,11 @@ foreach ($job in $failedJobs) {
 }
 
 Write-Output "All job checks completed"
-Write-Output "Ending Hosts Scale Optimization"
-Write-Output "Posting data to Log Analytics"
 
-# Get all user sessions and write to WVDUserSessions log
+# Get all user sessions
 $CurrentActiveUsers = Get-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Select-Object UserPrincipalName, Name, SessionState | Sort-Object Name | Out-String
-$logMessage = @{ 
-  hostpoolName_s = $HostpoolName;
-  userSessions_s = "$CurrentActiveUsers"
-}
-Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDUserSessions_CL"
 
-# Get all running hosts regardless of Maintenance Mode and write to WVDRunningHosts log
+# Get number of running hosts regardless of Maintenance Mode
 $RunningSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
 $NumberOfRunningSessionHost = 0
 foreach ($RunningSessionHost in $RunningSessionHosts) {
@@ -1086,11 +1059,15 @@ foreach ($RunningSessionHost in $RunningSessionHosts) {
   }
 }
 
+# Post data to Log Analytics
+Write-Output "Posting data to Log Analytics"
+
 $logMessage = @{ 
   hostpoolName_s = $HostpoolName;
-  runningHosts_d = $NumberOfRunningSessionHost
+  runningHosts_d = $NumberOfRunningSessionHost;
+  availableRunningHosts_d = $NumberOfRunningHost;
+  userSessions_s = "$CurrentActiveUsers"
 }
-Add-LogEntry -LogMessageObj $LogMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDRunningHosts_CL"
-
+Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDScalingTest_CL"
 
 Write-Output "-------------------- Ending script --------------------"
