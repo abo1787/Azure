@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.0.2
+    Version : 1.0.3
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -383,7 +383,8 @@ if ($weeklyDates -contains $todayDayOnly) {
                 allReservedSavings1YearTermUSD_d               = $allReservedSavings1YearTermUSD;
                 allReservedSavings3YearTermUSD_d               = $allReservedSavings3YearTermUSD;
                 allReservedSavings1YearTermBillingCurrency_d   = $allReservedSavings1YearTermBillingCurrency;
-                allReservedSavings3YearTermBillingCurrency_d   = $allReservedSavings3YearTermBillingCurrency
+                allReservedSavings3YearTermBillingCurrency_d   = $allReservedSavings3YearTermBillingCurrency;
+                usageHours_d                                   = $usageHours
             }
             Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDBilling_CL"
         }
