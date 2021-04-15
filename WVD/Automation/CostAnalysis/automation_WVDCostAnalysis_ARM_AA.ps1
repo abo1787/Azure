@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.0.6
+    Version : 1.0.7
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -348,7 +348,13 @@ Write-Output "Posted cost analysis data for date $billingDay to Log Analytics"
 Write-Output "Checking for any missing cost analysis data in the last 31 days..."
 
 # Query Log Analytics WVDBilling_CL log file for the last 31 days
-$logAnalyticsQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "WVDBilling_CL | where TimeGenerated > ago(31d)"
+try {
+    $logAnalyticsQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "WVDBilling_CL | where TimeGenerated > ago(31d)" -ErrorAction Stop
+}
+catch {
+    Write-Error "An error was received from the endpoint whilst querying Log Analytics. Checks for any missing cost analysis data in the last 31 days will not be performed. `nError: $($error[0].Exception.Message)"
+}
+
 $loggedDays = $logAnalyticsQuery.Results.billingDay_s | foreach { Get-Date -Date $_ -Format yyyy-MM-dd }
 $startDate = -31
 $daysToCheck = $startDate..-1 | ForEach-Object { (Get-Date).AddDays($_).ToString('yyyy-MM-dd') }
