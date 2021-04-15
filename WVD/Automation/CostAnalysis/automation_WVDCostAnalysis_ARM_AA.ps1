@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.0.4
+    Version : 1.0.6
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -99,8 +99,7 @@ if ($azAuthentication -eq $null) {
     Write-Error "Failed to authenticate to Azure using the Automation Account $($_.exception.message)"
 } 
 else {
-    $azObj = $azAuthentication | Out-String
-    Write-Output "Authenticated to Azure using the Automation Account `n$AzObj"
+    Write-Output "Successfully authenticated to Azure using the Automation Account"
 }
   
 # Set the Azure context with Subscription
@@ -109,8 +108,7 @@ if ($azContext -eq $null) {
     Write-Error "Subscription ID '$subscriptionID' does not exist. Ensure that you have entered the correct values in the automation settings file"
 } 
 else {
-    $azSubObj = $azContext | Out-String
-    Write-Output "Set the Azure Context to the correct Subscription `n$azSubObj"
+    Write-Output "Set the Azure Context to the subscription named '$($azContext.Subscription.Name)' with Id '$($azContext.Subscription.Id)'"
 }
 
 # Get the appropriate VM size from querying the VMs in the resource group
@@ -123,7 +121,15 @@ $skuName = $skuName -replace '_', ' '
 
 # Get Azure price list for all reserved VM instance SKUs matching VM size
 Write-Output "Retrieving Reserved Instance prices for machine type '$vmSize'..."
-$reservedAzurePriceSkus = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Reservation' and skuName eq '$skuName'" -UseBasicParsing | ConvertFrom-Json
+try {
+    $reservedAzurePriceSkus = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Reservation' and skuName eq '$skuName'" -UseBasicParsing
+    $reservedAzurePriceSkus = $reservedAzurePriceSkus | ConvertFrom-Json
+}
+catch {
+    $statusCode = $_.Exception.Response.StatusCode.value
+    $statusName = $_.Exception.Response.StatusDescription.value
+    Write-Error "An error was received from the endpoint whilst querying the Azure Retail Prices API so the script was terminated `nError code: $statusCode `nError description: $statusName"
+}
 
 if (!$reservedAzurePriceSkus.Items) {
     Write-Error "Azure Retail Prices API has not returned any data for VM size '$vmSize' in location '$vmLocation' with price type of 'Reservation' and SKU name '$skuName' so the script was terminated"
@@ -137,7 +143,15 @@ $hourlyReservedCostUSD3YearTerm = $reservedVMCostUSD3YearTerm / 26280
 
 # Get Azure price list for PAYG VM instances matching VM size
 Write-Output "Retrieving PAYG prices for machine type '$vmSize'..."
-$azurePrices = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Consumption' and skuName eq '$skuName'" -UseBasicParsing | ConvertFrom-Json
+try {
+    $azurePrices = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Consumption' and skuName eq '$skuName'" -UseBasicParsing
+    $azurePrices = $azurePrices | ConvertFrom-Json
+}
+catch {
+    $statusCode = $_.Exception.Response.StatusCode.value
+    $statusName = $_.Exception.Response.StatusDescription.value
+    Write-Error "An error was received from the endpoint whilst querying the Azure Retail Prices API so the script was terminated `nError code: $statusCode `nError description: $statusName"
+}
 
 if (!$azurePrices.Items) {
     Write-Error "Azure Retail Prices API has not returned any data for VM size '$vmSize' in location '$vmLocation' with price type of 'Consumption' and SKU name '$skuName' so the script was terminated"
@@ -147,7 +161,7 @@ if (!$azurePrices.Items) {
 $meterId = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty meterId
 
 # Check for any reserved instances of the machine type contained in resource group
-Write-Output "Checking for any reserved instances of VM size $vmSize..."
+Write-Output "Checking for any reserved instances of VM size '$vmSize'..."
 $reservedInstances1YearTerm = 0
 $reservedInstances3YearTerm = 0
 $reservationOrders = Get-AzReservationOrderId -ErrorAction SilentlyContinue
@@ -177,16 +191,16 @@ if ($reservationOrders.Id) {
     }   
 
     if ($reservedInstances1YearTerm) {
-        Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances for VM size $vmSize"
+        Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances for VM size '$vmSize'"
     }
 
     if ($reservedInstances3YearTerm) {
-        Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances for VM size $vmSize"
+        Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances for VM size '$vmSize'"
     }
 }
 
 if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
-    Write-Output "No reserved instances found for VM size $vmSize"
+    Write-Output "No reserved instances found for VM size '$vmSize'"
 }
 
 # Set billing day to yesterday
@@ -205,21 +219,37 @@ $authHeader = @{
 }
 
 # Invoke the REST API and pull in billing data for previous day
-Write-Output "Retrieving billing information for billing day $billingDay..."
+Write-Output "Retrieving billing data for billing day $billingDay..."
 $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$billingDay&endDate=$billingDay&api-version=2019-10-01"
-$billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
+try {
+    $billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing
+    $billingInfo = $billingInfo | ConvertFrom-Json
+}
+catch {
+    $statusCode = $_.Exception.Response.StatusCode.value
+    $statusName = $_.Exception.Response.StatusDescription.value
+    Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API so the script was terminated `nError code: $statusCode `nError description: $statusName"
+}
 
 $vmCosts = @()
 $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
 
 while ($billingInfo.nextLink) {
     $nextLink = $billingInfo.nextLink
-    $billingInfo = Invoke-WebRequest -Uri $nextLink -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
+    try {
+        $billingInfo = Invoke-WebRequest -Uri $nextLink -Method Get -Headers $authHeader -UseBasicParsing
+        $billingInfo = $billingInfo | ConvertFrom-Json
+    }
+    catch {
+        $statusCode = $_.Exception.Response.StatusCode.value
+        $statusName = $_.Exception.Response.StatusDescription.value
+        Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API for the next page so the script was terminated `nError code: $statusCode `nError description: $statusName"
+    }
     $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
 }
 
 # Filter billing data for compute type and retrieve costs
-Write-Output "All information retrieved, calculating costs now..."
+Write-Output "Successfully retrieved billing data for date $billingDay, calculating costs..."
 $conversionRate = $vmCosts.exchangeRate | Select-Object -First 1
 $hourlyVMCostUSD = $vmCosts.unitPrice | Select-Object -First 1
 $hourlyVMCostBillingCurrency = $hourlyVMCostUSD * $conversionRate
@@ -310,107 +340,120 @@ $logMessage = @{
     usageHours_d                                       = $usageHours;
     hostPoolName_s                                     = $hostpoolName
 }
+
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDBilling_CL"
+Write-Output "Posted cost analysis data for date $billingDay to Log Analytics"
 
-# Weekly check to see if any WVDBilling logs are missing for the last 31 days
-$weeklyDates = 01, 07, 14, 21, 28
-$todayDayOnly = Get-Date -Format dd
+# Check to see if any WVDBilling logs are missing for the last 31 days
+Write-Output "Checking for any missing cost analysis data in the last 31 days..."
 
-if ($weeklyDates -contains $todayDayOnly) {
+# Query Log Analytics WVDBilling_CL log file for the last 31 days
+$logAnalyticsQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "WVDBilling_CL | where TimeGenerated > ago(31d)"
+$loggedDays = $logAnalyticsQuery.Results.billingDay_s | foreach { Get-Date -Date $_ -Format yyyy-MM-dd }
+$startDate = -31
+$daysToCheck = $startDate..-1 | ForEach-Object { (Get-Date).AddDays($_).ToString('yyyy-MM-dd') }
+$missingDays = @()
 
-    Write-Output "Running weekly consolidation to check for missing billing data in the last 31 days..."
-
-    # Query Log Analytics WVDBilling_CL log file for the last 31 days
-    $logAnalyticsQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "WVDBilling_CL | where TimeGenerated > ago(31d)"
-    $loggedDays = $logAnalyticsQuery.Results.billingDay_s | foreach { Get-Date -Date $_ -Format yyyy-MM-dd }
-    $startDate = -31
-    $daysToCheck = $startDate..-1 | ForEach-Object { (Get-Date).AddDays($_).ToString('yyyy-MM-dd') }
-    $missingDays = @()
-
-    # Check for any missing days in Log Analytics WVDBilling_CL log file within the last 31 days
-    foreach ($dayToCheck in $daysToCheck) {
-        if ($loggedDays -notcontains $dayToCheck) {
-            $missingDays += $dayToCheck
-        }
-    }
-
-    # If there are any missing days then retrieve billing data for the missing days and post data to Log Analytics
-    if ($missingDays) {
-        foreach ($missingDay in $missingDays) {
-
-            Write-Output "Found no data for date $missingDay. Retrieving billing data now..."
-
-            # Get token for API call
-            $azContext = Get-AzContext
-            $subscriptionId = $azContext.Subscription.Id
-            $azProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
-            $profileClient = New-Object -TypeName Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient -ArgumentList ($azProfile)
-            $token = $profileClient.AcquireAccessToken($azContext.Subscription.TenantId)
-            $authHeader = @{
-                'Content-Type'  = 'application/json'
-                'Authorization' = 'Bearer ' + $token.AccessToken
-            }
-            # Invoke the REST API and pull in billing data for missing day
-            $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$missingDay&endDate=$missingDay&api-version=2019-10-01"
-            $billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
-
-            $vmCosts = @()
-            $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
-            
-            while ($billingInfo.nextLink) {
-                $nextLink = $billingInfo.nextLink
-                $billingInfo = Invoke-WebRequest -Uri $nextLink -Method Get -Headers $authHeader -UseBasicParsing | ConvertFrom-Json
-                $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
-            }
-
-            # Filter billing data for compute type and retrieve costs
-            Write-Output "All information retrieved for date $missingDay, calculating costs now..."
-            $usageHours = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-            $billingDaySpendUSD = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
-            $billingDaySpendUSD = $billingDaySpendUSD * $hourlyVMCostUSD
-            $billingDaySpend = $billingDaySpendUSD * $conversionRate
-
-            # Calculate costs for owned Reserved Instances and add to Billing Spend
-            $billingDaySpend = $billingDaySpend + $billingCost1YearTermBillingCurrency + $billingCost3YearTermBillingCurrency
-            $billingDaySpendUSD = $billingDaySpendUSD + $billingCost1YearTermUSD + $billingCost3YearTermUSD 
-            
-            # Convert final figures to 2 decimal places
-            $billingDaySpend = [math]::Round($billingDaySpend, 2)
-            $billingDaySpendUSD = [math]::Round($billingDaySpendUSD, 2)
-
-            # Calculate total savings from Autoscaling + Reserved Instances
-            $automationHoursSaved = $fullDailyRunHours - $usageHours
-            $automationHoursSaved = [math]::Round($automationHoursSaved, 2)
-            $totalSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDaySpendUSD
-            $totalSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDaySpend
-
-            # Compare daily cost vs all VMs running as Reserved Instances
-            $allReservedSavings1YearTermUSD = $fullDailyReservedHoursPriceUSD1YearTerm - $billingDaySpendUSD
-            $allReservedSavings3YearTermUSD = $fullDailyReservedHoursPriceUSD3YearTerm - $billingDaySpendUSD
-            $allReservedSavings1YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $billingDaySpend
-            $allReservedSavings3YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $billingDaySpend
-
-            # Post data to Log Analytics
-            $logMessage = @{ 
-                billingDay_s                                       = $missingDay;
-                resourceGroupName_s                                = $resourceGroupName;
-                billingDaySpendUSD_d                               = $billingDaySpendUSD;
-                billingDaySpend_d                                  = $billingDaySpend;
-                hoursSaved_d                                       = $automationHoursSaved; 
-                savingsFromOwnedReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
-                savingsFromOwnedReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
-                totalSavingsUSD_d                                  = $totalSavingsUSD;
-                totalSavingsBillingCurrency_d                      = $totalSavingsBillingCurrency;
-                ifAllReservedSavings1YearTermUSD_d                 = $allReservedSavings1YearTermUSD;
-                ifAllReservedSavings3YearTermUSD_d                 = $allReservedSavings3YearTermUSD;
-                ifAllReservedSavings1YearTermBillingCurrency_d     = $allReservedSavings1YearTermBillingCurrency;
-                ifAllReservedSavings3YearTermBillingCurrency_d     = $allReservedSavings3YearTermBillingCurrency;
-                usageHours_d                                       = $usageHours;
-                hostPoolName_s                                     = $hostpoolName
-            }
-            Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDBilling_CL"
-        }
+# Check for any missing days in Log Analytics WVDBilling_CL log file within the last 31 days
+foreach ($dayToCheck in $daysToCheck) {
+    if ($loggedDays -notcontains $dayToCheck) {
+        $missingDays += $dayToCheck
     }
 }
 
-Write-Output "All WVD billing data successfully posted to Log Analytics"
+# If there are any missing days then retrieve billing data for the missing days and post data to Log Analytics
+if ($missingDays) {
+    foreach ($missingDay in $missingDays) {
+
+        Write-Warning "Found no cost analysis data for date $missingDay. Retrieving billing data..."
+
+        # Get token for API call
+        $azContext = Get-AzContext
+        $subscriptionId = $azContext.Subscription.Id
+        $azProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
+        $profileClient = New-Object -TypeName Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient -ArgumentList ($azProfile)
+        $token = $profileClient.AcquireAccessToken($azContext.Subscription.TenantId)
+        $authHeader = @{
+            'Content-Type'  = 'application/json'
+            'Authorization' = 'Bearer ' + $token.AccessToken
+        }
+        # Invoke the REST API and pull in billing data for missing day
+        $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$missingDay&endDate=$missingDay&api-version=2019-10-01"
+        try {
+            $billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing
+            $billingInfo = $billingInfo | ConvertFrom-Json
+        }
+        catch {
+            $statusCode = $_.Exception.Response.StatusCode.value
+            $statusName = $_.Exception.Response.StatusDescription.value
+            Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API so the script was terminated `nError code: $statusCode `nError description: $statusName"
+        }
+
+        $vmCosts = @()
+        $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
+            
+        while ($billingInfo.nextLink) {
+            $nextLink = $billingInfo.nextLink
+            try {
+                $billingInfo = Invoke-WebRequest -Uri $nextLink -Method Get -Headers $authHeader -UseBasicParsing
+                $billingInfo = $billingInfo | ConvertFrom-Json
+            }
+            catch {
+                $statusCode = $_.Exception.Response.StatusCode.value
+                $statusName = $_.Exception.Response.StatusDescription.value
+                Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API for the next page so the script was terminated `nError code: $statusCode `nError description: $statusName"
+            }
+            $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate
+        }
+
+        # Filter billing data for compute type and retrieve costs
+        Write-Output "Successfully retrieved billing data for date $missingDay, calculating costs..."
+        $usageHours = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+        $billingDaySpendUSD = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
+        $billingDaySpendUSD = $billingDaySpendUSD * $hourlyVMCostUSD
+        $billingDaySpend = $billingDaySpendUSD * $conversionRate
+
+        # Calculate costs for owned Reserved Instances and add to Billing Spend
+        $billingDaySpend = $billingDaySpend + $billingCost1YearTermBillingCurrency + $billingCost3YearTermBillingCurrency
+        $billingDaySpendUSD = $billingDaySpendUSD + $billingCost1YearTermUSD + $billingCost3YearTermUSD 
+            
+        # Convert final figures to 2 decimal places
+        $billingDaySpend = [math]::Round($billingDaySpend, 2)
+        $billingDaySpendUSD = [math]::Round($billingDaySpendUSD, 2)
+
+        # Calculate total savings from Autoscaling + Reserved Instances
+        $automationHoursSaved = $fullDailyRunHours - $usageHours
+        $automationHoursSaved = [math]::Round($automationHoursSaved, 2)
+        $totalSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDaySpendUSD
+        $totalSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDaySpend
+
+        # Compare daily cost vs all VMs running as Reserved Instances
+        $allReservedSavings1YearTermUSD = $fullDailyReservedHoursPriceUSD1YearTerm - $billingDaySpendUSD
+        $allReservedSavings3YearTermUSD = $fullDailyReservedHoursPriceUSD3YearTerm - $billingDaySpendUSD
+        $allReservedSavings1YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $billingDaySpend
+        $allReservedSavings3YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $billingDaySpend
+
+        # Post data to Log Analytics
+        $logMessage = @{ 
+            billingDay_s                                       = $missingDay;
+            resourceGroupName_s                                = $resourceGroupName;
+            billingDaySpendUSD_d                               = $billingDaySpendUSD;
+            billingDaySpend_d                                  = $billingDaySpend;
+            hoursSaved_d                                       = $automationHoursSaved; 
+            savingsFromOwnedReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
+            savingsFromOwnedReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
+            totalSavingsUSD_d                                  = $totalSavingsUSD;
+            totalSavingsBillingCurrency_d                      = $totalSavingsBillingCurrency;
+            ifAllReservedSavings1YearTermUSD_d                 = $allReservedSavings1YearTermUSD;
+            ifAllReservedSavings3YearTermUSD_d                 = $allReservedSavings3YearTermUSD;
+            ifAllReservedSavings1YearTermBillingCurrency_d     = $allReservedSavings1YearTermBillingCurrency;
+            ifAllReservedSavings3YearTermBillingCurrency_d     = $allReservedSavings3YearTermBillingCurrency;
+            usageHours_d                                       = $usageHours;
+            hostPoolName_s                                     = $hostpoolName
+        }
+        Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDBilling_CL"
+        Write-Output "Posted cost analysis data for date $missingDay to Log Analytics"
+    }
+}
+
+Write-Output "All WVD cost analysis data successfully posted to Log Analytics"
