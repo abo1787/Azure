@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 3.1.02
+    Version : 3.2.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -69,7 +69,7 @@ $hostpoolName = $Input.HostPoolName
 $workDays = $Input.WorkDays
 $beginPeakTime = $Input.BeginPeakTime
 $endPeakTime = $Input.EndPeakTime
-$timeDifferenceInHours = $Input.TimeDifferenceInHours
+$timeZone = $Input.TimeZone
 $peakLoadBalancingType = $Input.PeakLoadBalancingType
 $offPeakLoadBalancingType = $Input.OffPeakLoadBalancingType
 $peakMaxSessions = $Input.PeakMaxSessions
@@ -95,26 +95,6 @@ Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Co
 $ErrorActionPreference = "Stop"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
-
-# Function for converting UTC to Local time
-function Convert-UTCtoLocalTime {
-  param(
-    $timeDifferenceInHours
-  )
-
-  $universalTime = (Get-Date).ToUniversalTime()
-  $timeDifferenceMinutes = 0
-  if ($timeDifferenceInHours -match ":") {
-    $timeDifferenceHours = $timeDifferenceInHours.Split(":")[0]
-    $timeDifferenceMinutes = $timeDifferenceInHours.Split(":")[1]
-  }
-  else {
-    $timeDifferenceHours = $timeDifferenceInHours
-  }
-  # Azure is using UTC time, justify it to the local time
-  $convertedTime = $universalTime.AddHours($timeDifferenceHours).AddMinutes($timeDifferenceMinutes)
-  return $convertedTime
-}
 
 # Function to add logs to Log Analytics Workspace
 function Add-LogEntry {
@@ -143,12 +123,7 @@ function Add-LogEntry {
   if ($postResult -ne "Accepted") {
     Write-Error "Error when posting data to Log Analytics - $postResult"
   }
-  
 }
-
-# Construct Begin time and End time for the Peak/Off-Peak periods from UTC to local time
-$timeDifference = [string]$timeDifferenceInHours
-$currentDateTime = Convert-UTCtoLocalTime -TimeDifferenceInHours $timeDifference
 
 # Collect the credentials from Azure Automation Account Assets
 $connection = Get-AutomationConnection -Name $connectionAssetName
@@ -174,7 +149,8 @@ else {
   Write-Output "Set the Azure Context to the subscription named '$($azContext.Subscription.Name)' with Id '$($azContext.Subscription.Id)'"
 }
 
-# Convert Datetime format
+# Convert Datetime format and construct Begin Peak and End Peak times for the Peak/Off-Peak periods
+$currentDateTime = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId((Get-Date).ToUniversalTime(), $timeZone)
 $beginPeakDateTime = [datetime]::Parse($currentDateTime.ToShortDateString() + ' ' + $beginPeakTime)
 $endPeakDateTime = [datetime]::Parse($currentDateTime.ToShortDateString() + ' ' + $endPeakTime)
 
