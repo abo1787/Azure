@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 3.2.0
+    Version : 3.2.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -87,6 +87,9 @@ $maintenanceTagName = $Input.MaintenanceTagName
 $logAnalyticsWorkspaceId = $Input.LogAnalyticsWorkspaceId
 $logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
 $connectionAssetName = $Input.ConnectionAssetName
+
+# Set Log Analytics log name
+$logName = 'WVDScalingTest1_CL'
 
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
@@ -1049,6 +1052,6 @@ $logMessage = @{
   userSessions_d                  = $currentUserCount;
   userDetail_s                    = $userDetail
 }
-Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDScalingTest1_CL"
+Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
 
 Write-Output "-------------------- Ending script --------------------"
