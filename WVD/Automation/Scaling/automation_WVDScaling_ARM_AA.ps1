@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 3.1.01
+    Version : 3.1.02
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -1047,7 +1047,10 @@ foreach ($job in $failedJobs) {
 Write-Output "All job checks completed"
 
 # Get all user sessions
-$CurrentActiveUsers = Get-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Select-Object UserPrincipalName, Name, SessionState | Sort-Object Name | Out-String
+$currentUsers = Get-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
+$currentUserCount = $currentUsers.Count
+$userDetail = $currentUsers | Select-Object UserPrincipalName, Name, SessionState | Sort-Object Name | Out-String
+
 
 # Get number of running hosts regardless of Maintenance Mode
 $RunningSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
@@ -1063,11 +1066,13 @@ foreach ($RunningSessionHost in $RunningSessionHosts) {
 Write-Output "Posting data to Log Analytics"
 
 $logMessage = @{ 
-  hostpoolName_s = $HostpoolName;
-  runningHosts_d = $NumberOfRunningSessionHost;
-  availableRunningHosts_d = $NumberOfRunningHost;
-  userSessions_s = "$CurrentActiveUsers"
+  hostpoolName_s                  = $HostpoolName;
+  resourceGroupName_s             = $resourceGroupName;
+  runningHosts_d                  = $NumberOfRunningSessionHost;
+  availableRunningHosts_d         = $NumberOfRunningHost;
+  userSessions_d                  = $currentUserCount;
+  userDetail_s                    = $userDetail
 }
-Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDScalingTest_CL"
+Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType "WVDScalingTest1_CL"
 
 Write-Output "-------------------- Ending script --------------------"
