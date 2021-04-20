@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.2.1
+    Version : 1.3.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -53,7 +53,7 @@ $connectionAssetName = $Input.ConnectionAssetName
 $hostpoolName = $Input.HostPoolName
 
 # Set Log Analytics log name
-$logName = 'WVDCostAnalysisTest1_CL'
+$logName = 'WVDCostAnalysisTest2_CL'
 
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
@@ -133,7 +133,7 @@ catch {
 }
 
 if (!$reservedAzurePriceSkus.Items) {
-    Write-Error "Azure Retail Prices API has not returned any data for VM size '$vmSize' in location '$vmLocation' with price type of 'Reservation' and SKU name '$skuName' so the script was terminated"
+    Write-Error "Azure Retail Prices API has not returned any data for machine type '$vmSize' in location '$vmLocation' with price type of 'Reservation' and SKU name '$skuName' so the script was terminated"
 }
 
 # Calculate hourly costs for reserved VM instances
@@ -153,7 +153,7 @@ catch {
 }
 
 if (!$azurePrices.Items) {
-    Write-Error "Azure Retail Prices API has not returned any data for VM size '$vmSize' in location '$vmLocation' with price type of 'Consumption' and SKU name '$skuName' so the script was terminated"
+    Write-Error "Azure Retail Prices API has not returned any data for machine type '$vmSize' in location '$vmLocation' with price type of 'Consumption' and SKU name '$skuName' so the script was terminated"
 }
 
 # Get meter id associated (using Linux pricing due to WVD)
@@ -203,11 +203,11 @@ while ($billingInfo.nextLink) {
 
 # Check that billing data returned includes data for the machine type contained in resource group
 if (!$vmCosts) {
-    Write-Error "No billing data has been returned for VM size '$vmSize' on $billingDay so the script was terminated"
+    Write-Error "No billing data has been returned for machine type '$vmSize' on $billingDay so the script was terminated"
 }
 
 # Check for any reserved instances of the machine type contained in resource group
-Write-Output "Checking if any reserved instances of VM size '$vmSize' were applied to any VMs in this resource group..."
+Write-Output "Checking if any reserved instances of machine type '$vmSize' were applied to any VMs on date $billingDay..."
 $reservedInstances1YearTerm = 0
 $reservedInstances3YearTerm = 0
 $appliedReservations = $vmCosts | Where-Object { $_.Term } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, reservationId, reservationName, term
@@ -226,13 +226,13 @@ if ($appliedReservations) {
     }
 }
 if ($reservedInstances1YearTerm) {
-    Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances were applied for VM size '$vmSize'"
+    Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances were applied for machine type '$vmSize'"
 }
 if ($reservedInstances3YearTerm) {
-    Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances were applied for VM size '$vmSize'"
+    Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances were applied for machine type '$vmSize'"
 }
 if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
-    Write-Output "No reserved instances were applied for VM size '$vmSize'"
+    Write-Output "No reserved instances were applied for machine type '$vmSize'"
 }
 
 # Calculate usage hours to subtract from applied reserved instances
@@ -313,7 +313,6 @@ foreach ($vm in $allVms) {
         $vmName = $vm.ResourceId | Out-String
         $vmName = $vmName.Split("/")[8]
         $vmName = $vmName.Trim()
-        Write-Output "Machine '$vmName' has no reported costs for $billingDay"
         $missingVm = $vm.ResourceId
         $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $missingVm; usageHours = 0; costUSD = 0; costBillingCurrency = 0 }
     }
@@ -321,6 +320,10 @@ foreach ($vm in $allVms) {
 
 $recommendedReserved1YearTerm = 0
 $recommendedReserved3YearTerm = 0
+$recommendedSavingsUSDReserved1YearTerm = 0
+$recommendedSavingsUSDReserved3YearTerm = 0
+$recommendedSavingsBillingCurrencyReserved1YearTerm = 0
+$recommendedSavingsBillingCurrencyReserved3YearTerm = 0
 
 foreach ($vmCost in $vmCostTable) {
     if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD1YearTerm) {
@@ -331,8 +334,9 @@ foreach ($vmCost in $vmCostTable) {
         $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency1YearTerm
         $overSpendUSD = [math]::Round($overSpendUSD, 2)
         $overSpendBillingCurrency = [math]::Round($overSpendBillingCurrency, 2)
+        $recommendedSavingsUSDReserved1YearTerm = $recommendedSavingsUSDReserved1YearTerm + $overSpendUSD
+        $recommendedSavingsBillingCurrencyReserved1YearTerm = $recommendedSavingsBillingCurrencyReserved1YearTerm + $overSpendBillingCurrency
         $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
-        Write-Output "Machine '$vmName' cost £$overSpendBillingCurrency more to run than if it was running as a 1 year Reserved Instance"
     }
     if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD3YearTerm) {
         $vmName = $vmCost.instanceName | Out-String
@@ -342,13 +346,11 @@ foreach ($vmCost in $vmCostTable) {
         $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency3YearTerm
         $overSpendUSD = [math]::Round($overSpendUSD, 2)
         $overSpendBillingCurrency = [math]::Round($overSpendBillingCurrency, 2)
+        $recommendedSavingsUSDReserved3YearTerm = $recommendedSavingsUSDReserved3YearTerm + $overSpendUSD
+        $recommendedSavingsBillingCurrencyReserved3YearTerm = $recommendedSavingsBillingCurrencyReserved3YearTerm + $overSpendBillingCurrency
         $recommendedReserved3YearTerm = $recommendedReserved3YearTerm + 1
-        Write-Output "Machine '$vmName' cost £$overSpendBillingCurrency more to run today if it was running as a 3 year Reserved Instance"
     }
 }
-
-Write-Output "Recommended 1 year Reserved Instances to be applied: $recommendedReserved1YearTerm"
-Write-Output "Recommended 3 year Reserved Instances to be applied: $recommendedReserved3YearTerm"
 
 # Calculate costs for all hosts running PAYG 24/7
 $fullPAYGDailyRunHoursPriceUSD = $fullDailyRunHours * $hourlyVMCostUSD
@@ -427,7 +429,11 @@ $logMessage = @{
     exchangeRate_d                                       = $conversionRate;
     totalVms_d                                           = $allVms.Count;
     recommendedReserved1YearTerm_d                       = $recommendedReserved1YearTerm;
-    recommendedReserved3YearTerm_d                       = $recommendedReserved3YearTerm
+    recommendedReserved3YearTerm_d                       = $recommendedReserved3YearTerm;
+    recommendedSavingsUSDReserved1YearTerm_d             = $recommendedSavingsUSDReserved1YearTerm;
+    recommendedSavingsUSDReserved3YearTerm_d             = $recommendedSavingsUSDReserved3YearTerm;
+    recommendedSavingsBillingCurrencyReserved1YearTerm_d = $recommendedSavingsBillingCurrencyReserved1YearTerm;
+    recommendedSavingsBillingCurrencyReserved3YearTerm_d = $recommendedSavingsBillingCurrencyReserved3YearTerm
 }
 
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
@@ -446,8 +452,8 @@ if (!$logAnalyticsQuery) {
 
 if ($logAnalyticsQuery) {
     $loggedDays = $logAnalyticsQuery.Results.billingDay_s | foreach { Get-Date -Date $_ -Format yyyy-MM-dd }
-    $startDate = -31
-    $daysToCheck = $startDate..-1 | ForEach-Object { (Get-Date).AddDays($_).ToString('yyyy-MM-dd') }
+    $startDate = -32
+    $daysToCheck = $startDate..-3 | ForEach-Object { (Get-Date).AddDays($_).ToString('yyyy-MM-dd') }
     $missingDays = @()
 
     # Check for any missing days in Log Analytics Cost Analysis log file within the last 31 days
@@ -499,12 +505,40 @@ if ($logAnalyticsQuery) {
             }
 
             if (!$vmCosts) {
-                Write-Warning "No billing data has been returned for VM size '$vmSize' on $missingDay so moving on..."
+                Write-Output "No billing data was returned for machine type '$vmSize' on $missingDay so resource must have either been shutdown or created after this date"
+
+                # Post blank set of data to Log Analytics so this missing day is not queried again
+                $logMessage = @{ 
+                    billingDay_s                                         = $missingDay;
+                    resourceGroupName_s                                  = $resourceGroupName;
+                    billingDaySpendUSD_d                                 = $null;
+                    billingDaySpend_d                                    = $null;
+                    hoursSaved_d                                         = $null; 
+                    savingsFromAppliedReservedInstancesUSD_d             = $null;
+                    savingsFromAppliedReservedInstancesBillingCurrency_d = $null;
+                    totalAutomationSavingsToPAYGUSD_d                    = $null;
+                    totalAutomationSavingsToPAYGBillingCurrency_d        = $null;
+                    ifAllReservedSavings1YearTermUSD_d                   = $null;
+                    ifAllReservedSavings3YearTermUSD_d                   = $null;
+                    ifAllReservedSavings1YearTermBillingCurrency_d       = $null;
+                    ifAllReservedSavings3YearTermBillingCurrency_d       = $null;
+                    usageHours_d                                         = $null;
+                    hostPoolName_s                                       = $hostpoolName;
+                    exchangeRate_d                                       = $null;
+                    totalVms_d                                           = $null;
+                    recommendedReserved1YearTerm_d                       = $null;
+                    recommendedReserved3YearTerm_d                       = $null;
+                    recommendedSavingsUSDReserved1YearTerm_d             = $null;
+                    recommendedSavingsUSDReserved3YearTerm_d             = $null;
+                    recommendedSavingsBillingCurrencyReserved1YearTerm_d = $null;
+                    recommendedSavingsBillingCurrencyReserved3YearTerm_d = $null
+                }
+                Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
                 continue
             }
 
             # Check for any reserved instances of the machine type contained in resource group
-            Write-Output "Checking if any reserved instances of VM size '$vmSize' were applied to any VMs in this resource group..."
+            Write-Output "Checking if any reserved instances of machine type '$vmSize' were applied to any VMs on date $missingDay..."
             $reservedInstances1YearTerm = 0
             $reservedInstances3YearTerm = 0
             $appliedReservations = $vmCosts | Where-Object { $_.Term } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, reservationId, reservationName, term
@@ -523,13 +557,13 @@ if ($logAnalyticsQuery) {
                 }
             }
             if ($reservedInstances1YearTerm) {
-                Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances were applied for VM size '$vmSize'"
+                Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances were applied for machine type '$vmSize'"
             }
             if ($reservedInstances3YearTerm) {
-                Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances were applied for VM size '$vmSize'"
+                Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances were applied for machine type '$vmSize'"
             }
             if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
-                Write-Output "No reserved instances were applied for VM size '$vmSize'"
+                Write-Output "No reserved instances were applied for machine type '$vmSize'"
             }
 
             # Calculate usage hours to subtract from applied reserved instances
@@ -610,7 +644,6 @@ if ($logAnalyticsQuery) {
                     $vmName = $vm.ResourceId | Out-String
                     $vmName = $vmName.Split("/")[8]
                     $vmName = $vmName.Trim()
-                    Write-Output "Machine '$vmName' has no reported costs for $missingDay"
                     $missingVm = $vm.ResourceId
                     $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $missingVm; usageHours = 0; costUSD = 0; costBillingCurrency = 0 }
                 }
@@ -618,7 +651,11 @@ if ($logAnalyticsQuery) {
 
             $recommendedReserved1YearTerm = 0
             $recommendedReserved3YearTerm = 0
-
+            $recommendedSavingsUSDReserved1YearTerm = 0
+            $recommendedSavingsUSDReserved3YearTerm = 0
+            $recommendedSavingsBillingCurrencyReserved1YearTerm = 0
+            $recommendedSavingsBillingCurrencyReserved3YearTerm = 0
+            
             foreach ($vmCost in $vmCostTable) {
                 if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD1YearTerm) {
                     $vmName = $vmCost.instanceName | Out-String
@@ -628,8 +665,9 @@ if ($logAnalyticsQuery) {
                     $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency1YearTerm
                     $overSpendUSD = [math]::Round($overSpendUSD, 2)
                     $overSpendBillingCurrency = [math]::Round($overSpendBillingCurrency, 2)
+                    $recommendedSavingsUSDReserved1YearTerm = $recommendedSavingsUSDReserved1YearTerm + $overSpendUSD
+                    $recommendedSavingsBillingCurrencyReserved1YearTerm = $recommendedSavingsBillingCurrencyReserved1YearTerm + $overSpendBillingCurrency
                     $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
-                    Write-Output "Machine '$vmName' cost £$overSpendBillingCurrency more to run than if it was running as a 1 year Reserved Instance"
                 }
                 if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD3YearTerm) {
                     $vmName = $vmCost.instanceName | Out-String
@@ -639,13 +677,11 @@ if ($logAnalyticsQuery) {
                     $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency3YearTerm
                     $overSpendUSD = [math]::Round($overSpendUSD, 2)
                     $overSpendBillingCurrency = [math]::Round($overSpendBillingCurrency, 2)
+                    $recommendedSavingsUSDReserved3YearTerm = $recommendedSavingsUSDReserved3YearTerm + $overSpendUSD
+                    $recommendedSavingsBillingCurrencyReserved3YearTerm = $recommendedSavingsBillingCurrencyReserved3YearTerm + $overSpendBillingCurrency
                     $recommendedReserved3YearTerm = $recommendedReserved3YearTerm + 1
-                    Write-Output "Machine '$vmName' cost £$overSpendBillingCurrency more to run than if it was running as a 3 year Reserved Instance"
                 }
             }
-
-            Write-Output "Recommended 1 year Reserved Instances to be applied: $recommendedReserved1YearTerm"
-            Write-Output "Recommended 3 year Reserved Instances to be applied: $recommendedReserved3YearTerm"
 
             # Calculate costs for PAYG 24/7 running
             $fullPAYGDailyRunHoursPriceUSD = $fullDailyRunHours * $hourlyVMCostUSD
@@ -724,7 +760,11 @@ if ($logAnalyticsQuery) {
                 exchangeRate_d                                       = $conversionRate;
                 totalVms_d                                           = $allVms.Count;
                 recommendedReserved1YearTerm_d                       = $recommendedReserved1YearTerm;
-                recommendedReserved3YearTerm_d                       = $recommendedReserved3YearTerm
+                recommendedReserved3YearTerm_d                       = $recommendedReserved3YearTerm;
+                recommendedSavingsUSDReserved1YearTerm_d             = $recommendedSavingsUSDReserved1YearTerm;
+                recommendedSavingsUSDReserved3YearTerm_d             = $recommendedSavingsUSDReserved3YearTerm;
+                recommendedSavingsBillingCurrencyReserved1YearTerm_d = $recommendedSavingsBillingCurrencyReserved1YearTerm;
+                recommendedSavingsBillingCurrencyReserved3YearTerm_d = $recommendedSavingsBillingCurrencyReserved3YearTerm
             }
             Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
             Write-Output "Posted cost analysis data for date $missingDay to Log Analytics"
