@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.3.0
+    Version : 1.3.2
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -299,12 +299,24 @@ $fullDailyRunHours = $allVms.Count * 24
 # Get cost per VM and calculate recommendations for Reserved Instances
 $vmCostTable = @()
 foreach ($vm in $allVms) {
-    $vmUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId } | Select-Object instanceName, quantity
+    $vmUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId } | Select-Object instanceName, quantity, term
 
     if ($vmUsageHours) {
-        $vmCostUSD = $vmUsageHours.quantity * $hourlyVMCostUSD
-        $vmCostBillingCurrency = $vmCostUSD * $conversionRate
-        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+        if ($vmUsageHours.term -eq '1Year') {
+            $vmCostUSD = $dailyReservedHoursPriceUSD1YearTerm
+            $vmCostBillingCurrency = $dailyReservedHoursPriceBillingCurrency1YearTerm
+            $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+        }
+        elseif ($vmUsageHours.term -eq '3Years') {
+            $vmCostUSD = $dailyReservedHoursPriceUSD3YearTerm
+            $vmCostBillingCurrency = $dailyReservedHoursPriceBillingCurrency3YearTerm
+            $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+        }
+        else {
+            $vmCostUSD = $vmUsageHours.quantity * $hourlyVMCostUSD
+            $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+            $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+        }
     }
 }
 
@@ -326,7 +338,7 @@ $recommendedSavingsBillingCurrencyReserved1YearTerm = 0
 $recommendedSavingsBillingCurrencyReserved3YearTerm = 0
 
 foreach ($vmCost in $vmCostTable) {
-    if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD1YearTerm) {
+    if ($vmCost.costUSD -ge $dailyReservedHoursPriceUSD1YearTerm) {
         $vmName = $vmCost.instanceName | Out-String
         $vmName = $vmName.Split("/")[8]
         $vmName = $vmName.Trim()
@@ -338,7 +350,7 @@ foreach ($vmCost in $vmCostTable) {
         $recommendedSavingsBillingCurrencyReserved1YearTerm = $recommendedSavingsBillingCurrencyReserved1YearTerm + $overSpendBillingCurrency
         $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
     }
-    if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD3YearTerm) {
+    if ($vmCost.costUSD -ge $dailyReservedHoursPriceUSD3YearTerm) {
         $vmName = $vmCost.instanceName | Out-String
         $vmName = $vmName.Split("/")[8]
         $vmName = $vmName.Trim()
@@ -404,10 +416,10 @@ $totalSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDaySpendUSD
 $totalSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDaySpend
 
 # Compare daily cost vs all VMs running as Reserved Instances
-$allReservedSavings1YearTermUSD = $fullDailyReservedHoursPriceUSD1YearTerm - $billingDaySpendUSD
-$allReservedSavings3YearTermUSD = $fullDailyReservedHoursPriceUSD3YearTerm - $billingDaySpendUSD
-$allReservedSavings1YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $billingDaySpend
-$allReservedSavings3YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $billingDaySpend
+$allReservedSavings1YearTermUSD = $billingDaySpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm
+$allReservedSavings3YearTermUSD = $billingDaySpendUSD - $fullDailyReservedHoursPriceUSD3YearTerm
+$allReservedSavings1YearTermBillingCurrency = $billingDaySpend - $fullDailyReservedHoursPriceBillingCurrency1YearTerm
+$allReservedSavings3YearTermBillingCurrency = $billingDaySpend - $fullDailyReservedHoursPriceBillingCurrency3YearTerm
 
 # Post data to Log Analytics
 $logMessage = @{ 
@@ -630,12 +642,24 @@ if ($logAnalyticsQuery) {
             # Get cost per VM and calculate recommendations for Reserved Instances
             $vmCostTable = @()
             foreach ($vm in $allVms) {
-                $vmUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId } | Select-Object instanceName, quantity
+                $vmUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId } | Select-Object instanceName, quantity, term
 
                 if ($vmUsageHours) {
-                    $vmCostUSD = $vmUsageHours.quantity * $hourlyVMCostUSD
-                    $vmCostBillingCurrency = $vmCostUSD * $conversionRate
-                    $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+                    if ($vmUsageHours.term -eq '1Year') {
+                        $vmCostUSD = $dailyReservedHoursPriceUSD1YearTerm
+                        $vmCostBillingCurrency = $dailyReservedHoursPriceBillingCurrency1YearTerm
+                        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+                    }
+                    elseif ($vmUsageHours.term -eq '3Years') {
+                        $vmCostUSD = $dailyReservedHoursPriceUSD3YearTerm
+                        $vmCostBillingCurrency = $dailyReservedHoursPriceBillingCurrency3YearTerm
+                        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+                    }
+                    else {
+                        $vmCostUSD = $vmUsageHours.quantity * $hourlyVMCostUSD
+                        $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+                        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+                    }
                 }
             }
 
@@ -657,7 +681,7 @@ if ($logAnalyticsQuery) {
             $recommendedSavingsBillingCurrencyReserved3YearTerm = 0
             
             foreach ($vmCost in $vmCostTable) {
-                if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD1YearTerm) {
+                if ($vmCost.costUSD -ge $dailyReservedHoursPriceUSD1YearTerm) {
                     $vmName = $vmCost.instanceName | Out-String
                     $vmName = $vmName.Split("/")[8]
                     $vmName = $vmName.Trim()
@@ -669,7 +693,7 @@ if ($logAnalyticsQuery) {
                     $recommendedSavingsBillingCurrencyReserved1YearTerm = $recommendedSavingsBillingCurrencyReserved1YearTerm + $overSpendBillingCurrency
                     $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
                 }
-                if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD3YearTerm) {
+                if ($vmCost.costUSD -ge $dailyReservedHoursPriceUSD3YearTerm) {
                     $vmName = $vmCost.instanceName | Out-String
                     $vmName = $vmName.Split("/")[8]
                     $vmName = $vmName.Trim()
@@ -735,10 +759,10 @@ if ($logAnalyticsQuery) {
             $totalSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDaySpend
 
             # Compare daily cost vs all VMs running as Reserved Instances
-            $allReservedSavings1YearTermUSD = $fullDailyReservedHoursPriceUSD1YearTerm - $billingDaySpendUSD
-            $allReservedSavings3YearTermUSD = $fullDailyReservedHoursPriceUSD3YearTerm - $billingDaySpendUSD
-            $allReservedSavings1YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $billingDaySpend
-            $allReservedSavings3YearTermBillingCurrency = $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $billingDaySpend
+            $allReservedSavings1YearTermUSD = $billingDaySpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm
+            $allReservedSavings3YearTermUSD = $billingDaySpendUSD - $fullDailyReservedHoursPriceUSD3YearTerm
+            $allReservedSavings1YearTermBillingCurrency = $billingDaySpend - $fullDailyReservedHoursPriceBillingCurrency1YearTerm
+            $allReservedSavings3YearTermBillingCurrency = $billingDaySpend - $fullDailyReservedHoursPriceBillingCurrency3YearTerm
 
             # Post data to Log Analytics
             $logMessage = @{ 
