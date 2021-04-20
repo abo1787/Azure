@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.1.0
+    Version : 1.2.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -201,6 +201,11 @@ while ($billingInfo.nextLink) {
     $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
 }
 
+# Check that billing data returned includes data for the machine type contained in resource group
+if (!$vmCosts) {
+    Write-Error "No billing data has been returned for VM size '$vmSize' on $billingDay so the script was terminated"
+}
+
 # Check for any reserved instances of the machine type contained in resource group
 Write-Output "Checking if any reserved instances of VM size '$vmSize' were applied to any VMs in this resource group..."
 $reservedInstances1YearTerm = 0
@@ -242,7 +247,7 @@ foreach ($appliedReservationsInstance in $appliedReservationsInstances) {
 $conversionRate = $vmCosts.exchangeRate | Sort-Object | Select-Object -First 1
             
 # If all VMs have had reserved instances applied then exchange rate wont be correct and will show as 1. If so try and retrieve exchange rate from Log Analytics
-if ($conversionRate -eq 1) {
+if (!$conversionRate -or $conversionRate -eq 1) {
     Write-Warning "All VMs had reserved instances applied so the correct exchange rate has not been returned. Querying Log Analytics for latest exchange rate data..."
     $exchangeRateQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(31d)" -ErrorAction SilentlyContinue
 
@@ -252,6 +257,10 @@ if ($conversionRate -eq 1) {
     }
     $exchangeRateQuery = $exchangeRateQuery.Results | Sort-Object billingDay_s -Descending | Select-Object -First 1
     $conversionRate = $exchangeRateQuery.exchangeRate_d
+
+    if (!$conversionRate -or $conversionRate -eq 1) {
+        Write-Error "The exchange rate could not be found in either Billing or Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
+    }
 }
 
 # Check correct hourly cost is available
@@ -274,12 +283,74 @@ $billingDaySpendUSD = $billingDaySpendUSD - $totalReservedHoursToSubtract
 $billingDaySpendUSD = $billingDaySpendUSD * $hourlyVMCostUSD
 $billingDaySpend = $billingDaySpendUSD * $conversionRate
 
+# Calculate daily costs for hosts running 24hours
+$payGDailyRunHoursPriceUSD = $hourlyVMCostUSD * 24
+$payGDailyRunHoursPriceBillingCurrency = $payGDailyRunHoursPriceUSD * $conversionRate
+$dailyReservedHoursPriceUSD1YearTerm = $hourlyReservedCostUSD1YearTerm * 24
+$dailyReservedHoursPriceBillingCurrency1YearTerm = $dailyReservedHoursPriceUSD1YearTerm * $conversionRate
+$dailyReservedHoursPriceUSD3YearTerm = $hourlyReservedCostUSD3YearTerm * 24
+$dailyReservedHoursPriceBillingCurrency3YearTerm = $dailyReservedHoursPriceUSD3YearTerm * $conversionRate
+
 # Get VM count from hostpool and calculate hours runtime if all machines were powered on 24/7 - we have to use the Hostpool to enumerate vms
 # rather than billing as powered off hosts will not show on the billing data due to no compute charge
 $allVms = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName
 $fullDailyRunHours = $allVms.Count * 24
 
-# Calculate costs for PAYG 24/7 running
+# Get cost per VM and calculate recommendations for Reserved Instances
+$vmCostTable = @()
+foreach ($vm in $allVms) {
+    $vmUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId } | Select-Object instanceName, quantity
+
+    if ($vmUsageHours) {
+        $vmCostUSD = $vmUsageHours.quantity * $hourlyVMCostUSD
+        $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+    }
+}
+
+foreach ($vm in $allVms) {
+    if ($vmCostTable.instanceName -notcontains $vm.ResourceId) {
+        $vmName = $vm.ResourceId | Out-String
+        $vmName = $vmName.Split("/")[8]
+        $vmName = $vmName.Trim()
+        Write-Output "Machine '$vmName' has no reported costs for $billingDay"
+        $missingVm = $vm.ResourceId
+        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $missingVm; usageHours = 0; costUSD = 0; costBillingCurrency = 0 }
+    }
+}
+
+$recommendedReserved1YearTerm = 0
+$recommendedReserved3YearTerm = 0
+
+foreach ($vmCost in $vmCostTable) {
+    if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD1YearTerm) {
+        $vmName = $vmCost.instanceName | Out-String
+        $vmName = $vmName.Split("/")[8]
+        $vmName = $vmName.Trim()
+        $overSpendUSD = $vmCost.costUSD - $dailyReservedHoursPriceUSD1YearTerm
+        $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency1YearTerm
+        $overSpendUSD = [math]::Round($overSpendUSD, 2)
+        $overSpendBillingCurrency = [math]::Round($overSpendBillingCurrency, 2)
+        $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
+        Write-Output "Machine '$vmName' cost £$overSpendBillingCurrency more to run than if it was running as a 1 year Reserved Instance"
+    }
+    if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD3YearTerm) {
+        $vmName = $vmCost.instanceName | Out-String
+        $vmName = $vmName.Split("/")[8]
+        $vmName = $vmName.Trim()
+        $overSpendUSD = $vmCost.costUSD - $dailyReservedHoursPriceUSD3YearTerm
+        $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency3YearTerm
+        $overSpendUSD = [math]::Round($overSpendUSD, 2)
+        $overSpendBillingCurrency = [math]::Round($overSpendBillingCurrency, 2)
+        $recommendedReserved3YearTerm = $recommendedReserved3YearTerm + 1
+        Write-Output "Machine '$vmName' cost £$overSpendBillingCurrency more to run today if it was running as a 3 year Reserved Instance"
+    }
+}
+
+Write-Output "Recommended 1 year Reserved Instances to be applied: $recommendedReserved1YearTerm"
+Write-Output "Recommended 3 year Reserved Instances to be applied: $recommendedReserved3YearTerm"
+
+# Calculate costs for all hosts running PAYG 24/7
 $fullPAYGDailyRunHoursPriceUSD = $fullDailyRunHours * $hourlyVMCostUSD
 $fullPAYGDailyRunHoursPriceBillingCurrency = $fullDailyRunHours * $hourlyVMCostBillingCurrency
 
@@ -338,22 +409,25 @@ $allReservedSavings3YearTermBillingCurrency = $fullDailyReservedHoursPriceBillin
 
 # Post data to Log Analytics
 $logMessage = @{ 
-    billingDay_s                                            = $billingDay;
-    resourceGroupName_s                                     = $resourceGroupName;
-    billingDaySpendUSD_d                                    = $billingDaySpendUSD;
-    billingDaySpend_d                                       = $billingDaySpend;
-    hoursSaved_d                                            = $automationHoursSaved; 
-    savingsFromAppliedReservedInstancesUSD_d                = $totalSavingsReservedInstancesUSD;
-    savingsFromAppliedReservedInstancesBillingCurrency_d    = $totalSavingsReservedInstancesBillingCurrency;
-    totalAutomationSavingsToPAYGUSD_d                       = $totalSavingsUSD;
-    totalAutomationSavingsToPAYGBillingCurrency_d           = $totalSavingsBillingCurrency;
-    ifAllReservedSavings1YearTermUSD_d                      = $allReservedSavings1YearTermUSD;
-    ifAllReservedSavings3YearTermUSD_d                      = $allReservedSavings3YearTermUSD;
-    ifAllReservedSavings1YearTermBillingCurrency_d          = $allReservedSavings1YearTermBillingCurrency;
-    ifAllReservedSavings3YearTermBillingCurrency_d          = $allReservedSavings3YearTermBillingCurrency;
-    usageHours_d                                            = $usageHours;
-    hostPoolName_s                                          = $hostpoolName;
-    exchangeRate_d                                          = $conversionRate
+    billingDay_s                                         = $billingDay;
+    resourceGroupName_s                                  = $resourceGroupName;
+    billingDaySpendUSD_d                                 = $billingDaySpendUSD;
+    billingDaySpend_d                                    = $billingDaySpend;
+    hoursSaved_d                                         = $automationHoursSaved; 
+    savingsFromAppliedReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
+    savingsFromAppliedReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
+    totalAutomationSavingsToPAYGUSD_d                    = $totalSavingsUSD;
+    totalAutomationSavingsToPAYGBillingCurrency_d        = $totalSavingsBillingCurrency;
+    ifAllReservedSavings1YearTermUSD_d                   = $allReservedSavings1YearTermUSD;
+    ifAllReservedSavings3YearTermUSD_d                   = $allReservedSavings3YearTermUSD;
+    ifAllReservedSavings1YearTermBillingCurrency_d       = $allReservedSavings1YearTermBillingCurrency;
+    ifAllReservedSavings3YearTermBillingCurrency_d       = $allReservedSavings3YearTermBillingCurrency;
+    usageHours_d                                         = $usageHours;
+    hostPoolName_s                                       = $hostpoolName;
+    exchangeRate_d                                       = $conversionRate;
+    totalVms_d                                           = $allVms.Count;
+    recommendedReserved1YearTerm_d                       = $recommendedReserved1YearTerm;
+    recommendedReserved3YearTerm_d                       = $recommendedReserved3YearTerm
 }
 
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
@@ -424,6 +498,11 @@ if ($logAnalyticsQuery) {
                 $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
             }
 
+            if (!$vmCosts) {
+                Write-Warning "No billing data has been returned for VM size '$vmSize' on $missingDay so moving on..."
+                continue
+            }
+
             # Check for any reserved instances of the machine type contained in resource group
             Write-Output "Checking if any reserved instances of VM size '$vmSize' were applied to any VMs in this resource group..."
             $reservedInstances1YearTerm = 0
@@ -465,7 +544,7 @@ if ($logAnalyticsQuery) {
             $conversionRate = $vmCosts.exchangeRate | Sort-Object | Select-Object -First 1
             
             # If all VMs have had reserved instances applied then exchange rate wont be correct and will show as 1. If so try and retrieve exchange rate from Log Analytics
-            if ($conversionRate -eq 1) {
+            if (!$conversionRate -or $conversionRate -eq 1) {
                 Write-Warning "All VMs had reserved instances applied so the correct exchange rate has not been returned. Querying Log Analytics for latest exchange rate data..."
                 $exchangeRateQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(31d)" -ErrorAction SilentlyContinue
 
@@ -475,6 +554,10 @@ if ($logAnalyticsQuery) {
                 }
                 $exchangeRateQuery = $exchangeRateQuery.Results | Sort-Object billingDay_s -Descending | Select-Object -First 1
                 $conversionRate = $exchangeRateQuery.exchangeRate_d
+
+                if (!$conversionRate -or $conversionRate -eq 1) {
+                    Write-Error "The exchange rate could not be found in either Billing or Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
+                }
             }
 
             # Check correct hourly cost is available
@@ -497,10 +580,72 @@ if ($logAnalyticsQuery) {
             $billingDaySpendUSD = $billingDaySpendUSD * $hourlyVMCostUSD
             $billingDaySpend = $billingDaySpendUSD * $conversionRate
 
+            # Calculate daily costs for hosts running 24hours
+            $payGDailyRunHoursPriceUSD = $hourlyVMCostUSD * 24
+            $payGDailyRunHoursPriceBillingCurrency = $payGDailyRunHoursPriceUSD * $conversionRate
+            $dailyReservedHoursPriceUSD1YearTerm = $hourlyReservedCostUSD1YearTerm * 24
+            $dailyReservedHoursPriceBillingCurrency1YearTerm = $dailyReservedHoursPriceUSD1YearTerm * $conversionRate
+            $dailyReservedHoursPriceUSD3YearTerm = $hourlyReservedCostUSD3YearTerm * 24
+            $dailyReservedHoursPriceBillingCurrency3YearTerm = $dailyReservedHoursPriceUSD3YearTerm * $conversionRate
+
             # Get VM count from hostpool and calculate hours runtime if all machines were powered on 24/7 - we have to use the Hostpool to enumerate vms
             # rather than billing as powered off hosts will not show on the billing data due to no compute charge
             $allVms = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName
             $fullDailyRunHours = $allVms.Count * 24
+
+            # Get cost per VM and calculate recommendations for Reserved Instances
+            $vmCostTable = @()
+            foreach ($vm in $allVms) {
+                $vmUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId } | Select-Object instanceName, quantity
+
+                if ($vmUsageHours) {
+                    $vmCostUSD = $vmUsageHours.quantity * $hourlyVMCostUSD
+                    $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+                    $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
+                }
+            }
+
+            foreach ($vm in $allVms) {
+                if ($vmCostTable.instanceName -notcontains $vm.ResourceId) {
+                    $vmName = $vm.ResourceId | Out-String
+                    $vmName = $vmName.Split("/")[8]
+                    $vmName = $vmName.Trim()
+                    Write-Output "Machine '$vmName' has no reported costs for $missingDay"
+                    $missingVm = $vm.ResourceId
+                    $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $missingVm; usageHours = 0; costUSD = 0; costBillingCurrency = 0 }
+                }
+            }
+
+            $recommendedReserved1YearTerm = 0
+            $recommendedReserved3YearTerm = 0
+
+            foreach ($vmCost in $vmCostTable) {
+                if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD1YearTerm) {
+                    $vmName = $vmCost.instanceName | Out-String
+                    $vmName = $vmName.Split("/")[8]
+                    $vmName = $vmName.Trim()
+                    $overSpendUSD = $vmCost.costUSD - $dailyReservedHoursPriceUSD1YearTerm
+                    $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency1YearTerm
+                    $overSpendUSD = [math]::Round($overSpendUSD, 2)
+                    $overSpendBillingCurrency = [math]::Round($overSpendBillingCurrency, 2)
+                    $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
+                    Write-Output "Machine '$vmName' cost £$overSpendBillingCurrency more to run than if it was running as a 1 year Reserved Instance"
+                }
+                if ($vmCost.costUSD -gt $dailyReservedHoursPriceUSD3YearTerm) {
+                    $vmName = $vmCost.instanceName | Out-String
+                    $vmName = $vmName.Split("/")[8]
+                    $vmName = $vmName.Trim()
+                    $overSpendUSD = $vmCost.costUSD - $dailyReservedHoursPriceUSD3YearTerm
+                    $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency3YearTerm
+                    $overSpendUSD = [math]::Round($overSpendUSD, 2)
+                    $overSpendBillingCurrency = [math]::Round($overSpendBillingCurrency, 2)
+                    $recommendedReserved3YearTerm = $recommendedReserved3YearTerm + 1
+                    Write-Output "Machine '$vmName' cost £$overSpendBillingCurrency more to run than if it was running as a 3 year Reserved Instance"
+                }
+            }
+
+            Write-Output "Recommended 1 year Reserved Instances to be applied: $recommendedReserved1YearTerm"
+            Write-Output "Recommended 3 year Reserved Instances to be applied: $recommendedReserved3YearTerm"
 
             # Calculate costs for PAYG 24/7 running
             $fullPAYGDailyRunHoursPriceUSD = $fullDailyRunHours * $hourlyVMCostUSD
@@ -561,22 +706,25 @@ if ($logAnalyticsQuery) {
 
             # Post data to Log Analytics
             $logMessage = @{ 
-                billingDay_s                                            = $billingDay;
-                resourceGroupName_s                                     = $resourceGroupName;
-                billingDaySpendUSD_d                                    = $billingDaySpendUSD;
-                billingDaySpend_d                                       = $billingDaySpend;
-                hoursSaved_d                                            = $automationHoursSaved; 
-                savingsFromAppliedReservedInstancesUSD_d                = $totalSavingsReservedInstancesUSD;
-                savingsFromAppliedReservedInstancesBillingCurrency_d    = $totalSavingsReservedInstancesBillingCurrency;
-                totalAutomationSavingsToPAYGUSD_d                       = $totalSavingsUSD;
-                totalAutomationSavingsToPAYGBillingCurrency_d           = $totalSavingsBillingCurrency;
-                ifAllReservedSavings1YearTermUSD_d                      = $allReservedSavings1YearTermUSD;
-                ifAllReservedSavings3YearTermUSD_d                      = $allReservedSavings3YearTermUSD;
-                ifAllReservedSavings1YearTermBillingCurrency_d          = $allReservedSavings1YearTermBillingCurrency;
-                ifAllReservedSavings3YearTermBillingCurrency_d          = $allReservedSavings3YearTermBillingCurrency;
-                usageHours_d                                            = $usageHours;
-                hostPoolName_s                                          = $hostpoolName;
-                exchangeRate_d                                          = $conversionRate
+                billingDay_s                                         = $missingDay;
+                resourceGroupName_s                                  = $resourceGroupName;
+                billingDaySpendUSD_d                                 = $billingDaySpendUSD;
+                billingDaySpend_d                                    = $billingDaySpend;
+                hoursSaved_d                                         = $automationHoursSaved; 
+                savingsFromAppliedReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
+                savingsFromAppliedReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
+                totalAutomationSavingsToPAYGUSD_d                    = $totalSavingsUSD;
+                totalAutomationSavingsToPAYGBillingCurrency_d        = $totalSavingsBillingCurrency;
+                ifAllReservedSavings1YearTermUSD_d                   = $allReservedSavings1YearTermUSD;
+                ifAllReservedSavings3YearTermUSD_d                   = $allReservedSavings3YearTermUSD;
+                ifAllReservedSavings1YearTermBillingCurrency_d       = $allReservedSavings1YearTermBillingCurrency;
+                ifAllReservedSavings3YearTermBillingCurrency_d       = $allReservedSavings3YearTermBillingCurrency;
+                usageHours_d                                         = $usageHours;
+                hostPoolName_s                                       = $hostpoolName;
+                exchangeRate_d                                       = $conversionRate;
+                totalVms_d                                           = $allVms.Count;
+                recommendedReserved1YearTerm_d                       = $recommendedReserved1YearTerm;
+                recommendedReserved3YearTerm_d                       = $recommendedReserved3YearTerm
             }
             Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
             Write-Output "Posted cost analysis data for date $missingDay to Log Analytics"
