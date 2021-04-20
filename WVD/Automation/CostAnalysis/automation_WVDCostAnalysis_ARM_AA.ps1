@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.2.0
+    Version : 1.2.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -160,8 +160,8 @@ if (!$azurePrices.Items) {
 $meterId = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty meterId
 $retailHourlyPriceUSD = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty unitPrice
 
-# Set billing day to yesterday
-$yesterday = (Get-Date).AddDays(-1)
+# Set billing day to day before yesterday
+$yesterday = (Get-Date).AddDays(-2)
 $billingDay = Get-Date $yesterday -Format yyyy-MM-dd
 
 # Get token for API call
