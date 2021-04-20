@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.3.2
+    Version : 1.3.3
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -157,8 +157,8 @@ if (!$azurePrices.Items) {
 }
 
 # Get meter id associated (using Linux pricing due to WVD)
-$meterId = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty meterId
-$retailHourlyPriceUSD = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty unitPrice
+$meterId = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceName -eq 'Virtual Machines' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty meterId
+$retailHourlyPriceUSD = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceName -eq 'Virtual Machines' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty unitPrice
 
 # Set billing day to day before yesterday
 $yesterday = (Get-Date).AddDays(-2)
