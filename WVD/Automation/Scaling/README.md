@@ -27,6 +27,6 @@
 ---
 #### v3.1.01
 ---
-#### v2.0.0
----
-#### v1.0.0 - No longer available
+#### v3.0.20
+##### Other
+###### * Added synopsis, description and versioning
