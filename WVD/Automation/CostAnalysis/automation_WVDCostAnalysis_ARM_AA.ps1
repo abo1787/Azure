@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.4.0
+    Version : 1.6.4
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -52,9 +52,10 @@ $logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
 $connectionAssetName = $Input.ConnectionAssetName
 $hostpoolName = $Input.HostPoolName
 $vmDiskType = $Input.VmDiskType
+$billingCurrency = $Input.BillingCurrency
 
 # Set Log Analytics log name
-$logName = 'WVDCostAnalysisTest2_CL'
+$logName = 'WVDCostAnalysisTest_CL'
 
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
@@ -133,7 +134,7 @@ $diskTiers = @($standardHDD, $standardSSD, $premiumSSD)
 $retailDiskPrices = @()
 
 # Get Azure price list for disks matching VM disk tier
-Write-Output "Retrieving Disk prices..."
+Write-Output "Retrieving retail prices for S$diskSize, E$diskSize and P$diskSize disks..."
 foreach ($diskTier in $diskTiers) {
     try {
         $azureDiskSku = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=serviceFamily eq 'Storage' and armRegionName eq '$vmLocation' and meterName eq '$diskTier'" -UseBasicParsing
@@ -163,7 +164,7 @@ $standardSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Sta
 $premiumSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' } | Select-Object -ExpandProperty meterId
 
 # Get Azure price list for all reserved VM instance SKUs matching VM size
-Write-Output "Retrieving Reserved Instance prices for machine type '$vmSize'..."
+Write-Output "Retrieving reserved instance prices for machine type '$vmSize'..."
 try {
     $reservedAzurePriceSkus = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Reservation' and skuName eq '$skuName'" -UseBasicParsing
     $reservedAzurePriceSkus = $reservedAzurePriceSkus | ConvertFrom-Json
@@ -230,6 +231,8 @@ $vmCosts = @()
 $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
 $diskCosts = @()
 $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+$bandwidthCosts = @()
+$bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
 
 while ($billingInfo.nextLink) {
     $nextLink = $billingInfo.nextLink
@@ -242,12 +245,14 @@ while ($billingInfo.nextLink) {
     }
     $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
     $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+    $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
 }
 
-# Check that billing data returned includes data for the machine type contained in resource group
-if (!$vmCosts -and !$diskCosts) {
-    Write-Error "No billing data has been returned for machine type '$vmSize' on $billingDay so the script was terminated"
+# Check that billing data returned includes data for the machine type, bandwidth or disks contained in resource group
+if (!$vmCosts -and !$diskCosts -and !$bandwidthCosts) {
+    Write-Error "No billing data has been returned for WVD resources on $billingDay so the script was terminated"
 }
+Write-Output "Successfully retrieved billing data for date $billingDay, calculating costs..."
 
 # Check for any reserved instances of the machine type contained in resource group
 Write-Output "Checking if any reserved instances of machine type '$vmSize' were applied to any VMs on date $billingDay..."
@@ -286,23 +291,32 @@ foreach ($appliedReservationsInstance in $appliedReservationsInstances) {
     $totalReservedHoursToSubtract = $totalReservedHoursToSubtract + $reservedHoursToSubtract
 }
 
-# Check correct exchange rate is available
+# Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
 $conversionRate = $vmCosts.exchangeRate | Sort-Object | Select-Object -First 1
-            
-# If all VMs have had reserved instances applied then exchange rate wont be correct and will show as 1. If so try and retrieve exchange rate from Log Analytics
-if (!$conversionRate -or $conversionRate -eq 1) {
-    Write-Warning "All VMs had reserved instances applied so the correct exchange rate has not been returned. Querying Log Analytics for latest exchange rate data..."
-    $exchangeRateQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(31d)" -ErrorAction SilentlyContinue
-
-    if (!$exchangeRateQuery) {
-        Write-Warning "An error was received from the endpoint whilst querying Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
-        Write-Warning "Error message: $($error[0].Exception.Message)"
-    }
-    $exchangeRateQuery = $exchangeRateQuery.Results | Sort-Object billingDay_s -Descending | Select-Object -First 1
-    $conversionRate = $exchangeRateQuery.exchangeRate_d
-
+if ($billingCurrency -ne 'USD') {
     if (!$conversionRate -or $conversionRate -eq 1) {
-        Write-Error "The exchange rate could not be found in either Billing or Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
+        $conversionRate = $diskCosts.exchangeRate | Sort-Object | Select-Object -First 1
+    }
+    if (!$conversionRate -or $conversionRate -eq 1) {
+        $conversionRate = $bandwidthCosts.exchangeRate | Sort-Object | Select-Object -First 1
+    }
+
+    # If no exchange rate is returned then try and retrieve from Log Analytics
+    if (!$conversionRate -or $conversionRate -eq 1) {
+    
+        Write-Warning "No exchange rate data has been returned. Querying Log Analytics for latest exchange rate data..."
+        $exchangeRateQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(31d)" -ErrorAction SilentlyContinue
+
+        if (!$exchangeRateQuery) {
+            Write-Warning "An error was received from the endpoint whilst querying Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
+            Write-Warning "Error message: $($error[0].Exception.Message)"
+        }
+        $exchangeRateQuery = $exchangeRateQuery.Results | Sort-Object billingDay_s -Descending | Select-Object -First 1
+        $conversionRate = $exchangeRateQuery.exchangeRate_d
+
+        if (!$conversionRate -or $conversionRate -eq 1) {
+            Write-Error "The exchange rate could not be found in either Billing or Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
+        }
     }
 }
 
@@ -312,11 +326,10 @@ $hourlyVMCostUSD = $vmCosts.unitPrice | Sort-Object | Select-Object -First 1
 # If all VMs have had reserved instances applied then hourly cost will show as 0. If so set hourly cost returned from Retail Prices API
 if (!$hourlyVMCostUSD) {
     $hourlyVMCostUSD = $retailHourlyPriceUSD
-    Write-Warning "All VMs had reserved instances applied so the PAYG hourly cost for VM size '$vmSize' has not been returned. Setting hourly cost returned from Retail Prices API"
+    Write-Warning "No PAYG hourly cost for VM size '$vmSize' has been returned from billing data. Setting hourly cost returned from Retail Prices API"
 }
 
 # Filter billing data for compute type and retrieve costs
-Write-Output "Successfully retrieved billing data for date $billingDay, calculating costs..."
 $hourlyVMCostBillingCurrency = $hourlyVMCostUSD * $conversionRate
 $hourlyReservedCostBillingCurrency1YearTerm = $hourlyReservedCostUSD1YearTerm * $conversionRate
 $hourlyReservedCostBillingCurrency3YearTerm = $hourlyReservedCostUSD3YearTerm * $conversionRate
@@ -325,6 +338,15 @@ $billingDayComputeSpendUSD = $vmCosts.quantity | Measure-Object -Sum | Select-Ob
 $billingDayComputeSpendUSD = $billingDayComputeSpendUSD - $totalReservedHoursToSubtract
 $billingDayComputeSpendUSD = $billingDayComputeSpendUSD * $hourlyVMCostUSD
 $billingDayComputeSpend = $billingDayComputeSpendUSD * $conversionRate
+
+# Calculate bandwidth costs
+$billingDayBandwidthSpendUSD = 0
+foreach ($bandwidthCost in $bandwidthCosts) {
+    $dataCost = 0
+    $dataCost = $bandwidthCost.unitPrice * $bandwidthCost.quantity
+    $billingDayBandwidthSpendUSD = $billingDayBandwidthSpendUSD + $dataCost
+}
+$billingDayBandwidthSpendBillingCurrency = $billingDayBandwidthSpendUSD * $conversionRate
 
 # Convert disk costs to billing currency
 $hourlyStandardHDDCostBillingCurrency = $hourlyStandardHDDCostUSD * $conversionRate
@@ -343,6 +365,9 @@ $dailyPremiumSSDCostUSD = $hourlyPremiumSSDCostUSD * 24
 $dailyPremiumSSDCostBillingCurrency = $dailyPremiumSSDCostUSD * $conversionRate
 
 # Collect disk usage hours by Tier
+$diskUsageHoursStandardHDD = 0
+$diskUsageHoursStandardSSD = 0
+$diskUsageHoursPremiumSSD = 0
 foreach ($diskCost in $diskCosts) {
     if ($diskCost.meterId -eq $standardHDDMeterId) {
         $diskUsageHoursStandardHDD = $diskUsageHoursStandardHDD + $diskCost.quantity
@@ -473,20 +498,24 @@ $reservationSavings1YearTermBillingCurrency = (($hourlyVMCostBillingCurrency * 2
 $reservationSavings3YearTermBillingCurrency = (($hourlyVMCostBillingCurrency * 24) * $reservedInstances3YearTerm) - $billingCost3YearTermBillingCurrency
 
 # Calculate savings from auto-changing disk performance
+$diskSavingsUSD = 0
 if ($vmDiskType -eq 'Standard_LRS') {
-    $diskSavingsUSD = 0
     $fullDailyDiskCostsUSD = $dailyStandardHDDCostUSD * $allVms.Count
 } 
 if ($vmDiskType -eq 'StandardSSD_LRS') {
     $diskSavingsUSD = ($dailyStandardSSDCostUSD * $allVms.Count) - $diskUsageCostsStandardSSDUSD + $diskUsageCostsStandardHDDUSD
     $fullDailyDiskCostsUSD = $dailyStandardSSDCostUSD * $allVms.Count
 }
-if ($vmDiskType -eq 'PremiumSSD_LRS') {
+if ($vmDiskType -eq 'Premium_LRS') {
     $diskSavingsUSD = ($dailyPremiumSSDCostUSD * $allVms.Count) - $diskUsagecostsPremiumSSDUSD + $diskUsageCostsStandardHDDUSD
     $fullDailyDiskCostsUSD = $dailyPremiumSSDCostUSD * $allVms.Count
 }
 $diskSavingsBillingCurrency = $diskSavingsUSD * $conversionRate
 $fullDailyDiskCostsBillingCurrency = $fullDailyDiskCostsUSD * $conversionRate
+
+# Calculate total costs
+$totalBillingDaySpendUSD = $billingDayDiskSpendUSD + $billingDayComputeSpendUSD + $billingDayBandwidthSpendUSD
+$totalBillingDaySpendBillingCurrency = $billingDayDiskSpendBillingCurrency + $billingDayComputeSpend + $billingDayBandwidthSpendBillingCurrency
 
 # Convert final figures to 2 decimal places
 $fullPAYGDailyRunHoursPriceUSD = [math]::Round($fullPAYGDailyRunHoursPriceUSD, 2)
@@ -511,6 +540,9 @@ $billingDayDiskSpendUSD = [math]::Round($billingDayDiskSpendUSD, 2)
 $billingDayDiskSpendBillingCurrency = [math]::Round($billingDayDiskSpendBillingCurrency, 2)
 $fullDailyDiskCostsUSD = [math]::Round($fullDailyDiskCostsUSD, 2)
 $fullDailyDiskCostsBillingCurrency = [math]::Round($fullDailyDiskCostsBillingCurrency, 2)
+$totalBillingDaySpendUSD = [math]::Round($totalBillingDaySpendUSD, 2)
+$totalBillingDaySpendBillingCurrency = [math]::Round($totalBillingDaySpendBillingCurrency, 2)
+$usageHours = [math]::Round($usageHours, 2)
 
 # Calculate total savings from Autoscaling + applied Reserved Instances
 $automationHoursSaved = $fullDailyRunHours - $usageHours
@@ -518,8 +550,10 @@ $automationHoursSaved = [math]::Round($automationHoursSaved, 2)
 $totalSavingsReservedInstancesUSD = $reservationSavings1YearTermUSD + $reservationSavings3YearTermUSD
 $totalSavingsReservedInstancesBillingCurrency = $reservationSavings1YearTermBillingCurrency + $reservationSavings3YearTermBillingCurrency
 $totalSavingsReservedInstancesBillingCurrency = [math]::Round($totalSavingsReservedInstancesBillingCurrency, 2)
-$totalSavingsUSD = ($fullPAYGDailyRunHoursPriceUSD + $fullDailyDiskCostsUSD) - $billingDayComputeSpendUSD - $diskSavingsUSD
-$totalSavingsBillingCurrency = ($fullPAYGDailyRunHoursPriceBillingCurrency + $fullDailyDiskCostsBillingCurrency) - $billingDayComputeSpend - $diskSavingsBillingCurrency
+$totalComputeSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDayComputeSpendUSD
+$totalComputeSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDayComputeSpend
+$totalSavingsUSD = ($fullPAYGDailyRunHoursPriceUSD + $fullDailyDiskCostsUSD) - $billingDayComputeSpendUSD - $billingDayDiskSpendUSD
+$totalSavingsBillingCurrency = ($fullPAYGDailyRunHoursPriceBillingCurrency + $fullDailyDiskCostsBillingCurrency) - $billingDayComputeSpend - $billingDayDiskSpendBillingCurrency
 
 # Compare daily cost vs all VMs running as Reserved Instances
 $allReservedSavings1YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm
@@ -536,8 +570,8 @@ $logMessage = @{
     hoursSaved_d                                         = $automationHoursSaved; 
     savingsFromAppliedReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
     savingsFromAppliedReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
-    totalAutomationSavingsToPAYGUSD_d                    = $totalSavingsUSD;
-    totalAutomationSavingsToPAYGBillingCurrency_d        = $totalSavingsBillingCurrency;
+    totalSavingsUSD_d                                    = $totalSavingsUSD;
+    totalSavingsBillingCurrency_d                        = $totalSavingsBillingCurrency;
     ifAllReservedSavings1YearTermUSD_d                   = $allReservedSavings1YearTermUSD;
     ifAllReservedSavings3YearTermUSD_d                   = $allReservedSavings3YearTermUSD;
     ifAllReservedSavings1YearTermBillingCurrency_d       = $allReservedSavings1YearTermBillingCurrency;
@@ -553,7 +587,14 @@ $logMessage = @{
     recommendedSavingsBillingCurrencyReserved1YearTerm_d = $recommendedSavingsBillingCurrencyReserved1YearTerm;
     recommendedSavingsBillingCurrencyReserved3YearTerm_d = $recommendedSavingsBillingCurrencyReserved3YearTerm;
     billingDayDiskSpendUSD_d                             = $billingDayDiskSpendUSD;
-    billingDayDiskSpend_d                                = $billingDayDiskSpendBillingCurrency
+    billingDayDiskSpend_d                                = $billingDayDiskSpendBillingCurrency;
+    diskSavingsBillingCurrency_d                         = $diskSavingsBillingCurrency;
+    totalBillingDaySpendUSD_d                            = $totalBillingDaySpendUSD;
+    totalBillingDaySpendBillingCurrency_d                = $totalBillingDaySpendBillingCurrency;
+    totalComputeSavingsUSD_d                             = $totalComputeSavingsUSD;
+    totalComputeSavingsBillingCurrency_d                 = $totalComputeSavingsBillingCurrency;
+    bandwidthSpendUSD_d                                  = $billingDayBandwidthSpendUSD;
+    bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency
 }
 
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
@@ -613,7 +654,9 @@ if ($logAnalyticsQuery) {
             $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
             $diskCosts = @()
             $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
-            
+            $bandwidthCosts = @()
+            $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+
             while ($billingInfo.nextLink) {
                 $nextLink = $billingInfo.nextLink
                 try {
@@ -625,11 +668,11 @@ if ($logAnalyticsQuery) {
                 }
                 $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
                 $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
-
+                $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
             }
 
-            if (!$vmCosts -and !$diskCosts) {
-                Write-Output "No billing data was returned for machine type '$vmSize' on $missingDay so resource must have been created after this date"
+            if (!$vmCosts -and !$diskCosts -and !$bandwidthCosts) {
+                Write-Output "No billing data was returned for $missingDay so resource must have been created after this date"
 
                 # Post blank set of data to Log Analytics so this missing day is not queried again
                 $logMessage = @{ 
@@ -640,8 +683,8 @@ if ($logAnalyticsQuery) {
                     hoursSaved_d                                         = $null; 
                     savingsFromAppliedReservedInstancesUSD_d             = $null;
                     savingsFromAppliedReservedInstancesBillingCurrency_d = $null;
-                    totalAutomationSavingsToPAYGUSD_d                    = $null;
-                    totalAutomationSavingsToPAYGBillingCurrency_d        = $null;
+                    totalSavingsUSD_d                                    = $null;
+                    totalSavingsBillingCurrency_d                        = $null;
                     ifAllReservedSavings1YearTermUSD_d                   = $null;
                     ifAllReservedSavings3YearTermUSD_d                   = $null;
                     ifAllReservedSavings1YearTermBillingCurrency_d       = $null;
@@ -657,11 +700,19 @@ if ($logAnalyticsQuery) {
                     recommendedSavingsBillingCurrencyReserved1YearTerm_d = $null;
                     recommendedSavingsBillingCurrencyReserved3YearTerm_d = $null;
                     billingDayDiskSpendUSD_d                             = $null;
-                    billingDayDiskSpend_d                                = $null
+                    billingDayDiskSpend_d                                = $null;
+                    diskSavingsBillingCurrency_d                         = $null;
+                    totalBillingDaySpendUSD_d                            = $null;
+                    totalBillingDaySpendBillingCurrency_d                = $null;
+                    totalComputeSavingsUSD_d                             = $null;
+                    totalComputeSavingsBillingCurrency_d                 = $null;
+                    bandwidthSpendUSD_d                                  = $null;
+                    bandwidthSpendBillingCurrency_d                      = $null
                 }
                 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
                 continue
             }
+            Write-Output "Successfully retrieved billing data for date $missingDay, calculating costs..."
 
             # Check for any reserved instances of the machine type contained in resource group
             Write-Output "Checking if any reserved instances of machine type '$vmSize' were applied to any VMs on date $missingDay..."
@@ -700,23 +751,32 @@ if ($logAnalyticsQuery) {
                 $totalReservedHoursToSubtract = $totalReservedHoursToSubtract + $reservedHoursToSubtract
             }
 
-            # Check correct exchange rate is available
+            # Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
             $conversionRate = $vmCosts.exchangeRate | Sort-Object | Select-Object -First 1
-            
-            # If all VMs have had reserved instances applied then exchange rate wont be correct and will show as 1. If so try and retrieve exchange rate from Log Analytics
-            if (!$conversionRate -or $conversionRate -eq 1) {
-                Write-Warning "All VMs had reserved instances applied so the correct exchange rate has not been returned. Querying Log Analytics for latest exchange rate data..."
-                $exchangeRateQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(31d)" -ErrorAction SilentlyContinue
-
-                if (!$exchangeRateQuery) {
-                    Write-Warning "An error was received from the endpoint whilst querying Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
-                    Write-Warning "Error message: $($error[0].Exception.Message)"
-                }
-                $exchangeRateQuery = $exchangeRateQuery.Results | Sort-Object billingDay_s -Descending | Select-Object -First 1
-                $conversionRate = $exchangeRateQuery.exchangeRate_d
-
+            if ($billingCurrency -ne 'USD') {
                 if (!$conversionRate -or $conversionRate -eq 1) {
-                    Write-Error "The exchange rate could not be found in either Billing or Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
+                    $conversionRate = $diskCosts.exchangeRate | Sort-Object | Select-Object -First 1
+                }
+                if (!$conversionRate -or $conversionRate -eq 1) {
+                    $conversionRate = $bandwidthCosts.exchangeRate | Sort-Object | Select-Object -First 1
+                }
+
+                # If no exchange rate is returned then try and retrieve from Log Analytics
+                if (!$conversionRate -or $conversionRate -eq 1) {
+    
+                    Write-Warning "No exchange rate data has been returned. Querying Log Analytics for latest exchange rate data..."
+                    $exchangeRateQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(31d)" -ErrorAction SilentlyContinue
+
+                    if (!$exchangeRateQuery) {
+                        Write-Warning "An error was received from the endpoint whilst querying Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
+                        Write-Warning "Error message: $($error[0].Exception.Message)"
+                    }
+                    $exchangeRateQuery = $exchangeRateQuery.Results | Sort-Object billingDay_s -Descending | Select-Object -First 1
+                    $conversionRate = $exchangeRateQuery.exchangeRate_d
+
+                    if (!$conversionRate -or $conversionRate -eq 1) {
+                        Write-Error "The exchange rate could not be found in either Billing or Log Analytics. Cost analysis cannot be performed without the exchange rate so the script was terminated"
+                    }
                 }
             }
 
@@ -726,11 +786,10 @@ if ($logAnalyticsQuery) {
             # If all VMs have had reserved instances applied then hourly cost will show as 0. If so set hourly cost returned from Retail Prices API
             if (!$hourlyVMCostUSD) {
                 $hourlyVMCostUSD = $retailHourlyPriceUSD
-                Write-Warning "All VMs had reserved instances applied so the PAYG hourly cost for VM size '$vmSize' has not been returned. Setting hourly cost returned from Retail Prices API"
+                Write-Warning "No PAYG hourly cost for VM size '$vmSize' has been returned from billing data. Setting hourly cost returned from Retail Prices API"
             }
 
             # Filter billing data for compute type and retrieve costs
-            Write-Output "Successfully retrieved billing data for date $missingDay, calculating costs..."
             $hourlyVMCostBillingCurrency = $hourlyVMCostUSD * $conversionRate
             $hourlyReservedCostBillingCurrency1YearTerm = $hourlyReservedCostUSD1YearTerm * $conversionRate
             $hourlyReservedCostBillingCurrency3YearTerm = $hourlyReservedCostUSD3YearTerm * $conversionRate
@@ -739,6 +798,15 @@ if ($logAnalyticsQuery) {
             $billingDayComputeSpendUSD = $billingDayComputeSpendUSD - $totalReservedHoursToSubtract
             $billingDayComputeSpendUSD = $billingDayComputeSpendUSD * $hourlyVMCostUSD
             $billingDayComputeSpend = $billingDayComputeSpendUSD * $conversionRate
+
+            # Calculate bandwidth costs
+            $billingDayBandwidthSpendUSD = 0
+            foreach ($bandwidthCost in $bandwidthCosts) {
+                $dataCost = 0
+                $dataCost = $bandwidthCost.unitPrice * $bandwidthCost.quantity
+                $billingDayBandwidthSpendUSD = $billingDayBandwidthSpendUSD + $dataCost
+            }
+            $billingDayBandwidthSpendBillingCurrency = $billingDayBandwidthSpendUSD * $conversionRate
 
             # Convert disk costs to billing currency
             $hourlyStandardHDDCostBillingCurrency = $hourlyStandardHDDCostUSD * $conversionRate
@@ -757,6 +825,9 @@ if ($logAnalyticsQuery) {
             $dailyPremiumSSDCostBillingCurrency = $dailyPremiumSSDCostUSD * $conversionRate
 
             # Collect disk usage hours by Tier
+            $diskUsageHoursStandardHDD = 0
+            $diskUsageHoursStandardSSD = 0
+            $diskUsageHoursPremiumSSD = 0
             foreach ($diskCost in $diskCosts) {
                 if ($diskCost.meterId -eq $standardHDDMeterId) {
                     $diskUsageHoursStandardHDD = $diskUsageHoursStandardHDD + $diskCost.quantity
@@ -887,20 +958,24 @@ if ($logAnalyticsQuery) {
             $reservationSavings3YearTermBillingCurrency = (($hourlyVMCostBillingCurrency * 24) * $reservedInstances3YearTerm) - $billingCost3YearTermBillingCurrency
 
             # Calculate savings from auto-changing disk performance
+            $diskSavingsUSD = 0
             if ($vmDiskType -eq 'Standard_LRS') {
-                $diskSavingsUSD = 0
                 $fullDailyDiskCostsUSD = $dailyStandardHDDCostUSD * $allVms.Count
             } 
             if ($vmDiskType -eq 'StandardSSD_LRS') {
                 $diskSavingsUSD = ($dailyStandardSSDCostUSD * $allVms.Count) - $diskUsageCostsStandardSSDUSD + $diskUsageCostsStandardHDDUSD
                 $fullDailyDiskCostsUSD = $dailyStandardSSDCostUSD * $allVms.Count
             }
-            if ($vmDiskType -eq 'PremiumSSD_LRS') {
+            if ($vmDiskType -eq 'Premium_LRS') {
                 $diskSavingsUSD = ($dailyPremiumSSDCostUSD * $allVms.Count) - $diskUsagecostsPremiumSSDUSD + $diskUsageCostsStandardHDDUSD
                 $fullDailyDiskCostsUSD = $dailyPremiumSSDCostUSD * $allVms.Count
             }
             $diskSavingsBillingCurrency = $diskSavingsUSD * $conversionRate
             $fullDailyDiskCostsBillingCurrency = $fullDailyDiskCostsUSD * $conversionRate
+
+            # Calculate total costs
+            $totalBillingDaySpendUSD = $billingDayDiskSpendUSD + $billingDayComputeSpendUSD + $billingDayBandwidthSpendUSD
+            $totalBillingDaySpendBillingCurrency = $billingDayDiskSpendBillingCurrency + $billingDayComputeSpend + $billingDayBandwidthSpendBillingCurrency
 
             # Convert final figures to 2 decimal places
             $fullPAYGDailyRunHoursPriceUSD = [math]::Round($fullPAYGDailyRunHoursPriceUSD, 2)
@@ -925,15 +1000,20 @@ if ($logAnalyticsQuery) {
             $billingDayDiskSpendBillingCurrency = [math]::Round($billingDayDiskSpendBillingCurrency, 2)
             $fullDailyDiskCostsUSD = [math]::Round($fullDailyDiskCostsUSD, 2)
             $fullDailyDiskCostsBillingCurrency = [math]::Round($fullDailyDiskCostsBillingCurrency, 2)
-
+            $totalBillingDaySpendUSD = [math]::Round($totalBillingDaySpendUSD, 2)
+            $totalBillingDaySpendBillingCurrency = [math]::Round($totalBillingDaySpendBillingCurrency, 2)
+            $usageHours = [math]::Round($usageHours, 2)
+        
             # Calculate total savings from Autoscaling + applied Reserved Instances
             $automationHoursSaved = $fullDailyRunHours - $usageHours
             $automationHoursSaved = [math]::Round($automationHoursSaved, 2)
             $totalSavingsReservedInstancesUSD = $reservationSavings1YearTermUSD + $reservationSavings3YearTermUSD
             $totalSavingsReservedInstancesBillingCurrency = $reservationSavings1YearTermBillingCurrency + $reservationSavings3YearTermBillingCurrency
             $totalSavingsReservedInstancesBillingCurrency = [math]::Round($totalSavingsReservedInstancesBillingCurrency, 2)
-            $totalSavingsUSD = ($fullPAYGDailyRunHoursPriceUSD + $fullDailyDiskCostsUSD) - $billingDayComputeSpendUSD - $diskSavingsUSD
-            $totalSavingsBillingCurrency = ($fullPAYGDailyRunHoursPriceBillingCurrency + $fullDailyDiskCostsBillingCurrency) - $billingDayComputeSpend - $diskSavingsBillingCurrency
+            $totalComputeSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDayComputeSpendUSD
+            $totalComputeSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDayComputeSpend
+            $totalSavingsUSD = ($fullPAYGDailyRunHoursPriceUSD + $fullDailyDiskCostsUSD) - $billingDayComputeSpendUSD - $billingDayDiskSpendUSD
+            $totalSavingsBillingCurrency = ($fullPAYGDailyRunHoursPriceBillingCurrency + $fullDailyDiskCostsBillingCurrency) - $billingDayComputeSpend - $billingDayDiskSpendBillingCurrency
 
             # Compare daily cost vs all VMs running as Reserved Instances
             $allReservedSavings1YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm
@@ -950,8 +1030,8 @@ if ($logAnalyticsQuery) {
                 hoursSaved_d                                         = $automationHoursSaved; 
                 savingsFromAppliedReservedInstancesUSD_d             = $totalSavingsReservedInstancesUSD;
                 savingsFromAppliedReservedInstancesBillingCurrency_d = $totalSavingsReservedInstancesBillingCurrency;
-                totalAutomationSavingsToPAYGUSD_d                    = $totalSavingsUSD;
-                totalAutomationSavingsToPAYGBillingCurrency_d        = $totalSavingsBillingCurrency;
+                totalSavingsUSD_d                                    = $totalSavingsUSD;
+                totalSavingsBillingCurrency_d                        = $totalSavingsBillingCurrency;
                 ifAllReservedSavings1YearTermUSD_d                   = $allReservedSavings1YearTermUSD;
                 ifAllReservedSavings3YearTermUSD_d                   = $allReservedSavings3YearTermUSD;
                 ifAllReservedSavings1YearTermBillingCurrency_d       = $allReservedSavings1YearTermBillingCurrency;
@@ -967,7 +1047,14 @@ if ($logAnalyticsQuery) {
                 recommendedSavingsBillingCurrencyReserved1YearTerm_d = $recommendedSavingsBillingCurrencyReserved1YearTerm;
                 recommendedSavingsBillingCurrencyReserved3YearTerm_d = $recommendedSavingsBillingCurrencyReserved3YearTerm;
                 billingDayDiskSpendUSD_d                             = $billingDayDiskSpendUSD;
-                billingDayDiskSpend_d                                = $billingDayDiskSpendBillingCurrency
+                billingDayDiskSpend_d                                = $billingDayDiskSpendBillingCurrency;
+                diskSavingsBillingCurrency_d                         = $diskSavingsBillingCurrency;
+                totalBillingDaySpendUSD_d                            = $totalBillingDaySpendUSD;
+                totalBillingDaySpendBillingCurrency_d                = $totalBillingDaySpendBillingCurrency;
+                totalComputeSavingsUSD_d                             = $totalComputeSavingsUSD;
+                totalComputeSavingsBillingCurrency_d                 = $totalComputeSavingsBillingCurrency;
+                bandwidthSpendUSD_d                                  = $billingDayBandwidthSpendUSD;
+                bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency
             }
             Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
             Write-Output "Posted cost analysis data for date $missingDay to Log Analytics"
