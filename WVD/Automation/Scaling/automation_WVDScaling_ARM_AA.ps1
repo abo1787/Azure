@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 3.2.1
+    Version : 4.0.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -62,10 +62,11 @@ else {
   Write-Error -Message 'Runbook was not started from Webhook' -ErrorAction stop
 }
 
+# Assign variable values from input
 $aadTenantId = $Input.AADTenantId
 $subscriptionID = $Input.SubscriptionID
 $resourceGroupName = $Input.ResourceGroupName
-$hostpoolName = $Input.HostPoolName
+$hostPoolName = $Input.HostPoolName
 $workDays = $Input.WorkDays
 $beginPeakTime = $Input.BeginPeakTime
 $endPeakTime = $Input.EndPeakTime
@@ -78,15 +79,15 @@ $peakScaleFactor = $Input.PeakScaleFactor
 $offpeakScaleFactor = $Input.OffpeakScaleFactor
 $peakMinimumNumberOfRDSH = $Input.PeakMinimumNumberOfRDSH
 $offpeakMinimumNumberOfRDSH = $Input.OffpeakMinimumNumberOfRDSH
-$minimumNumberFastScale = $Input.MinimumNumberFastScale
-$jobTimeout = $Input.JobTimeout
+$jobTimeout = 420
 $limitSecondsToForceLogOffUser = $Input.LimitSecondsToForceLogOffUser
 $logOffMessageTitle = $Input.LogOffMessageTitle
 $logOffMessageBody = $Input.LogOffMessageBody
 $maintenanceTagName = $Input.MaintenanceTagName
 $logAnalyticsWorkspaceId = $Input.LogAnalyticsWorkspaceId
 $logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
-$connectionAssetName = $Input.ConnectionAssetName
+$connectionAssetName = "AzureRunAsConnection"
+$vmDiskType = $Input.VMDiskType
 
 # Set Log Analytics log name
 $logName = 'WVDScalingTest1_CL'
@@ -134,7 +135,7 @@ $connection = Get-AutomationConnection -Name $connectionAssetName
 # Authenticate to Azure 
 Clear-AzContext -Force
 $azAuthentication = Connect-AzAccount -ApplicationId $connection.ApplicationId -TenantId $aadTenantId -CertificateThumbprint $connection.CertificateThumbprint -ServicePrincipal
-if ($azAuthentication -eq $null) {
+if (!$azAuthentication) {
   Write-Error "Failed to authenticate to Azure using the Automation Account $($_.exception.message)"
   exit
 } 
@@ -144,7 +145,7 @@ else {
 
 # Set the Azure context with Subscription
 $azContext = Set-AzContext -SubscriptionId $subscriptionID
-if ($azContext -eq $null) {
+if (!$azContext) {
   Write-Error "Subscription '$subscriptionID' does not exist. Ensure that you have entered the correct values"
   exit
 } 
@@ -167,7 +168,7 @@ $peakToOffPeakTransitionTime = $endPeakDateTime.AddMinutes(15)
 
 # Check given hostpool name exists
 $hostpoolInfo = Get-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName
-if ($hostpoolInfo -eq $null) {
+if (!$hostpoolInfo) {
   Write-Error "Hostpoolname '$hostpoolName' does not exist. Ensure that you have entered the correct values"
   exit
 }	
@@ -177,7 +178,7 @@ $today = (Get-Date).DayOfWeek
 
 # Compare Work Days and Peak Hours, and set up appropriate load balancing type based on PeakLoadBalancingType & OffPeakLoadBalancingType
 if (($currentDateTime -ge $beginPeakDateTime -and $currentDateTime -le $endPeakDateTime) -and ($workDays -contains $today)) {
-  Write-Output "It is currently Peak hours"
+  Write-Output "It is currently within Peak hours"
   if ($hostpoolInfo.LoadBalancerType -ne $peakLoadBalancingType) {
     Write-Output "Changing Hostpool Load Balance Type to: $peakLoadBalancingType Load Balancing"
 
@@ -201,7 +202,7 @@ if (($currentDateTime -ge $beginPeakDateTime -and $currentDateTime -le $endPeakD
   }
 }
 else {
-  Write-Output "It is currently Off-Peak hours"
+  Write-Output "It is currently within Off-Peak hours"
   if ($hostpoolInfo.LoadBalancerType -ne $offPeakLoadBalancingType) {
     Write-Output "Changing Hostpool Load Balance Type to: $offPeakLoadBalancingType Load Balancing"
         
@@ -225,10 +226,15 @@ else {
   }
 }
 
-# Check for VM's with maintenance tag set to True & ensure connections are set as not allowed
-Write-Output "Checking virtual machine maintenance tags and updating drain modes based on results"
+# Check that host pool has Session Hosts within it
 $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName
+if (!$allSessionHosts) {
+  Write-Error "No Session Hosts exist within the Hostpool '$HostpoolName'. Ensure that the Hostpool has hosts within it"
+  exit
+}
 
+# Check for VM's with maintenance tag set to True & ensure connections are set as not allowed
+Write-Output "Checking virtual machine maintenance tags and updating drain modes..."
 foreach ($sessionHost in $allSessionHosts) {
 
   $sessionHostName = $sessionHost.Name
@@ -254,318 +260,323 @@ Write-Output "Hostpool Maximum Session Limit per Host: $($hostpoolMaxSessionLimi
 # Check if it's peak hours
 if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakDateTime) -and ($WorkDays -contains $today)) {
 
-  # Calculate Scalefactor for each host.										  
-  $ScaleFactorEachHost = $HostpoolMaxSessionLimit * $peakScaleFactor
-  $SessionhostLimit = [math]::Floor($ScaleFactorEachHost)
+  # Set Scalefactor for each host.										  
+  $sessionHostLimit = $peakScaleFactor
 
   Write-Output "Checking current Host availability and workloads..."
 
   # Get all session hosts in the host pool
-  $AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object Status, Name
-  if ($AllSessionHosts -eq $null) {
-    Write-Error "No Session Hosts exist within the Hostpool '$HostpoolName'. Ensure that the Hostpool has hosts within it"
-    exit
-  }
-  
+  $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object -Descending Session
+
   # Check the number of available running session hosts
-  $NumberOfRunningHost = 0
-  foreach ($SessionHost in $AllSessionHosts) {
+  $numberOfRunningHost = 0
+  foreach ($sessionHost in $allSessionHosts) {
+    $sessionHostName = $sessionHost.Name
+    $sessionHostName = $sessionHostName.Split("/")[1]
+    $vmName = $sessionHostName.Split(".")[0]
+    Write-Output "Host: $vmName, Current sessions: $($sessionHost.Session), Status: $($sessionHost.Status), Allow New Sessions: $($sessionHost.AllowNewSession)"
 
-    $SessionHostName = $SessionHost.Name
-    $SessionHostName = $SessionHostName.Split("/")[1]
-    $VMName = $SessionHostName.Split(".")[0]
-    Write-Output "Host: $VMName, Current sessions: $($SessionHost.Session), Status: $($SessionHost.Status), Allow New Sessions: $($SessionHost.AllowNewSession)"
-
-    if ($SessionHost.Status -eq "Available" -and $SessionHost.AllowNewSession -eq $True) {
-      $NumberOfRunningHost = $NumberOfRunningHost + 1
+    if ($sessionHost.Status -eq "Available" -and $sessionHost.AllowNewSession -eq $True) {
+      $numberOfRunningHost = $numberOfRunningHost + 1
     }
   }
-  Write-Output "Current number of available running hosts: $NumberOfRunningHost"
+  Write-Output "Current number of available running hosts: $numberOfRunningHost"
 
   # Start more hosts if available host number is less than the specified Peak minimum number of hosts
-  if ($NumberOfRunningHost -lt $peakMinimumNumberOfRDSH) {
-    Write-Output "Current number of available running hosts ($NumberOfRunningHost) is less than the specified Peak Minimum Number of RDSH ($peakMinimumNumberOfRDSH) - Need to start additional hosts"
+  if ($numberOfRunningHost -lt $peakMinimumNumberOfRDSH) {
+    Write-Output "Current number of available running hosts ($numberOfRunningHost) is less than the specified Peak Minimum Number of RDSH ($peakMinimumNumberOfRDSH) - Need to start additional hosts"
 
     $global:peakMinRDSHcapacityTrigger = $True
 
-    :peakMinStartupLoop foreach ($SessionHost in $AllSessionHosts) {
+    :peakMinStartupLoop foreach ($sessionHost in $allSessionHosts) {
 
-      if ($NumberOfRunningHost -ge $peakMinimumNumberOfRDSH) {
-
-        if ($minimumNumberFastScale -eq $True) {
-          Write-Output "The number of available running hosts should soon equal the specified Peak Minimum Number of RDSH ($peakMinimumNumberOfRDSH)"
-          break peakMinStartupLoop
-        }
-        else {
-          Write-Output "The number of available running hosts ($NumberOfRunningHost) now equals the specified Peak Minimum Number of RDSH ($peakMinimumNumberOfRDSH)"
-          break peakMinStartupLoop
-        }
+      if ($numberOfRunningHost -ge $peakMinimumNumberOfRDSH) {
+        Write-Output "The number of available running hosts should soon equal the specified Peak Minimum Number of RDSH ($peakMinimumNumberOfRDSH)"
+        break peakMinStartupLoop    
       }
 
       # Check the session hosts status to determine it's healthy before starting it
-      if (($SessionHost.Status -eq "NoHeartbeat" -or $SessionHost.Status -eq "Unavailable") -and ($SessionHost.UpdateState -eq "Succeeded")) {
-        $SessionHostName = $SessionHost.Name
-        $SessionHostName = $SessionHostName.Split("/")[1]
-        $VMName = $SessionHostName.Split(".")[0]
-        $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
-
+      if (($sessionHost.Status -eq "NoHeartbeat" -or $sessionHost.Status -eq "Unavailable") -and ($sessionHost.UpdateState -eq "Succeeded")) {
+        $sessionHostName = $sessionHost.Name
+        $sessionHostName = $sessionHostName.Split("/")[1]
+        $vmName = $sessionHostName.Split(".")[0]
+        $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $vmName }
+        $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
+        
         # Check to see if the Session host is in maintenance mode
-        if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
+        if ($vmInfo.Tags.ContainsKey($maintenanceTagName) -and $vmInfo.Tags.ContainsValue($True)) {
+          Write-Output "Host $vmName is in Maintenance mode, so this host will be skipped"
           continue
         }
 
         # Ensure the host has allow new connections set to True
-        if ($SessionHost.AllowNewSession = $False) {
+        if ($sessionHost.AllowNewSession = $False) {
           try {
-            Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue
+            Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostPoolName -Name $sessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
           }
           catch {
             Write-Error "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
             exit 1
           }
         }
-        if ($minimumNumberFastScale -eq $True) {
 
-          # Start the Azure VM in Fast-Scale Mode for parallel processing
+        # Change the Azure VM disk tier before starting
+        if ($vmDisk.Sku.Name -ne $vmDiskType) {
           try {
-            Write-Output "Starting host $VMName in fast-scale mode..."
-            Start-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName -AsJob
-
+            $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+            Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
           }
           catch {
-            Write-Error "Failed to start host $VMName with error: $($_.exception.message)"
+            Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
             exit
           }
         }
-        if ($minimumNumberFastScale -eq $False) {
 
-          # Start the Azure VM
-          try {
-            Write-Output "Starting host $VMName and waiting for it to complete..."
-            Start-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName
+        # Start the Azure VM in Fast-Scale Mode for parallel processing
+        try {
+          Write-Output "Starting host $vmName..."
+          Start-AzVM -Name $vmName -ResourceGroupName $vmInfo.ResourceGroupName -AsJob | Out-Null
 
-          }
-          catch {
-            Write-Error "Failed to start host $VMName with error: $($_.exception.message)"
-            exit
-          }
-          # Wait for the session host to become available
-          $IsHostAvailable = $false
-          while (!$IsHostAvailable) {
-
-            $SessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName
-
-            if ($SessionHostStatus.Status -eq "Available") {
-              $IsHostAvailable = $true
-
-            }
-          }
         }
-        $NumberOfRunningHost = $NumberOfRunningHost + 1
+        catch {
+          Write-Error "Failed to start host $vmName with error: $($_.exception.message)"
+          exit
+        }
+        
+        $numberOfRunningHost = $numberOfRunningHost + 1
         $global:spareCapacity = $True
       }
     }
   }
   else {
-    $AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object Status, Name
+    
+    :mainLoop foreach ($sessionHost in $allSessionHosts) {
 
-    :mainLoop foreach ($SessionHost in $AllSessionHosts) {
+      # Check if a hosts sessions have exceeded the Peak scale factor
+      if ($sessionHost.Session -ge $SessionHostLimit) {
+        $sessionHostName = $SessionHost.Name
+        $sessionHostName = $SessionHostName.Split("/")[1]
+        $VMName = $SessionHostName.Split(".")[0]
 
-      if ($SessionHost.Session -le $HostpoolMaxSessionLimit -or $SessionHost.Session -gt $HostpoolMaxSessionLimit) {
-        if ($SessionHost.Session -ge $SessionHostLimit) {
-          $SessionHostName = $SessionHost.Name
-          $SessionHostName = $SessionHostName.Split("/")[1]
-          $VMName = $SessionHostName.Split(".")[0]
+        # Check if a hosts sessions have exceeded the Peak scale factor
+        if (($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) -and ($global:capacityTrigger -eq $False -or !$global:capacityTrigger)) {
+          Write-Output "One or more hosts have surpassed the Scale Factor of $SessionHostLimit. Checking other active host capacities now..."
+          $global:capacityTrigger = $True
+        }
 
-          # Check if a hosts sessions have exceeded the Peak scale factor
-          if (($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) -and ($global:capacityTrigger -eq $False -or !$global:capacityTrigger)) {
-            Write-Output "One or more hosts have surpassed the Scale Factor of $SessionHostLimit. Checking other active host capacities now..."
-            $global:capacityTrigger = $True
+        :startupLoop  foreach ($sessionHost in $allSessionHosts) {
+
+          # Check the existing session hosts for spare capacity before starting another host
+          if ($sessionHost.Status -eq "Available" -and $sessionHost.Session -lt $SessionHostLimit -and $SessionHost.AllowNewSession -eq $True) {
+            $sessionHostName = $SessionHost.Name
+            $sessionHostName = $SessionHostName.Split("/")[1]
+            $VMName = $SessionHostName.Split(".")[0]
+
+            if ($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) {
+              Write-Output "Found spare capacity so don't need to start another host"
+              $global:exceededHostCapacity = $True
+              $global:spareCapacity = $True
+            }
+            break startupLoop
           }
 
-          :startupLoop  foreach ($SessionHost in $AllSessionHosts) {
+          # Check the session hosts status to determine it's healthy before starting it
+          if (($SessionHost.Status -eq "NoHeartbeat" -or $SessionHost.Status -eq "Unavailable") -and ($SessionHost.UpdateState -eq "Succeeded")) {
+            $SessionHostName = $SessionHost.Name
+            $SessionHostName = $SessionHostName.Split("/")[1]
+            $VMName = $SessionHostName.Split(".")[0]
+            $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
+            $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
 
-            # Check the existing session hosts spare capacity before starting another host
-            if ($SessionHost.Status -eq "Available" -and ($SessionHost.Session -ge 0 -and $SessionHost.Session -lt $SessionHostLimit) -and $SessionHost.AllowNewSession -eq $True) {
-              $SessionHostName = $SessionHost.Name
-              $SessionHostName = $SessionHostName.Split("/")[1]
-              $VMName = $SessionHostName.Split(".")[0]
-
-              if ($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) {
-                Write-Output "Host $VMName has spare capacity so don't need to start another host. Continuing now..."
-                $global:exceededHostCapacity = $True
-                $global:spareCapacity = $True
-              }
-              break startupLoop
+            # Check to see if the Session host is in maintenance mode
+            if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
+              Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
+              continue
             }
 
-            # Check the session hosts status to determine it's healthy before starting it
-            if (($SessionHost.Status -eq "NoHeartbeat" -or $SessionHost.Status -eq "Unavailable") -and ($SessionHost.UpdateState -eq "Succeeded")) {
-              $SessionHostName = $SessionHost.Name
-              $SessionHostName = $SessionHostName.Split("/")[1]
-              $VMName = $SessionHostName.Split(".")[0]
-              $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
-
-              # Check to see if the Session host is in maintenance mode
-              if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-                Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
-                continue
-              }
-
-              # Ensure the host has allow new connections set to True
-              if ($SessionHost.AllowNewSession = $False) {
-                try {
-                  Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue
-                }
-                catch {
-                  Write-Error "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
-                  exit 1
-                }
-              }
-
-              # Start the Azure VM
+            # Ensure the host has allow new connections set to True
+            if ($SessionHost.AllowNewSession = $False) {
               try {
-                Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
-                Write-Output "Starting host $VMName and waiting for it to complete..."
-                Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName
+                Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
               }
               catch {
-                Write-Error "Failed to start host $VMName with error: $($_.exception.message)"
+                Write-Error "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+                exit 1
+              }
+            }
+
+            # Change the Azure VM disk tier before starting
+            if ($vmDisk.Sku.Name -ne $vmDiskType) {
+              try {
+                $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+                Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
+              }
+              catch {
+                Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
                 exit
               }
-
-              # Wait for the session host to become available
-              $IsHostAvailable = $false
-              while (!$IsHostAvailable) {
-
-                $SessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName
-
-                if ($SessionHostStatus.Status -eq "Available") {
-                  $IsHostAvailable = $true
-                }
-              }
-              $NumberOfRunningHost = $NumberOfRunningHost + 1
-              $global:spareCapacity = $True
-              Write-Output "Current number of Available Running Hosts is now: $NumberOfRunningHost"
-              break mainLoop
-
             }
+
+            # Start the Azure VM
+            try {
+              Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
+              Write-Output "Starting host $VMName..."
+              Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName | Out-Null
+            }
+            catch {
+              Write-Error "Failed to start host $VMName with error: $($_.exception.message)"
+              exit
+            }
+
+            # Wait for the session host to become available
+            $isHostAvailable = $false
+            while (!$isHostAvailable) {
+
+              $sessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostPoolName -Name $sessionHostName
+
+              if ($SessionHostStatus.Status -eq "Available") {
+                $isHostAvailable = $true
+              }
+            }
+            $numberOfRunningHost = $numberOfRunningHost + 1
+            $global:spareCapacity = $True
+            Write-Output "Current number of Available Running Hosts is now: $numberOfRunningHost"
+            break mainLoop
+
           }
         }
-        # Shut down hosts utilizing unnecessary resource
-        $ActiveHostsZeroSessions = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Where-Object { $_.Session -eq 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
-        $AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object Status, Name
-        :shutdownLoop foreach ($ActiveHost in $ActiveHostsZeroSessions) {
-          
-          $ActiveHostsZeroSessions = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Where-Object { $_.Session -eq 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
+      }
 
+      # Get sessions status of all available hosts. Build list of any hosts available to be shut down
+      $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
+      $activeHostsZeroSessions = [System.Collections.ArrayList]@()
+      $sessionlessHostList = $allSessionHosts | Where-Object { $_.Session -eq 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
+      $activeHostsWithSessions = $allSessionHosts | Where-Object { $_.Session -gt 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
+      $shutdownSpareCapacity = $false
+      foreach ($sessionlessHost in $sessionlessHostList) {
+        $activeHostsZeroSessions.Add($sessionlessHost) | Out-Null
+      }
+
+      # If any available hosts are running with 0 sessions, run the shutdown check sequence
+      if ($activeHostsZeroSessions) {
+
+        # Check if available hosts with sessions have spare capacity
+        foreach ($activeHostWithSessions in $activeHostsWithSessions) {
+
+          if ($activeHostWithSessions.Session -lt $sessionHostLimit) {
+            $shutdownSpareCapacity = $true
+          }
+        }
+
+        # If no host with existing sessions has spare capacity, remove a host from $activeHostsZeroSessions array list
+        if ($shutdownSpareCapacity -eq $false) {
+          $activeHostsZeroSessions.RemoveAt(0) 
+        }
+        
+        foreach ($activeHost in $activeHostsZeroSessions) {
+          
           # Ensure there is at least the peakMinimumNumberOfRDSH sessions available
-          if ($NumberOfRunningHost -le $peakMinimumNumberOfRDSH) {
-            Write-Output "Found no available resource to save as the number of Available Running Hosts = $NumberOfRunningHost and the specified Peak Minimum Number of RDSH = $peakMinimumNumberOfRDSH"
+          if ($numberOfRunningHost -le $peakMinimumNumberOfRDSH) {
+            Write-Output "Found no available resource to save as the number of Available Running Hosts = $numberOfRunningHost and the specified Peak Minimum Number of RDSH = $peakMinimumNumberOfRDSH"
             break mainLoop
           }
 
           # Check for session capacity on other active hosts before shutting the free host down
           else {
-            $ActiveHostsZeroSessions = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Where-Object { $_.Session -eq 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
-            :shutdownLoopTier2 foreach ($ActiveHost in $ActiveHostsZeroSessions) {
 
-              $AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object Status, Name
-              foreach ($SessionHost in $AllSessionHosts) {
+            $activeHostName = $activeHost.Name
+            $activeHostName = $activeHostName.Split("/")[1]
+            $vmName = $activeHostName.Split(".")[0]
+            $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $vmName }
+            $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
 
-                if ($SessionHost.Status -eq "Available" -and ($SessionHost.Session -ge 0 -and $SessionHost.Session -lt $SessionHostLimit -and $SessionHost.AllowNewSession -eq $True)) {
-                  if ($SessionHost.Name -ne $ActiveHost.Name) {
-                    $ActiveHostName = $ActiveHost.Name
-                    $ActiveHostName = $ActiveHostName.Split("/")[1]
-                    $VMName = $ActiveHostName.Split(".")[0]
-                    $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
-
-                    # Check if the Session host is in maintenance
-                    if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-                      Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
-                      continue
-                    }
-
-                    Write-Output "Identified free host $VMName with $($ActiveHost.Session) sessions that can be shut down to save resource"
-
-                    # Ensure the running Azure VM is set into drain mode
-                    try {
-                      Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$False -ErrorAction SilentlyContinue
-                    }
-                    catch {
-                      Write-Error "Unable to set 'Allow New Sessions' to False on host $VMName with error: $($_.exception.message)"
-                      exit
-                    }
-                    try {
-                      Write-Output "Stopping host $VMName and waiting for it to complete..."
-                      Stop-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName -Force
-                    }
-                    catch {
-                      Write-Error "Failed to stop host $VMName with error: $($_.exception.message)"
-                      exit
-                    }
-                    # Check if the session host server is healthy before enable allowing new connections
-                    if ($ActiveHost.UpdateState -eq "Succeeded") {
-                      # Ensure Azure VMs that are stopped have the allowing new connections state True
-                      try {
-                        Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$True -ErrorAction SilentlyContinue
-                      }
-                      catch {
-                        Write-Output "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
-                        exit
-                      }
-                    }
-
-                    # Wait after shutting down Host until it's Status returns as Unavailable
-                    $IsShutdownHostUnavailable = $false
-                    while (!$IsShutdownHostUnavailable) {
-
-                      $shutdownHost = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName
-
-                      if ($shutdownHost.Status -eq "Unavailable") {
-                        $IsShutdownHostUnavailable = $true
-                      }
-                    }
-
-                    # Decrement the number of running session hosts
-                    $NumberOfRunningHost = $NumberOfRunningHost - 1
-                    Write-Output "Current number of Available Running Hosts is now: $NumberOfRunningHost"
-
-                    break shutdownLoop
-                  }
-                }
-              }     
+            # Check if the Session host is in maintenance
+            if ($vmInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
+              Write-Output "Host $vmName is in Maintenance mode, so this host will be skipped"
+              continue
             }
-          }  
+
+            Write-Output "Identified free host $vmName with $($activeHost.Session) sessions that can be shut down to save resource"
+
+            # Ensure the running Azure VM is set into drain mode
+            try {
+              Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
+            }
+            catch {
+              Write-Error "Unable to set 'Allow New Sessions' to False on host $VMName with error: $($_.exception.message)"
+              exit
+            }
+            try {
+              Write-Output "Stopping host $vmName..."
+              Stop-AzVM -Name $vmName -ResourceGroupName $vmInfo.ResourceGroupName -Force | Out-Null
+            }
+            catch {
+              Write-Error "Failed to stop host $VMName with error: $($_.exception.message)"
+              exit
+            }
+            # Check if the session host server is healthy before enable allowing new connections
+            if ($activeHost.UpdateState -eq "Succeeded") {
+              # Ensure Azure VMs that are stopped have the allowing new connections state True
+              try {
+                Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
+              }
+              catch {
+                Write-Output "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+                exit
+              }
+            }
+
+            # Wait after shutting down Host until it's Status returns as Unavailable
+            $IsShutdownHostUnavailable = $false
+            while (!$IsShutdownHostUnavailable) {
+
+              $shutdownHost = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName
+
+              if ($shutdownHost.Status -eq "Unavailable") {
+                $IsShutdownHostUnavailable = $true
+              }
+            }
+
+            # Change the Azure VM disk tier after shutting down to save on costs
+            if ($vmDisk.Sku.Name -ne 'Standard_LRS') {
+              try {
+                $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
+                Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
+              }
+              catch {
+                Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+                exit
+              }
+            }
+
+            # Decrement the number of running session hosts
+            $NumberOfRunningHost = $NumberOfRunningHost - 1
+            Write-Output "Current number of Available Running Hosts is now: $NumberOfRunningHost"
+          }
         }
       }
-    }
+    }     
   }
-}
+}  
+
 else {
 
-  # Calculate Scalefactor for each host.										  
-  $ScaleFactorEachHost = $HostpoolMaxSessionLimit * $offpeakScaleFactor
-  $SessionhostLimit = [math]::Floor($ScaleFactorEachHost)
+  # Set Scalefactor for each host.										  
+  $SessionhostLimit = $offpeakScaleFactor
 
   Write-Output "Checking current Host availability and workloads..."
 
   # Get all session hosts in the host pool
-  $AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object Status, Name
-  if ($AllSessionHosts -eq $null) {
-    Write-Error "No Session Hosts exist within the Hostpool '$HostpoolName'. Ensure that the Hostpool has hosts within it"
-    exit
-  }
-
-  # Check the number of running session hosts
-  $NumberOfRunningHost = 0
+  $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object -Descending Session
+ 
+  # Check the number of available running session hosts
+  $numberOfRunningHost = 0
   foreach ($SessionHost in $AllSessionHosts) {
 
     $SessionHostName = $SessionHost.Name
     $SessionHostName = $SessionHostName.Split("/")[1]
     $VMName = $SessionHostName.Split(".")[0]
-    Write-Output "Host:$VMName, Current sessions:$($SessionHost.Session), Status:$($SessionHost.Status), Allow New Sessions:$($SessionHost.AllowNewSession)"
+    Write-Output "Host: $VMName, Current sessions: $($SessionHost.Session), Status: $($SessionHost.Status), Allow New Sessions: $($SessionHost.AllowNewSession)"
 
     if ($SessionHost.Status -eq "Available" -and $SessionHost.AllowNewSession -eq $True) {
       $NumberOfRunningHost = $NumberOfRunningHost + 1
@@ -622,7 +633,7 @@ else {
         
         # Notify user to log off their session
         try {
-          Send-AzWvdUserSessionMessage -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -SessionHostName $SessionHostName -UserSessionId $SessionId -MessageTitle $LogOffMessageTitle -MessageBody "$($LogOffMessageBody) - You will logged off in $($LimitSecondsToForceLogOffUser) seconds"
+          Send-AzWvdUserSessionMessage -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -SessionHostName $SessionHostName -UserSessionId $SessionId -MessageTitle $LogOffMessageTitle -MessageBody "$($LogOffMessageBody) - You will logged off in $($LimitSecondsToForceLogOffUser) seconds" | Out-Null
         }
         catch {
           Write-Error "Failed to send message to user with error: $($_.exception.message)"
@@ -634,8 +645,8 @@ else {
       Write-Output "Logoff messages were sent to $ExistingSession user(s)"
 
       # Set all Available session hosts into drain mode to stop any more connections
-      Write-Output "Setting all available hosts into Drain mode to stop any further connections whilst logging-off procedure is running..."
-      $forceLogoffSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Where-Object { $_.Status -eq "Available" }
+      Write-Output "Setting all available hosts into Drain mode to stop any further connections whilst logging-off procedure is running"
+      $forceLogoffSessionHosts = $allSessionHosts | Where-Object { $_.Status -eq "Available" }
       foreach ($SessionHost in $forceLogoffSessionHosts) {
         
         $SessionHostName = $SessionHost.Name
@@ -650,7 +661,7 @@ else {
           continue
         }
         try {
-          Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$False -ErrorAction SilentlyContinue
+          Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
         }
         catch {
           Write-Error "Unable to set 'Allow New Sessions' to False on host $VMName with error: $($_.exception.message)"
@@ -677,15 +688,16 @@ else {
 
         $SessionHostName = $Session.Name
         $SessionHostName = $SessionHostName.Split("/")[1]
+        $vmName = $SessionHostName.Split(".")[0]
         $SessionId = $Session.Id
         $SessionId = $SessionId.Split("/")[12]
 
         # Log off user
         try {
-          Remove-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -SessionHostName $SessionHostName -Id $SessionId
+          Remove-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -SessionHostName $SessionHostName -Id $SessionId | Out-Null
         }
         catch {
-          Write-Error "Failed to log off user session $($Session.UserSessionid) on host $SessionHostName with error: $($_.exception.message)"
+          Write-Error "Failed to log off user session $($Session.UserSessionid) on host $vmName with error: $($_.exception.message)"
           exit
         }
         $ExistingSession = $ExistingSession + 1
@@ -701,6 +713,7 @@ else {
           $SessionHostName = $SessionHostName.Split("/")[1]
           $VMName = $SessionHostName.Split(".")[0]
           $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
+          $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
 
           # Wait for the drained sessions to update on the WVD service
           $HaveSessionsDrained = $false
@@ -716,14 +729,14 @@ else {
 
           # Shutdown the Azure VM
           try {
-            Write-Output "Stopping host $VMName and waiting for it to complete..."
+            Write-Output "Stopping host $VMName..."
             Stop-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName -Force
           }
           catch {
             Write-Error "Failed to stop host $VMName with error: $($_.exception.message)"
             exit
           }
-          
+
           # Check if the session host is healthy before allowing new connections
           if ($SessionHost.UpdateState -eq "Succeeded") {
             # Ensure Azure VMs that are stopped have the allow new connections state set to True
@@ -735,6 +748,29 @@ else {
               exit 1
             }
           }
+
+          # Wait after shutting down Host until it's Status returns as Unavailable
+          $IsShutdownHostUnavailable = $false
+          while (!$IsShutdownHostUnavailable) {
+
+            $shutdownHost = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName
+
+            if ($shutdownHost.Status -eq "Unavailable") {
+              $IsShutdownHostUnavailable = $true
+            }
+          }
+
+          # Change the Azure VM disk tier after shutting down to save on costs
+          if ($vmDisk.Sku.Name -ne 'Standard_LRS') {
+            try {
+              $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
+              Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
+            }
+            catch {
+              Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+              exit
+            }
+          }
           # Decrement the number of running session host
           $NumberOfRunningHost = $NumberOfRunningHost - 1
         }
@@ -743,7 +779,7 @@ else {
   }
 
   #Get Session Hosts again in case force Log Off users has changed their state
-  $AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object Status, Name
+  $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
 
   if ($NumberOfRunningHost -lt $offpeakMinimumNumberOfRDSH) {
     Write-Output "Current number of available running hosts ($NumberOfRunningHost) is less than the specified Off-Peak Minimum Number of RDSH ($offpeakMinimumNumberOfRDSH) - Need to start additional hosts"
@@ -752,15 +788,8 @@ else {
     :offpeakMinStartupLoop foreach ($SessionHost in $AllSessionHosts) {
 
       if ($NumberOfRunningHost -ge $offpeakMinimumNumberOfRDSH) {
-
-        if ($minimumNumberFastScale -eq $True) {
-          Write-Output "The number of available running hosts should soon equal the specified Off-Peak Minimum Number of RDSH ($offpeakMinimumNumberOfRDSH)"
-          break offpeakMinStartupLoop
-        }
-        else {
-          Write-Output "The number of available running hosts ($NumberOfRunningHost) now equals the specified Off-Peak Minimum Number of RDSH ($offpeakMinimumNumberOfRDSH)"
-          break offpeakMinStartupLoop
-        }
+        Write-Output "The number of available running hosts should soon equal the specified Off-Peak Minimum Number of RDSH ($offpeakMinimumNumberOfRDSH)"
+        break offpeakMinStartupLoop
       }
 
       # Check the session host status and if the session host is healthy before starting the host
@@ -769,6 +798,7 @@ else {
         $SessionHostName = $SessionHostName.Split("/")[1]
         $VMName = $SessionHostName.Split(".")[0]
         $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
+        $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
 
         # Check to see if the Session host is in maintenance
         if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
@@ -779,221 +809,250 @@ else {
         # Ensure Azure VMs that are stopped have the allowing new connections state set to True
         if ($SessionHost.AllowNewSession = $False) {
           try {
-            Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue
+            Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
           }
           catch {
             Write-Error "Unable to set it to allow connections on host $VMName with error: $($_.exception.message)"
             exit 1
           }
         }
-        if ($minimumNumberFastScale -eq $True) {
-
-          # Start the Azure VM in Fast-Scale Mode for parallel processing
+        
+        # Change the Azure VM disk tier before starting
+        if ($vmDisk.Sku.Name -ne $vmDiskType) {
           try {
-            Write-Output "Starting host $VMName in fast-scale mode..."
-            Start-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName -AsJob
-
+            $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+            Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
           }
           catch {
-            Write-Output "Failed to start host $VMName with error: $($_.exception.message)"
+            Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
             exit
           }
         }
-        if ($minimumNumberFastScale -eq $False) {
 
-          # Start the Azure VM
-          try {
-            Write-Output "Starting host $VMName and waiting for it to complete..."
-            Start-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName
+        # Start the Azure VM in Fast-Scale Mode for parallel processing
+        try {
+          Write-Output "Starting host $VMName..."
+          Start-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName -AsJob | Out-Null
 
-          }
-          catch {
-            Write-Error "Failed to start host $VMName with error: $($_.exception.message)"
-            exit
-          }
-          # Wait for the sessionhost to become available
-          $IsHostAvailable = $false
-          while (!$IsHostAvailable) {
-
-            $SessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName
-
-            if ($SessionHostStatus.Status -eq "Available") {
-              $IsHostAvailable = $true
-
-            }
-          }
         }
+        catch {
+          Write-Output "Failed to start host $VMName with error: $($_.exception.message)"
+          exit
+        }
+        
         $NumberOfRunningHost = $NumberOfRunningHost + 1
         $global:spareCapacity = $True
       }
     }
   }
   else {
-    $AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object Status, Name
-
-    :mainLoop foreach ($SessionHost in $AllSessionHosts) {
-
-      if ($SessionHost.Session -le $HostpoolMaxSessionLimit -or $SessionHost.Session -gt $HostpoolMaxSessionLimit) {
-        if ($SessionHost.Session -ge $SessionHostLimit) {
-          $SessionHostName = $SessionHost.Name
-          $SessionHostName = $SessionHostName.Split("/")[1]
-          $VMName = $SessionHostName.Split(".")[0]
-
-          if (($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) -and ($global:capacityTrigger -eq $False -or !$global:capacityTrigger)) {
-            Write-Output "One or more hosts have surpassed the Scale Factor of $SessionHostLimit. Checking other active host capacities now..."
-            $global:capacityTrigger = $True
-          }
-
-          :startupLoop  foreach ($SessionHost in $AllSessionHosts) {
-            # Check the existing session hosts and session availability before starting another session host
-            if ($SessionHost.Status -eq "Available" -and ($SessionHost.Session -ge 0 -and $SessionHost.Session -lt $SessionHostLimit) -and $SessionHost.AllowNewSession -eq $True) {
-              $SessionHostName = $SessionHost.Name
-              $SessionHostName = $SessionHostName.Split("/")[1]
-              $VMName = $SessionHostName.Split(".")[0]
-
-              if ($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) {
-                Write-Output "Host $VMName has spare capacity so don't need to start another host. Continuing now..."
-
-                $global:exceededHostCapacity = $True
-                $global:spareCapacity = $True
-              }
-              break startupLoop
+    
+    :mainLoop foreach ($sessionHost in $allSessionHosts) {
+  
+      # Check if a hosts sessions have exceeded the Peak scale factor
+      if ($sessionHost.Session -ge $SessionHostLimit) {
+        $sessionHostName = $SessionHost.Name
+        $sessionHostName = $SessionHostName.Split("/")[1]
+        $VMName = $SessionHostName.Split(".")[0]
+  
+        # Check if a hosts sessions have exceeded the Peak scale factor
+        if (($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) -and ($global:capacityTrigger -eq $False -or !$global:capacityTrigger)) {
+          Write-Output "One or more hosts have surpassed the Scale Factor of $SessionHostLimit. Checking other active host capacities now..."
+          $global:capacityTrigger = $True
+        }
+  
+        :startupLoop  foreach ($sessionHost in $allSessionHosts) {
+  
+          # Check the existing session hosts for spare capacity before starting another host
+          if ($sessionHost.Status -eq "Available" -and $sessionHost.Session -lt $SessionHostLimit -and $SessionHost.AllowNewSession -eq $True) {
+            $sessionHostName = $SessionHost.Name
+            $sessionHostName = $SessionHostName.Split("/")[1]
+            $VMName = $SessionHostName.Split(".")[0]
+  
+            if ($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) {
+              Write-Output "Found spare capacity so don't need to start another host"
+              $global:exceededHostCapacity = $True
+              $global:spareCapacity = $True
             }
-
-            # Check the session host status and if the session host is healthy before starting the host
-            if (($SessionHost.Status -eq "NoHeartbeat" -or $SessionHost.Status -eq "Unavailable") -and ($SessionHost.UpdateState -eq "Succeeded")) {
-              $SessionHostName = $SessionHost.Name
-              $SessionHostName = $SessionHostName.Split("/")[1]
-              $VMName = $SessionHostName.Split(".")[0]
-              $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
-
-              # Check if the session host is in maintenance
-              if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-                Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
-                continue
-              }
-
-              # Ensure Azure VMs that are stopped have the allowing new connections state set to True
-              if ($SessionHost.AllowNewSession = $False) {
-                try {
-                  Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue
-                }
-                catch {
-                  Write-Error "Unable to set 'Allow New Sessions' to True on Host $VMName with error: $($_.exception.message)"
-                  exit 1
-                }
-              }
-
-              # Start the Azure VM
+            break startupLoop
+          }
+  
+          # Check the session hosts status to determine it's healthy before starting it
+          if (($SessionHost.Status -eq "NoHeartbeat" -or $SessionHost.Status -eq "Unavailable") -and ($SessionHost.UpdateState -eq "Succeeded")) {
+            $SessionHostName = $SessionHost.Name
+            $SessionHostName = $SessionHostName.Split("/")[1]
+            $VMName = $SessionHostName.Split(".")[0]
+            $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
+            $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
+  
+            # Check to see if the Session host is in maintenance mode
+            if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
+              Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
+              continue
+            }
+  
+            # Ensure the host has allow new connections set to True
+            if ($SessionHost.AllowNewSession = $False) {
               try {
-                Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
-                Write-Output "Starting host $VMName and waiting for it to complete..."
-                Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName
+                Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
               }
               catch {
-                Write-Error "Failed to start host $VMName with error: $($_.exception.message)"
+                Write-Error "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+                exit 1
+              }
+            }
+  
+            # Change the Azure VM disk tier before starting
+            if ($vmDisk.Sku.Name -ne $vmDiskType) {
+              try {
+                $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+                Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
+              }
+              catch {
+                Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
                 exit
               }
-              # Wait for the sessionhost to become available
-              $IsHostAvailable = $false
-              while (!$IsHostAvailable) {
-
-                $SessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName
-
-                if ($SessionHostStatus.Status -eq "Available") {
-                  $IsHostAvailable = $true
-                }
+            }
+  
+            # Start the Azure VM
+            try {
+              Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
+              Write-Output "Starting host $VMName..."
+              Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName | Out-Null
+            }
+            catch {
+              Write-Error "Failed to start host $VMName with error: $($_.exception.message)"
+              exit
+            }
+  
+            # Wait for the session host to become available
+            $isHostAvailable = $false
+            while (!$isHostAvailable) {
+  
+              $sessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostPoolName -Name $sessionHostName
+  
+              if ($SessionHostStatus.Status -eq "Available") {
+                $isHostAvailable = $true
               }
-              $NumberOfRunningHost = $NumberOfRunningHost + 1
-              $global:spareCapacity = $True
-              Write-Output "Current number of Available Running Hosts is now: $NumberOfRunningHost"
-              break mainLoop
             }
-          }
-        }
-        # Shut down hosts utilizing unnecessary resource
-        $ActiveHostsZeroSessions = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Where-Object { $_.Session -eq 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
-        $AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object Status, Name
-        :shutdownLoop foreach ($ActiveHost in $ActiveHostsZeroSessions) {
-          
-          $ActiveHostsZeroSessions = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Where-Object { $_.Session -eq 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
-
-          # Ensure there is at least the offpeakMinimumNumberOfRDSH sessions available
-          if ($NumberOfRunningHost -le $offpeakMinimumNumberOfRDSH) {
-            Write-Output "Found no available resource to save as the number of Available Running Hosts = $NumberOfRunningHost and the specified Off-Peak Minimum Number of Hosts = $offpeakMinimumNumberOfRDSH"
+            $numberOfRunningHost = $numberOfRunningHost + 1
+            $global:spareCapacity = $True
+            Write-Output "Current number of Available Running Hosts is now: $numberOfRunningHost"
             break mainLoop
+  
           }
-
-          # Check for session capacity on other active hosts before shutting the free host down
-          else {
-            $ActiveHostsZeroSessions = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Where-Object { $_.Session -eq 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
-            :shutdownLoopTier2 foreach ($ActiveHost in $ActiveHostsZeroSessions) {
-              $AllSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object Status, Name
-              foreach ($SessionHost in $AllSessionHosts) {
-                if ($SessionHost.Status -eq "Available" -and ($SessionHost.Session -ge 0 -and $SessionHost.Session -lt $SessionHostLimit -and $SessionHost.AllowNewSession -eq $True)) {
-                  if ($SessionHost.Name -ne $ActiveHost.Name) {
-                    $ActiveHostName = $ActiveHost.Name
-                    $ActiveHostName = $ActiveHostName.Split("/")[1]
-                    $VMName = $ActiveHostName.Split(".")[0]
-                    $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
-
-                    # Check if the Session host is in maintenance
-                    if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-                      Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
-                      continue
-                    }
-
-                    Write-Output "Identified free Host $VMName with $($ActiveHost.Session) sessions that can be shut down to save resource"
-
-                    # Ensure the running Azure VM is set as drain mode
-                    try {
-                      Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$False -ErrorAction SilentlyContinue
-                    }
-                    catch {
-                      Write-Error "Unable to set 'Allow New Sessions' to False on Host $VMName with error: $($_.exception.message)"
-                      exit
-                    }
-                    try {
-                      Write-Output "Stopping host $VMName and waiting for it to complete ..."
-                      Stop-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName -Force
-                    }
-                    catch {
-                      Write-Error "Failed to stop host $VMName with error: $($_.exception.message)"
-                      exit
-                    }
-                    # Check if the session host server is healthy before enable allowing new connections
-                    if ($SessionHost.UpdateState -eq "Succeeded") {
-                      # Ensure Azure VMs that are stopped have the allowing new connections state True
-                      try {
-                        Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$True -ErrorAction SilentlyContinue
-                      }
-                      catch {
-                        Write-Error "Unable to set 'Allow New Sessions' to True on Host $VMName with error: $($_.exception.message)"
-                        exit
-                      }
-                    }
-                    # Wait after shutting down ActiveHost until it's Status returns as Unavailable
-                    $IsShutdownHostUnavailable = $false
-                    while (!$IsShutdownHostUnavailable) {
-
-                      $shutdownHost = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName
-
-                      if ($shutdownHost.Status -eq "Unavailable") {
-                        $IsShutdownHostUnavailable = $true
-                      }
-                    }
-                    # Decrement the number of running session host
-                    $NumberOfRunningHost = $NumberOfRunningHost - 1
-                    Write-Output "Current Number of Available Running Hosts is now: $NumberOfRunningHost"
-                    break shutdownLoop
-                  }
-                }
-              }     
-            }
-          }  
         }
       }
-    }
+  
+      # Get sessions status of all available hosts. Build list of any hosts available to be shut down
+      $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
+      $activeHostsZeroSessions = [System.Collections.ArrayList]@()
+      $sessionlessHostList = $allSessionHosts | Where-Object { $_.Session -eq 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
+      $activeHostsWithSessions = $allSessionHosts | Where-Object { $_.Session -gt 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
+      $shutdownSpareCapacity = $false
+      foreach ($sessionlessHost in $sessionlessHostList) {
+        $activeHostsZeroSessions.Add($sessionlessHost) | Out-Null
+      }
+  
+      # If any available hosts are running with 0 sessions, run the shutdown check sequence
+      if ($activeHostsZeroSessions) {
+  
+        # Check if available hosts with sessions have spare capacity
+        foreach ($activeHostWithSessions in $activeHostsWithSessions) {
+  
+          if ($activeHostWithSessions.Session -lt $sessionHostLimit) {
+            $shutdownSpareCapacity = $true
+          }
+        }
+  
+        # If no host with existing sessions has spare capacity, remove a host from $activeHostsZeroSessions array list
+        if ($shutdownSpareCapacity -eq $false) {
+          $activeHostsZeroSessions.RemoveAt(0) 
+        }
+          
+        foreach ($activeHost in $activeHostsZeroSessions) {
+            
+          # Ensure there is at least the offpeakMinimumNumberOfRDSH sessions available
+          if ($numberOfRunningHost -le $offpeakMinimumNumberOfRDSH) {
+            Write-Output "Found no available resource to save as the number of Available Running Hosts = $numberOfRunningHost and the specified Off-Peak Minimum Number of RDSH = $offpeakMinimumNumberOfRDSH"
+            break mainLoop
+          }
+  
+          # Check for session capacity on other active hosts before shutting the free host down
+          else {
+  
+            $activeHostName = $activeHost.Name
+            $activeHostName = $activeHostName.Split("/")[1]
+            $vmName = $activeHostName.Split(".")[0]
+            $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $vmName }
+            $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
+  
+            # Check if the Session host is in maintenance
+            if ($vmInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
+              Write-Output "Host $vmName is in Maintenance mode, so this host will be skipped"
+              continue
+            }
+  
+            Write-Output "Identified free host $vmName with $($activeHost.Session) sessions that can be shut down to save resource"
+  
+            # Ensure the running Azure VM is set into drain mode
+            try {
+              Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
+            }
+            catch {
+              Write-Error "Unable to set 'Allow New Sessions' to False on host $VMName with error: $($_.exception.message)"
+              exit
+            }
+            try {
+              Write-Output "Stopping host $vmName..."
+              Stop-AzVM -Name $vmName -ResourceGroupName $vmInfo.ResourceGroupName -Force | Out-Null
+            }
+            catch {
+              Write-Error "Failed to stop host $VMName with error: $($_.exception.message)"
+              exit
+            }
+            # Check if the session host server is healthy before enable allowing new connections
+            if ($activeHost.UpdateState -eq "Succeeded") {
+              # Ensure Azure VMs that are stopped have the allowing new connections state True
+              try {
+                Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
+              }
+              catch {
+                Write-Output "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+                exit
+              }
+            }
+  
+            # Wait after shutting down Host until it's Status returns as Unavailable
+            $IsShutdownHostUnavailable = $false
+            while (!$IsShutdownHostUnavailable) {
+  
+              $shutdownHost = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName
+  
+              if ($shutdownHost.Status -eq "Unavailable") {
+                $IsShutdownHostUnavailable = $true
+              }
+            }
+  
+            # Change the Azure VM disk tier after shutting down to save on costs
+            if ($vmDisk.Sku.Name -ne 'Standard_LRS') {
+              try {
+                $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
+                Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
+              }
+              catch {
+                Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+                exit
+              }
+            }
+  
+            # Decrement the number of running session hosts
+            $NumberOfRunningHost = $NumberOfRunningHost - 1
+            Write-Output "Current number of Available Running Hosts is now: $NumberOfRunningHost"
+          }
+        }
+      }
+    }     
   }
 }
 
@@ -1045,12 +1104,25 @@ foreach ($RunningSessionHost in $RunningSessionHosts) {
 Write-Output "Posting data to Log Analytics"
 
 $logMessage = @{ 
-  hostpoolName_s                  = $HostpoolName;
+  hostPoolName_s                  = $HostpoolName;
   resourceGroupName_s             = $resourceGroupName;
   runningHosts_d                  = $NumberOfRunningSessionHost;
   availableRunningHosts_d         = $NumberOfRunningHost;
   userSessions_d                  = $currentUserCount;
-  userDetail_s                    = $userDetail
+  userDetail_s                    = $userDetail;
+  workDays_s                      = $workDays;
+  beginPeakTime_s                 = $beginPeakTime;
+  endPeakTime_s                   = $endPeakTime;
+  timeZone_s                      = $timeZone;
+  peakLoadBalancingType_s         = $peakLoadBalancingType;
+  offPeakLoadBalancingType_s      = $offPeakLoadBalancingType;
+  peakMaxSessions_d               = $peakMaxSessions;
+  offpeakMaxSessions_d            = $offPeakMaxSessions;
+  peakScaleFactor_d               = $peakScaleFactor;
+  offpeakScaleFactor_d            = $offpeakScaleFactor;
+  peakMinimumNumberOfRDSH_d       = $peakMinimumNumberOfRDSH;
+  offpeakMinimumNumberOfRDSH_d    = $offpeakMinimumNumberOfRDSH;
+  limitSecondsToForceLogOffUser_d = $limitSecondsToForceLogOffUser
 }
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
 
