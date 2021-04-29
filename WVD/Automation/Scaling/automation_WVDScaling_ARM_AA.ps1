@@ -957,17 +957,27 @@ else {
       # If any available hosts are running with 0 sessions, run the shutdown check sequence
       if ($activeHostsZeroSessions) {
   
-        # Check if available hosts with sessions have spare capacity
+        # Check if available hosts with sessions have spare capacity      
         foreach ($activeHostWithSessions in $activeHostsWithSessions) {
   
           if ($activeHostWithSessions.Session -lt $sessionHostLimit) {
             $shutdownSpareCapacity = $true
           }
         }
-  
+
+        # Check if Off-Peak Minimum number of hosts is 0
+        if ($offpeakMinimumNumberOfRDSH -eq 0) {
+          # Check if this empty host is the last running host
+          if ($allSessionHosts.Count -eq 0) {
+            $shutdownSpareCapacity = $true
+          }
+        }
+
         # If no host with existing sessions has spare capacity, remove a host from $activeHostsZeroSessions array list
         if ($shutdownSpareCapacity -eq $false) {
-          $activeHostsZeroSessions.RemoveAt(0) 
+          if ($offpeakMinimumNumberOfRDSH -ne 0) {
+            $activeHostsZeroSessions.RemoveAt(0) 
+          }
         }
           
         foreach ($activeHost in $activeHostsZeroSessions) {
