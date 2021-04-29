@@ -26,6 +26,12 @@
 ###### * Parameters file now needs timeZone instead of timeDifferenceInHours
 ---
 #### v3.1.01
+##### New Features
+###### * Log Analytics reporting is now combined into a single file for better query function
+##### Fixes
+###### * Removed blank logging lines from job output
+##### Other
+###### * Added additonal output
 ---
 #### v3.0.20
 ##### Other
