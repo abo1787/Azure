@@ -12,7 +12,7 @@
 
 
 ##### Other
-* Condensed and tidied Job outputs
+###### * Condensed and tidied Job outputs
 ---
 #### v3.2.1
 ##### Other
