@@ -8,20 +8,25 @@
 ###### * Disk cost optimization - VM disks will be changed to Standard HDD when powered off to save on storage costs. They will be changed to required performance tier when powered on
 ###### * Minimum Number of Hosts now supports 0 - All hosts can be powered off in Off-Peak if required
 
-#### Fixes
+##### Fixes
 
 
-#### Other
+##### Other
 * Condensed and tidied Job outputs
 
-### v3.2.0
-#### New Features
-* Added daylight saving support
-#### Breaking Changes
-* Parameters file now needs timeZone instead of timeDifferenceInHours
+#### v3.2.1
+##### Other
+###### Log Analytics log name changed to variable
 
-### v3.0.0
 
-### v2.0.0
+#### v3.2.0
+##### New Features
+###### * Added daylight saving support
+##### Breaking Changes
+###### * Parameters file now needs timeZone instead of timeDifferenceInHours
 
-### v1.0.0 - No longer available
+#### v3.1.01
+
+#### v2.0.0
+
+#### v1.0.0 - No longer available
