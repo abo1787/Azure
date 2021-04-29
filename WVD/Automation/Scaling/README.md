@@ -13,20 +13,20 @@
 
 ##### Other
 * Condensed and tidied Job outputs
-
+---
 #### v3.2.1
 ##### Other
-###### Log Analytics log name changed to variable
+###### * Log Analytics log name changed to variable
 
-
+---
 #### v3.2.0
 ##### New Features
 ###### * Added daylight saving support
 ##### Breaking Changes
 ###### * Parameters file now needs timeZone instead of timeDifferenceInHours
-
+---
 #### v3.1.01
-
+---
 #### v2.0.0
-
+---
 #### v1.0.0 - No longer available
