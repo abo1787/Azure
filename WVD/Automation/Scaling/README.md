@@ -14,6 +14,12 @@
 #### Other
 * Condensed and tidied Job outputs
 
+### v3.2.0
+#### New Features
+* Added daylight saving support
+#### Breaking Changes
+* Parameters file now needs timeZone instead of timeDifferenceInHours
+
 ### v3.0.0
 
 ### v2.0.0
