@@ -1,8 +1,13 @@
 # Windows Virtual Desktop AutoScaling
 
 
-### Latest Release - v4.1.0
-
+### Latest Release - v4.2.0
+#### v4.2.0
+##### New Features
+###### * Custom Holiday Support - Custom holiday dates can now be specified.Host pools will be kept in Off-Peak mode when it's a Custom Holiday
+##### Breaking Changes
+###### * Parameters file now needs customHolidays (array)
+---
 #### v4.1.0
 ##### New Features
 ###### * UK Bank Holiday Support - Host pools can now be kept in Off-Peak mode when it's a UK Bank Holiday
