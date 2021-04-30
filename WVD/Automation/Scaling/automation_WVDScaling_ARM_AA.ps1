@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 4.0.0
+    Version : 4.1.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -88,6 +88,7 @@ $logAnalyticsWorkspaceId = $Input.LogAnalyticsWorkspaceId
 $logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
 $connectionAssetName = "AzureRunAsConnection"
 $vmDiskType = $Input.VMDiskType
+$observeUKBankHolidays = $Input.ObserveUKBankHolidays
 
 # Set Log Analytics log name
 $logName = 'WVDScalingTest1_CL'
@@ -150,7 +151,7 @@ if (!$azContext) {
   exit
 } 
 else {
-  Write-Output "Set the Azure Context to the subscription named '$($azContext.Subscription.Name)' with Id '$($azContext.Subscription.Id)'"
+  Write-Output "Set the Azure context to the subscription named '$($azContext.Subscription.Name)' with Id '$($azContext.Subscription.Id)'"
 }
 
 # Convert Datetime format and construct Begin Peak and End Peak times for the Peak/Off-Peak periods
@@ -173,14 +174,28 @@ if (!$hostpoolInfo) {
   exit
 }	
 
+# If observeUKBankHolidays is set to true then get list of holidays and todays date
+if($observeUKBankHolidays -eq $true){
+  $holidayAPI = 'https://www.gov.uk/bank-holidays.json'
+  $holidays = Invoke-RestMethod -Uri $holidayAPI
+  $holidays = $holidays.'england-and-wales'.events.date
+  $todaysDate = Get-Date -Format yyyy-MM-dd
+
+  # Check if today is a bank holiday
+  if ($holidays -contains $todaysDate){
+    $bankHoliday = $true
+    Write-Output "Today is a UK Bank Holiday so host pool will be kept in Off-Peak"
+  }
+}
+
 # Get todays day of week for comparing to Work Days
 $today = (Get-Date).DayOfWeek
 
 # Compare Work Days and Peak Hours, and set up appropriate load balancing type based on PeakLoadBalancingType & OffPeakLoadBalancingType
-if (($currentDateTime -ge $beginPeakDateTime -and $currentDateTime -le $endPeakDateTime) -and ($workDays -contains $today)) {
+if (($currentDateTime -ge $beginPeakDateTime -and $currentDateTime -le $endPeakDateTime) -and ($workDays -contains $today) -and (!$bankHoliday)) {
   Write-Output "It is currently within Peak hours"
   if ($hostpoolInfo.LoadBalancerType -ne $peakLoadBalancingType) {
-    Write-Output "Changing Hostpool Load Balance Type to: $peakLoadBalancingType Load Balancing"
+    Write-Output "Changing hostpool Load Balance Type to: $peakLoadBalancingType Load Balancing"
 
     if ($peakLoadBalancingType -eq "DepthFirst") {                
       Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $hostpoolInfo.MaxSessionLimit | Out-Null
@@ -191,7 +206,7 @@ if (($currentDateTime -ge $beginPeakDateTime -and $currentDateTime -le $endPeakD
   }
   # Compare MaxSessionLimit of hostpool to peakMaxSessions value and adjust if necessary
   if ($hostpoolInfo.MaxSessionLimit -ne $peakMaxSessions) {
-    Write-Output "Changing Hostpool Peak MaxSessionLimit to: $peakMaxSessions"
+    Write-Output "Changing hostpool Peak Maximum Session Limit to: $peakMaxSessions"
 
     if ($peakLoadBalancingType -eq "DepthFirst") {
       Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $peakMaxSessions | Out-Null
@@ -204,7 +219,7 @@ if (($currentDateTime -ge $beginPeakDateTime -and $currentDateTime -le $endPeakD
 else {
   Write-Output "It is currently within Off-Peak hours"
   if ($hostpoolInfo.LoadBalancerType -ne $offPeakLoadBalancingType) {
-    Write-Output "Changing Hostpool Load Balance Type to: $offPeakLoadBalancingType Load Balancing"
+    Write-Output "Changing hostpool Load Balance Type to: $offPeakLoadBalancingType Load Balancing"
         
     if ($offPeakLoadBalancingType -eq "DepthFirst") {                
       Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $hostpoolInfo.MaxSessionLimit | Out-Null
@@ -215,7 +230,7 @@ else {
   }
   # Compare MaxSessionLimit of hostpool to offpeakMaxSessions value and adjust if necessary
   if ($hostpoolInfo.MaxSessionLimit -ne $offpeakMaxSessions) {
-    Write-Output "Changing Hostpool Off-Peak MaxSessionLimit to: $offpeakMaxSessions"
+    Write-Output "Changing hostpool Off-Peak Maximum Session Limit to: $offpeakMaxSessions"
 
     if ($peakLoadBalancingType -eq "DepthFirst") {
       Update-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName -LoadBalancerType 'DepthFirst' -MaxSessionLimit $offpeakMaxSessions | Out-Null
@@ -229,7 +244,7 @@ else {
 # Check that host pool has Session Hosts within it
 $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName
 if (!$allSessionHosts) {
-  Write-Error "No Session Hosts exist within the Hostpool '$HostpoolName'. Ensure that the Hostpool has hosts within it"
+  Write-Error "No session hosts exist within the Hostpool '$HostpoolName'. Ensure that the hostpool has hosts within it"
   exit
 }
 
@@ -243,7 +258,7 @@ foreach ($sessionHost in $allSessionHosts) {
   $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
 
   if ($vmInfo.Tags.ContainsKey($maintenanceTagName) -and $vmInfo.Tags.ContainsValue($True)) {
-    Write-Output "The host $vmName is in Maintenance mode, so is not allowing any further connections"
+    Write-Output "The host $vmName is in maintenance mode, so is not allowing any further connections"
     Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName -Name $sessionHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
   }
   else {
@@ -258,12 +273,12 @@ Write-Output "Hostpool Load Balancing Type: $($hostpoolInfo.LoadBalancerType)"
 Write-Output "Hostpool Maximum Session Limit per Host: $($hostpoolMaxSessionLimit)"
 
 # Check if it's peak hours
-if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakDateTime) -and ($WorkDays -contains $today)) {
+if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakDateTime) -and ($WorkDays -contains $today) -and (!$bankHoliday)) {
 
   # Set Scalefactor for each host.										  
   $sessionHostLimit = $peakScaleFactor
 
-  Write-Output "Checking current Host availability and workloads..."
+  Write-Output "Checking current host availability and workloads..."
 
   # Get all session hosts in the host pool
   $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object -Descending Session
@@ -274,7 +289,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
     $sessionHostName = $sessionHost.Name
     $sessionHostName = $sessionHostName.Split("/")[1]
     $vmName = $sessionHostName.Split(".")[0]
-    Write-Output "Host: $vmName, Current sessions: $($sessionHost.Session), Status: $($sessionHost.Status), Allow New Sessions: $($sessionHost.AllowNewSession)"
+    Write-Output "Host: $vmName, Current Sessions: $($sessionHost.Session), Status: $($sessionHost.Status), Allow New Sessions: $($sessionHost.AllowNewSession)"
 
     if ($sessionHost.Status -eq "Available" -and $sessionHost.AllowNewSession -eq $True) {
       $numberOfRunningHost = $numberOfRunningHost + 1
@@ -284,14 +299,14 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
 
   # Start more hosts if available host number is less than the specified Peak minimum number of hosts
   if ($numberOfRunningHost -lt $peakMinimumNumberOfRDSH) {
-    Write-Output "Current number of available running hosts ($numberOfRunningHost) is less than the specified Peak Minimum Number of RDSH ($peakMinimumNumberOfRDSH) - Need to start additional hosts"
+    Write-Output "Current number of available running hosts ($numberOfRunningHost) is less than the specified Peak minimum number of running hosts ($peakMinimumNumberOfRDSH) - Need to start additional hosts"
 
     $global:peakMinRDSHcapacityTrigger = $True
 
     :peakMinStartupLoop foreach ($sessionHost in $allSessionHosts) {
 
       if ($numberOfRunningHost -ge $peakMinimumNumberOfRDSH) {
-        Write-Output "The number of available running hosts should soon equal the specified Peak Minimum Number of RDSH ($peakMinimumNumberOfRDSH)"
+        Write-Output "The number of available running hosts should soon equal the specified Peak minimum number of running hosts ($peakMinimumNumberOfRDSH)"
         break peakMinStartupLoop    
       }
 
@@ -305,7 +320,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
         
         # Check to see if the Session host is in maintenance mode
         if ($vmInfo.Tags.ContainsKey($maintenanceTagName) -and $vmInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host $vmName is in Maintenance mode, so this host will be skipped"
+          Write-Output "Host $vmName is in maintenance mode, so this host will be skipped"
           continue
         }
 
@@ -390,7 +405,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
 
             # Check to see if the Session host is in maintenance mode
             if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
+              Write-Output "Host $VMName is in maintenance mode, so this host will be skipped"
               continue
             }
 
@@ -440,7 +455,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             }
             $numberOfRunningHost = $numberOfRunningHost + 1
             $global:spareCapacity = $True
-            Write-Output "Current number of Available Running Hosts is now: $numberOfRunningHost"
+            Write-Output "Current number of available running hosts is now: $numberOfRunningHost"
             break mainLoop
 
           }
@@ -477,7 +492,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
           
           # Ensure there is at least the peakMinimumNumberOfRDSH sessions available
           if ($numberOfRunningHost -le $peakMinimumNumberOfRDSH) {
-            Write-Output "Found no available resource to save as the number of Available Running Hosts = $numberOfRunningHost and the specified Peak Minimum Number of RDSH = $peakMinimumNumberOfRDSH"
+            Write-Output "Found no available resource to save as the number of available running hosts = $numberOfRunningHost and the specified Peak minimum number of running hosts = $peakMinimumNumberOfRDSH"
             break mainLoop
           }
 
@@ -492,7 +507,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
 
             # Check if the Session host is in maintenance
             if ($vmInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host $vmName is in Maintenance mode, so this host will be skipped"
+              Write-Output "Host $vmName is in maintenance mode, so this host will be skipped"
               continue
             }
 
@@ -551,7 +566,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
 
             # Decrement the number of running session hosts
             $NumberOfRunningHost = $NumberOfRunningHost - 1
-            Write-Output "Current number of Available Running Hosts is now: $NumberOfRunningHost"
+            Write-Output "Current number of available running hosts is now: $NumberOfRunningHost"
           }
         }
       }
@@ -564,7 +579,7 @@ else {
   # Set Scalefactor for each host.										  
   $SessionhostLimit = $offpeakScaleFactor
 
-  Write-Output "Checking current Host availability and workloads..."
+  Write-Output "Checking current host availability and workloads..."
 
   # Get all session hosts in the host pool
   $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object -Descending Session
@@ -576,13 +591,13 @@ else {
     $SessionHostName = $SessionHost.Name
     $SessionHostName = $SessionHostName.Split("/")[1]
     $VMName = $SessionHostName.Split(".")[0]
-    Write-Output "Host: $VMName, Current sessions: $($SessionHost.Session), Status: $($SessionHost.Status), Allow New Sessions: $($SessionHost.AllowNewSession)"
+    Write-Output "Host: $VMName, Current Sessions: $($SessionHost.Session), Status: $($SessionHost.Status), Allow New Sessions: $($SessionHost.AllowNewSession)"
 
     if ($SessionHost.Status -eq "Available" -and $SessionHost.AllowNewSession -eq $True) {
       $NumberOfRunningHost = $NumberOfRunningHost + 1
     }
   }
-  Write-Output "Current number of Available Running Hosts: $NumberOfRunningHost"
+  Write-Output "Current number of available running hosts: $NumberOfRunningHost"
 
   # Check if it is within PeakToOffPeakTransitionTime after the end of Peak time and set the Peak to Off-Peak transition trigger if true
   $peakToOffPeakTransitionTrigger = $false
@@ -593,10 +608,10 @@ else {
 
   # Check if user logoff is turned on in off peak
   if ($LimitSecondsToForceLogOffUser -ne 0 -and $peakToOffPeakTransitionTrigger -eq $True) {
-    Write-Output "The Hostpool has recently transitioned to Off-Peak from Peak and force logging-off of users in Off-Peak is enabled. Checking if any resource can be saved..."
+    Write-Output "The hostpool has recently transitioned to Off-Peak from Peak and force logging-off of users in Off-Peak is enabled. Checking if any resource can be saved..."
 
     if ($NumberOfRunningHost -gt $offpeakMinimumNumberOfRDSH) {
-      Write-Output "The number of available running hosts is greater than the Off-Peak Minimum Number of RDSH. Logging-off procedure will now be started..."
+      Write-Output "The number of available running hosts ($numberOfRunningHost) is greater than the Off-Peak Minimum Number of running hosts ($offpeakMinimumNumberOfRDSH). Logging-off procedure will now be started..."
 
       foreach ($SessionHost in $AllSessionHosts) {
 
@@ -612,7 +627,7 @@ else {
             $HostPoolUserSessions = Get-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
           }
           catch {
-            Write-Error "Failed to retrieve user sessions in hostPool $($HostpoolName) with error: $($_.exception.message)"
+            Write-Error "Failed to retrieve user sessions in hostpool $($HostpoolName) with error: $($_.exception.message)"
             exit
           }
 
@@ -642,7 +657,7 @@ else {
         $ExistingSession = $ExistingSession + 1
       }
       # List User Session count
-      Write-Output "Logoff messages were sent to $ExistingSession user(s)"
+      Write-Output "Log off messages were sent to $ExistingSession user(s)"
 
       # Set all Available session hosts into drain mode to stop any more connections
       Write-Output "Setting all available hosts into Drain mode to stop any further connections whilst logging-off procedure is running"
@@ -656,7 +671,7 @@ else {
 
         # Check to see if the Session host is in maintenance
         if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
+          Write-Output "Host $VMName is in maintenance mode, so this host will be skipped"
           $NumberOfRunningHost = $NumberOfRunningHost - 1
           continue
         }
@@ -680,7 +695,7 @@ else {
         $HostPoolUserSessions = Get-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
       }
       catch {
-        Write-Error "Failed to retrieve list of user sessions in HostPool $HostpoolName with error: $($_.exception.message)"
+        Write-Error "Failed to retrieve list of user sessions in hostpool $HostpoolName with error: $($_.exception.message)"
         exit
       }
       $ExistingSession = 0
@@ -782,13 +797,13 @@ else {
   $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
 
   if ($NumberOfRunningHost -lt $offpeakMinimumNumberOfRDSH) {
-    Write-Output "Current number of available running hosts ($NumberOfRunningHost) is less than the specified Off-Peak Minimum Number of RDSH ($offpeakMinimumNumberOfRDSH) - Need to start additional hosts"
+    Write-Output "Current number of available running hosts ($NumberOfRunningHost) is less than the specified Off-Peak Minimum Number of running hosts ($offpeakMinimumNumberOfRDSH) - Need to start additional hosts"
     $global:offpeakMinRDSHcapacityTrigger = $True
 
     :offpeakMinStartupLoop foreach ($SessionHost in $AllSessionHosts) {
 
       if ($NumberOfRunningHost -ge $offpeakMinimumNumberOfRDSH) {
-        Write-Output "The number of available running hosts should soon equal the specified Off-Peak Minimum Number of RDSH ($offpeakMinimumNumberOfRDSH)"
+        Write-Output "The number of available running hosts should soon equal the specified Off-Peak Minimum Number of running hosts ($offpeakMinimumNumberOfRDSH)"
         break offpeakMinStartupLoop
       }
 
@@ -802,7 +817,7 @@ else {
 
         # Check to see if the Session host is in maintenance
         if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
+          Write-Output "Host $VMName is in maintenance mode, so this host will be skipped"
           continue
         }
 
@@ -887,7 +902,7 @@ else {
   
             # Check to see if the Session host is in maintenance mode
             if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host $VMName is in Maintenance mode, so this host will be skipped"
+              Write-Output "Host $VMName is in maintenance mode, so this host will be skipped"
               continue
             }
   
@@ -937,7 +952,7 @@ else {
             }
             $numberOfRunningHost = $numberOfRunningHost + 1
             $global:spareCapacity = $True
-            Write-Output "Current number of Available Running Hosts is now: $numberOfRunningHost"
+            Write-Output "Current number of available running hosts is now: $numberOfRunningHost"
             break mainLoop
   
           }
@@ -984,7 +999,7 @@ else {
             
           # Ensure there is at least the offpeakMinimumNumberOfRDSH sessions available
           if ($numberOfRunningHost -le $offpeakMinimumNumberOfRDSH) {
-            Write-Output "Found no available resource to save as the number of Available Running Hosts = $numberOfRunningHost and the specified Off-Peak Minimum Number of RDSH = $offpeakMinimumNumberOfRDSH"
+            Write-Output "Found no available resource to save as the number of available running hosts = $numberOfRunningHost and the specified Off-Peak minimum number of running hosts = $offpeakMinimumNumberOfRDSH"
             break mainLoop
           }
   
@@ -999,7 +1014,7 @@ else {
   
             # Check if the Session host is in maintenance
             if ($vmInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host $vmName is in Maintenance mode, so this host will be skipped"
+              Write-Output "Host $vmName is in maintenance mode, so this host will be skipped"
               continue
             }
   
@@ -1058,7 +1073,7 @@ else {
   
             # Decrement the number of running session hosts
             $NumberOfRunningHost = $NumberOfRunningHost - 1
-            Write-Output "Current number of Available Running Hosts is now: $NumberOfRunningHost"
+            Write-Output "Current number of available running hosts is now: $NumberOfRunningHost"
           }
         }
       }
@@ -1071,11 +1086,11 @@ if (($global:spareCapacity -eq $False -or !$global:spareCapacity) -and ($global:
 }
 
 if (($global:spareCapacity -eq $False -or !$global:spareCapacity) -and ($global:peakMinRDSHcapacityTrigger -eq $True)) { 
-  Write-Warning "WARNING - Current number of available running hosts ($NumberOfRunningHost) is less than the specified Peak Minimum Number of RDSH ($peakMinimumNumberOfRDSH) but there are no additional hosts available to start"
+  Write-Warning "WARNING - Current number of available running hosts ($NumberOfRunningHost) is less than the specified Peak minimum number of running hosts ($peakMinimumNumberOfRDSH) but there are no additional hosts available to start"
 }
 
 if (($global:spareCapacity -eq $False -or !$global:spareCapacity) -and ($global:offpeakMinRDSHcapacityTrigger -eq $True)) { 
-  Write-Warning "WARNING - Current number of available running hosts ($NumberOfRunningHost) is less than the specified Off-Peak Minimum Number of RDSH ($offpeakMinimumNumberOfRDSH) but there are no additional hosts available to start"
+  Write-Warning "WARNING - Current number of available running hosts ($NumberOfRunningHost) is less than the specified Off-Peak minimum number of running hosts ($offpeakMinimumNumberOfRDSH) but there are no additional hosts available to start"
 }
 
 Write-Output "Waiting for any outstanding jobs to complete..."
