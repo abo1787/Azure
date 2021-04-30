@@ -23,7 +23,7 @@
 ###### * Reserved Instance Recommendations Cost Comparison - Added cost comparison alongside the reserved instance recommendations
 ##### Fixes
 ###### * Fixed total compute spend calculations where sometimes they wouldn't total correctly
-###### * Fixed compute MeterId where it sometimes returned CLoud Services rather than Compute
+###### * Fixed compute MeterId where it sometimes returned Cloud Services rather than Compute
 ##### Other
 ###### * Tidied logging so output is consistent
 ---
