@@ -35,7 +35,7 @@
 ---
 #### v3.1.02
 ##### Fixes
-###### * Log output field types correctly to correct data types
+###### * Log output field types changed to correct data types
 ##### Other
 ###### * Added resource group to log output for better query function
 ---
