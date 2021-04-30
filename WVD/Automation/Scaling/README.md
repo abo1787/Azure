@@ -21,7 +21,7 @@
 ###### * Various code optimizations
 ##### Breaking Changes
 ###### * Parameters file now needs vmDiskType
-###### * Parameters file Scale Factor now needs to be number of sessions rather than percentage of total sessions allowed
+###### * Parameters file Scale Factor variables now need to be number of sessions rather than percentage of total sessions allowed
 ---
 #### v3.2.1
 ##### Other
