@@ -9,7 +9,7 @@
 ##### Fixes
 ###### * Fixed an issue where last host wouldn't shut down if minimum number of hosts was set to 0
 ##### Breaking Changes
-###### * Parameters file now needs observeUKBankHolidays
+###### * Parameters file now needs observeUKBankHolidays (boolean)
 ---
 #### v4.0.0
 ##### New Features
@@ -20,8 +20,8 @@
 ###### * Condensed and tidied Job outputs
 ###### * Various code optimizations
 ##### Breaking Changes
-###### * Parameters file now needs vmDiskType
-###### * Parameters file Scale Factor variables now need to be number of sessions rather than percentage of total sessions allowed
+###### * Parameters file now needs vmDiskType (string)
+###### * Parameters file Scale Factor variables now need to be number of sessions (int) rather than percentage of total sessions allowed
 ---
 #### v3.2.1
 ##### Other
@@ -31,7 +31,7 @@
 ##### New Features
 ###### * Added daylight saving support
 ##### Breaking Changes
-###### * Parameters file now needs timeZone instead of timeDifferenceInHours
+###### * Parameters file now needs timeZone (string) instead of timeDifferenceInHours
 ---
 #### v3.1.02
 ##### Fixes
