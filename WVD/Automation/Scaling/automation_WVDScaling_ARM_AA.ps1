@@ -7,7 +7,7 @@
     the time and ensure that there are enough resources available to satisfy user density. The runbook is ran on a specified schedule, usually every 15 minutes, and 
     performs the following steps:
       1.	Receives all the parameters in from the scaling parameters file
-      2.	Checks the current day and time against the specified ‘WorkDays’ and ‘Peak Start/End Times’
+      2.	Checks the current day and time against the specified ‘WorkDays’ and ‘Peak Start/End Times, and also against the UK Bank Holidays and Custom Holidays if applicable '’
       3.	Sets the appropriate Peak/Off Peak parameters, Load-Balancing method and ‘Maximum Sessions per Host’ based on Step 2
       4.	Checks all hosts in the pool and where the ‘Maintenance Tag’ value is set to True, sets these hosts into ‘Drain Mode’ if they are not already. These hosts are ignored when performing the rest of the calculations and will have no action taken on them.
       5.	Checks to see if the number of available hosts is less than the minimum required as set in the parameter file, and if true, starts valid hosts to reach this number
@@ -23,12 +23,12 @@
       8.	Check for any available host that has 0 sessions and if true:
         a.	Ensure that if this host were to be shut down, the minimum required hosts value would still be met
         b.	Checks for available capacity on other running hosts if this host were to be shut down
-        c.	Shuts down the host if a & b both pass the test
+        c.	Shuts down the host if a & b both pass the test (test b is not evaluated if it's Off-Peak and Off-Peak minimum sessions are set to 0)
       9.	Writes logs to Log Analytics
 
 .NOTES
     Author  : Dave Pierson
-    Version : 4.1.0
+    Version : 4.2.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -89,6 +89,7 @@ $logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
 $connectionAssetName = "AzureRunAsConnection"
 $vmDiskType = $Input.VMDiskType
 $observeUKBankHolidays = $Input.ObserveUKBankHolidays
+$customHolidays = $Input.CustomHolidays
 
 # Set Log Analytics log name
 $logName = 'WVDScalingTest1_CL'
@@ -174,25 +175,33 @@ if (!$hostpoolInfo) {
   exit
 }	
 
-# If observeUKBankHolidays is set to true then get list of holidays and todays date
-if($observeUKBankHolidays -eq $true){
+# Get todays day of week for comparing to Work Days along with todays date for comparing to Bank Holidays and Custom Holidays
+$today = (Get-Date).DayOfWeek
+$todaysDate = Get-Date -Format yyyy-MM-dd
+
+# If observeUKBankHolidays is set to true then get list of holidays
+if ($observeUKBankHolidays -eq $true) {
   $holidayAPI = 'https://www.gov.uk/bank-holidays.json'
   $holidays = Invoke-RestMethod -Uri $holidayAPI
   $holidays = $holidays.'england-and-wales'.events.date
-  $todaysDate = Get-Date -Format yyyy-MM-dd
 
   # Check if today is a bank holiday
-  if ($holidays -contains $todaysDate){
+  if ($holidays -contains $todaysDate) {
     $bankHoliday = $true
     Write-Output "Today is a UK Bank Holiday so host pool will be kept in Off-Peak"
   }
 }
 
-# Get todays day of week for comparing to Work Days
-$today = (Get-Date).DayOfWeek
+# If customHolidays has data within it then check if today is contained within the customHolidays list
+if ($customHolidays) {
+  if ($customHolidays -contains $todaysDate) {
+    $customHoliday = $true
+    Write-Output "Today is a custom holiday so host pool will be kept in Off-Peak"
+  }
+}
 
-# Compare Work Days and Peak Hours, and set up appropriate load balancing type based on PeakLoadBalancingType & OffPeakLoadBalancingType
-if (($currentDateTime -ge $beginPeakDateTime -and $currentDateTime -le $endPeakDateTime) -and ($workDays -contains $today) -and (!$bankHoliday)) {
+# Compare Work Days,Peak Hours,Bank Holidays and Custom Holidays and set up appropriate load balancing type based on PeakLoadBalancingType & OffPeakLoadBalancingType
+if (($currentDateTime -ge $beginPeakDateTime -and $currentDateTime -le $endPeakDateTime) -and ($workDays -contains $today) -and (!$bankHoliday) -and (!$customHoliday)) {
   Write-Output "It is currently within Peak hours"
   if ($hostpoolInfo.LoadBalancerType -ne $peakLoadBalancingType) {
     Write-Output "Changing hostpool Load Balance Type to: $peakLoadBalancingType Load Balancing"
@@ -273,7 +282,7 @@ Write-Output "Hostpool Load Balancing Type: $($hostpoolInfo.LoadBalancerType)"
 Write-Output "Hostpool Maximum Session Limit per Host: $($hostpoolMaxSessionLimit)"
 
 # Check if it's peak hours
-if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakDateTime) -and ($WorkDays -contains $today) -and (!$bankHoliday)) {
+if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakDateTime) -and ($WorkDays -contains $today) -and (!$bankHoliday) -and (!$customHoliday)) {
 
   # Set Scalefactor for each host.										  
   $sessionHostLimit = $peakScaleFactor
@@ -1094,7 +1103,7 @@ if (($global:spareCapacity -eq $False -or !$global:spareCapacity) -and ($global:
 }
 
 Write-Output "Waiting for any outstanding jobs to complete..."
-Get-Job | Wait-Job -Timeout $jobTimeout
+Get-Job | Wait-Job -Timeout $jobTimeout | Out-Null
 
 $timedoutJobs = Get-Job -State Running
 $failedJobs = Get-Job -State Failed
