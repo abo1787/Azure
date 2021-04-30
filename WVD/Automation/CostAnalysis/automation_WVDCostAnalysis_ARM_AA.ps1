@@ -55,7 +55,7 @@ $vmDiskType = $Input.VmDiskType
 $billingCurrency = $Input.BillingCurrency
 
 # Set Log Analytics log name
-$logName = 'WVDCostAnalysisTest_CL'
+$logName = 'WVDCostAnalysis_CL'
 
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
