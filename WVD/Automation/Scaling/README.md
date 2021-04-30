@@ -9,7 +9,7 @@
 ##### Fixes
 ###### * Fixed an issue where last host wouldn't shut down if minimum number of hosts was set to 0
 ##### Breaking Changes
-###### * Parameters file now needs observeUKBankHolidays (boolean)
+###### * Parameters file now needs observeUKBankHolidays (bool)
 ---
 #### v4.0.0
 ##### New Features
