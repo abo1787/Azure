@@ -92,7 +92,7 @@ $observeUKBankHolidays = $Input.ObserveUKBankHolidays
 $customHolidays = $Input.CustomHolidays
 
 # Set Log Analytics log name
-$logName = 'WVDScalingTest1_CL'
+$logName = 'WVDScaling_CL'
 
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
