@@ -19,6 +19,8 @@
 ##### Other
 ###### * Condensed and tidied Job outputs
 ###### * Various code optimizations
+##### Breaking Changes
+###### * Parameters file now needs vmDiskType
 ---
 #### v3.2.1
 ##### Other
