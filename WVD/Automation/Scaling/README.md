@@ -4,9 +4,9 @@
 ### Latest Release - v4.3.0
 #### v4.3.0
 ##### New Features
-###### * Custom Holiday Support - Custom holiday dates can now be specified. Host pools will be kept in Off-Peak mode when it's a Custom Holiday
-##### Breaking Changes
-###### * Parameters file now needs customHolidays (array)
+###### * Automation Account now uses Managed Identity rather than Azure RunAs Account. No longer any need to renew certificate every 12 months
+##### Other
+###### * Added error checking for holidays API
 ---
 #### v4.2.0
 ##### New Features
