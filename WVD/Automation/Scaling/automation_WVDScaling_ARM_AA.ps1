@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 4.2.0
+    Version : 4.3.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -63,7 +63,6 @@ else {
 }
 
 # Assign variable values from input
-$aadTenantId = $Input.AADTenantId
 $subscriptionID = $Input.SubscriptionID
 $resourceGroupName = $Input.ResourceGroupName
 $hostPoolName = $Input.HostPoolName
@@ -86,7 +85,6 @@ $logOffMessageBody = $Input.LogOffMessageBody
 $maintenanceTagName = $Input.MaintenanceTagName
 $logAnalyticsWorkspaceId = $Input.LogAnalyticsWorkspaceId
 $logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
-$connectionAssetName = "AzureRunAsConnection"
 $vmDiskType = $Input.VMDiskType
 $observeUKBankHolidays = $Input.ObserveUKBankHolidays
 $customHolidays = $Input.CustomHolidays
@@ -131,14 +129,10 @@ function Add-LogEntry {
   }
 }
 
-# Collect the credentials from Azure Automation Account Assets
-$connection = Get-AutomationConnection -Name $connectionAssetName
-
 # Authenticate to Azure 
-Clear-AzContext -Force
-$azAuthentication = Connect-AzAccount -ApplicationId $connection.ApplicationId -TenantId $aadTenantId -CertificateThumbprint $connection.CertificateThumbprint -ServicePrincipal
+$azAuthentication = Connect-AzAccount -Identity
 if (!$azAuthentication) {
-  Write-Error "Failed to authenticate to Azure using the Automation Account $($_.exception.message)"
+  Write-Error "Failed to authenticate to Azure using the Automation Account Managed Identity $($_.exception.message)"
   exit
 } 
 else {
@@ -182,8 +176,13 @@ $todaysDate = Get-Date -Format yyyy-MM-dd
 # If observeUKBankHolidays is set to true then get list of holidays
 if ($observeUKBankHolidays -eq $true) {
   $holidayAPI = 'https://www.gov.uk/bank-holidays.json'
-  $holidays = Invoke-RestMethod -Uri $holidayAPI
-  $holidays = $holidays.'england-and-wales'.events.date
+  try {
+    $holidays = Invoke-RestMethod -Uri $holidayAPI
+    $holidays = $holidays.'england-and-wales'.events.date
+  }
+  catch {
+    Write-Warning "Holiday API did not respond so cannot check Bank Holidays" -ErrorAction SilentlyContinue
+  }
 
   # Check if today is a bank holiday
   if ($holidays -contains $todaysDate) {
