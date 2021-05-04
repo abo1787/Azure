@@ -2,8 +2,16 @@
 # Windows Virtual Desktop Cost Analysis
 
 
-### Latest Release - v1.6.4
+### Latest Release - v1.6.5
 
+#### v1.6.5
+##### New Features
+###### * Automation Account now uses Managed Identity rather than Azure RunAs Account. No longer any need to renew certificate every 12 months.
+##### Fixes
+###### * 
+##### Other
+###### * Increased number of metrics being written to Log Analytics
+---
 #### v1.6.4
 ##### New Features
 ###### * Bandwidth Costs - Costs will now be calculated for the VMs egress bandwidth
