@@ -8,9 +8,8 @@
 ##### New Features
 ###### * Automation Account now uses Managed Identity rather than Azure RunAs Account. No longer any need to renew certificate every 12 months.
 ##### Fixes
-###### * 
-##### Other
-###### * Increased number of metrics being written to Log Analytics
+###### * Fixed an issue with Disk Size where it sometimes return null
+###### * Fixed an issue with total costs not totalling correctly
 ---
 #### v1.6.4
 ##### New Features
