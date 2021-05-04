@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 4.3.0
+    Version : 4.3.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -95,7 +95,7 @@ $logName = 'WVDScaling_CL'
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
 
-# Setting ErrorActionPreference to stop script execution when error occurs
+# Setting ErrorActionPreference to stop script execution when error occursy
 $ErrorActionPreference = "Stop"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
@@ -1121,7 +1121,10 @@ Write-Output "All job checks completed"
 $currentUsers = Get-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
 $currentUserCount = $currentUsers.Count
 $userDetail = $currentUsers | Select-Object UserPrincipalName, Name, SessionState | Sort-Object Name | Out-String
-
+$activeUsers = $currentUsers | Where-Object { $_.SessionState -eq 'Active' }
+$activeUserCount = $activeUsers.Count
+$disconnectedUsers = $currentUsers | Where-Object { $_.SessionState -eq 'Disconnected' }
+$disconnectedUserCount = $disconnectedUsers.Count
 
 # Get number of running hosts regardless of Maintenance Mode
 $RunningSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
@@ -1155,7 +1158,9 @@ $logMessage = @{
   offpeakScaleFactor_d            = $offpeakScaleFactor;
   peakMinimumNumberOfRDSH_d       = $peakMinimumNumberOfRDSH;
   offpeakMinimumNumberOfRDSH_d    = $offpeakMinimumNumberOfRDSH;
-  limitSecondsToForceLogOffUser_d = $limitSecondsToForceLogOffUser
+  limitSecondsToForceLogOffUser_d = $limitSecondsToForceLogOffUser;
+  activeUserCount_d               = $activeUserCount;
+  disconnectedUserCount_d         = $disconnectedUserCount
 }
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
 
