@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.6.4
+    Version : 1.6.5
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -44,12 +44,10 @@ else {
 }
 
 # Set variables from WebHook body objects
-$aadTenantId = $Input.AADTenantId
 $subscriptionID = $Input.SubscriptionID
 $resourceGroupName = $Input.ResourceGroupName
 $logAnalyticsWorkspaceId = $Input.LogAnalyticsWorkspaceId
 $logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
-$connectionAssetName = "AzureRunAsConnection"
 $hostpoolName = $Input.HostPoolName
 $vmDiskType = $Input.VmDiskType
 $billingCurrency = $Input.BillingCurrency
@@ -94,14 +92,10 @@ function Add-LogEntry {
     }
 }
   
-# Retrieve the RunAs account credentials from the Azure Automation Account Assets
-$connection = Get-AutomationConnection -Name $ConnectionAssetName
-  
 # Authenticate to Azure 
-Clear-AzContext -Force
-$azAuthentication = Connect-AzAccount -ApplicationId $connection.ApplicationId -TenantId $aadTenantId -CertificateThumbprint $connection.CertificateThumbprint -ServicePrincipal
-if ($azAuthentication -eq $null) {
-    Write-Error "Failed to authenticate to Azure using the Automation Account $($_.exception.message)"
+$azAuthentication = Connect-AzAccount -Identity
+if (!$azAuthentication) {
+    Write-Error "Failed to authenticate to Azure using the Automation Account Managed Identity $($_.exception.message)"
 } 
 else {
     Write-Output "Successfully authenticated to Azure using the Automation Account"
@@ -109,7 +103,7 @@ else {
   
 # Set the Azure context with Subscription
 $azContext = Set-AzContext -SubscriptionId $subscriptionID
-if ($azContext -eq $null) {
+if (!$azContext) {
     Write-Error "Subscription ID '$subscriptionID' does not exist. Ensure that you have entered the correct values in the automation settings file"
 } 
 else {
@@ -125,7 +119,7 @@ $skuName = $vmSize -replace 'Standard_'
 $skuName = $skuName -replace '_', ' '
 
 # Get the disk tier from querying the disks in the resource group
-$diskSize = Get-AzDisk -ResourceGroupName $resourceGroupName | Select-Object -First 1
+$diskSize = Get-AzDisk -ResourceGroupName $resourceGroupName | Where-Object { $_.Tier -ne $null } | Select-Object -First 1
 $diskSize = $diskSize.Tier -replace "[^0-9]"
 $standardHDD = 'S' + $diskSize + ' Disks'
 $standardSSD = 'E' + $diskSize + ' Disks'
@@ -552,8 +546,8 @@ $totalSavingsReservedInstancesBillingCurrency = $reservationSavings1YearTermBill
 $totalSavingsReservedInstancesBillingCurrency = [math]::Round($totalSavingsReservedInstancesBillingCurrency, 2)
 $totalComputeSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDayComputeSpendUSD
 $totalComputeSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDayComputeSpend
-$totalSavingsUSD = ($fullPAYGDailyRunHoursPriceUSD + $fullDailyDiskCostsUSD) - $billingDayComputeSpendUSD - $billingDayDiskSpendUSD
-$totalSavingsBillingCurrency = ($fullPAYGDailyRunHoursPriceBillingCurrency + $fullDailyDiskCostsBillingCurrency) - $billingDayComputeSpend - $billingDayDiskSpendBillingCurrency
+$totalSavingsUSD = $totalComputeSavingsUSD + $diskSavingsUSD + $totalSavingsReservedInstancesUSD
+$totalSavingsBillingCurrency = $totalComputeSavingsBillingCurrency + $diskSavingsBillingCurrency + $totalSavingsReservedInstancesBillingCurrency
 
 # Compare daily cost vs all VMs running as Reserved Instances
 $allReservedSavings1YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm
