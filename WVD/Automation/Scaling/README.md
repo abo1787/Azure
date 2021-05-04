@@ -1,7 +1,11 @@
 # Windows Virtual Desktop AutoScaling
 
 
-### Latest Release - v4.3.0
+### Latest Release - v4.3.1
+#### v4.3.1
+##### Other
+###### * Added active & disconnected session reporting
+---
 #### v4.3.0
 ##### New Features
 ###### * Automation Account now uses Managed Identity rather than Azure RunAs Account. No longer any need to renew certificate every 12 months
