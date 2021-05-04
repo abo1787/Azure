@@ -95,7 +95,7 @@ $logName = 'WVDScaling_CL'
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
 
-# Setting ErrorActionPreference to stop script execution when error occursy
+# Setting ErrorActionPreference to stop script execution when error occurs
 $ErrorActionPreference = "Stop"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
