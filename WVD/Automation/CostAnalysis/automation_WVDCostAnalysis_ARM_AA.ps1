@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.6.5
+    Version : 1.6.6
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -497,11 +497,11 @@ if ($vmDiskType -eq 'Standard_LRS') {
     $fullDailyDiskCostsUSD = $dailyStandardHDDCostUSD * $allVms.Count
 } 
 if ($vmDiskType -eq 'StandardSSD_LRS') {
-    $diskSavingsUSD = ($dailyStandardSSDCostUSD * $allVms.Count) - $diskUsageCostsStandardSSDUSD + $diskUsageCostsStandardHDDUSD
+    $diskSavingsUSD = ($dailyStandardSSDCostUSD * $allVms.Count) - $diskUsageCostsStandardSSDUSD - $diskUsageCostsStandardHDDUSD
     $fullDailyDiskCostsUSD = $dailyStandardSSDCostUSD * $allVms.Count
 }
 if ($vmDiskType -eq 'Premium_LRS') {
-    $diskSavingsUSD = ($dailyPremiumSSDCostUSD * $allVms.Count) - $diskUsagecostsPremiumSSDUSD + $diskUsageCostsStandardHDDUSD
+    $diskSavingsUSD = ($dailyPremiumSSDCostUSD * $allVms.Count) - $diskUsagecostsPremiumSSDUSD - $diskUsageCostsStandardHDDUSD
     $fullDailyDiskCostsUSD = $dailyPremiumSSDCostUSD * $allVms.Count
 }
 $diskSavingsBillingCurrency = $diskSavingsUSD * $conversionRate
@@ -550,10 +550,10 @@ $totalSavingsUSD = $totalComputeSavingsUSD + $diskSavingsUSD + $totalSavingsRese
 $totalSavingsBillingCurrency = $totalComputeSavingsBillingCurrency + $diskSavingsBillingCurrency + $totalSavingsReservedInstancesBillingCurrency
 
 # Compare daily cost vs all VMs running as Reserved Instances
-$allReservedSavings1YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm
-$allReservedSavings3YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD3YearTerm
-$allReservedSavings1YearTermBillingCurrency = $billingDayComputeSpend - $fullDailyReservedHoursPriceBillingCurrency1YearTerm
-$allReservedSavings3YearTermBillingCurrency = $billingDayComputeSpend - $fullDailyReservedHoursPriceBillingCurrency3YearTerm
+$allReservedSavings1YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm - $diskSavingsUSD
+$allReservedSavings3YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD3YearTerm - $diskSavingsUSD
+$allReservedSavings1YearTermBillingCurrency = $billingDayComputeSpend - $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $diskSavingsBillingCurrency
+$allReservedSavings3YearTermBillingCurrency = $billingDayComputeSpend - $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $diskSavingsBillingCurrency
 
 # Post data to Log Analytics
 $logMessage = @{ 
@@ -957,11 +957,11 @@ if ($logAnalyticsQuery) {
                 $fullDailyDiskCostsUSD = $dailyStandardHDDCostUSD * $allVms.Count
             } 
             if ($vmDiskType -eq 'StandardSSD_LRS') {
-                $diskSavingsUSD = ($dailyStandardSSDCostUSD * $allVms.Count) - $diskUsageCostsStandardSSDUSD + $diskUsageCostsStandardHDDUSD
+                $diskSavingsUSD = ($dailyStandardSSDCostUSD * $allVms.Count) - $diskUsageCostsStandardSSDUSD - $diskUsageCostsStandardHDDUSD
                 $fullDailyDiskCostsUSD = $dailyStandardSSDCostUSD * $allVms.Count
             }
             if ($vmDiskType -eq 'Premium_LRS') {
-                $diskSavingsUSD = ($dailyPremiumSSDCostUSD * $allVms.Count) - $diskUsagecostsPremiumSSDUSD + $diskUsageCostsStandardHDDUSD
+                $diskSavingsUSD = ($dailyPremiumSSDCostUSD * $allVms.Count) - $diskUsagecostsPremiumSSDUSD - $diskUsageCostsStandardHDDUSD
                 $fullDailyDiskCostsUSD = $dailyPremiumSSDCostUSD * $allVms.Count
             }
             $diskSavingsBillingCurrency = $diskSavingsUSD * $conversionRate
@@ -1010,10 +1010,10 @@ if ($logAnalyticsQuery) {
             $totalSavingsBillingCurrency = ($fullPAYGDailyRunHoursPriceBillingCurrency + $fullDailyDiskCostsBillingCurrency) - $billingDayComputeSpend - $billingDayDiskSpendBillingCurrency
 
             # Compare daily cost vs all VMs running as Reserved Instances
-            $allReservedSavings1YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm
-            $allReservedSavings3YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD3YearTerm
-            $allReservedSavings1YearTermBillingCurrency = $billingDayComputeSpend - $fullDailyReservedHoursPriceBillingCurrency1YearTerm
-            $allReservedSavings3YearTermBillingCurrency = $billingDayComputeSpend - $fullDailyReservedHoursPriceBillingCurrency3YearTerm
+            $allReservedSavings1YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD1YearTerm - $diskSavingsUSD
+            $allReservedSavings3YearTermUSD = $billingDayComputeSpendUSD - $fullDailyReservedHoursPriceUSD3YearTerm - $diskSavingsUSD
+            $allReservedSavings1YearTermBillingCurrency = $billingDayComputeSpend - $fullDailyReservedHoursPriceBillingCurrency1YearTerm - $diskSavingsBillingCurrency
+            $allReservedSavings3YearTermBillingCurrency = $billingDayComputeSpend - $fullDailyReservedHoursPriceBillingCurrency3YearTerm - $diskSavingsBillingCurrency
 
             # Post data to Log Analytics
             $logMessage = @{ 
