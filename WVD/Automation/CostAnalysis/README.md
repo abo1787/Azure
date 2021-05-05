@@ -22,7 +22,7 @@
 ---
 #### v1.5.0
 ##### New Features
-###### * Missing Days - If any billing data is missing in Log Analytics for the last 30 days, cost analysis will be performed and missing data retrieved
+###### * Missing Days - If any billing data is missing in Log Analytics for the last 31 days, cost analysis will be performed and missing data retrieved
 ---
 #### v1.4.0
 ##### New Features
