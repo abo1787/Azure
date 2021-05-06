@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.6.6
+    Version : 1.6.7
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -267,22 +267,22 @@ if ($appliedReservations) {
         }
     }
 }
-if ($reservedInstances1YearTerm) {
-    Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances were applied for machine type '$vmSize'"
-}
-if ($reservedInstances3YearTerm) {
-    Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances were applied for machine type '$vmSize'"
-}
-if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
-    Write-Output "No reserved instances were applied for machine type '$vmSize'"
-}
 
 # Calculate usage hours to subtract from applied reserved instances
 $reservedHoursToSubtract = 0
 foreach ($appliedReservationsInstance in $appliedReservationsInstances) {
 
-    $reservedHoursToSubtract = $vmCosts | Where-Object { $_.instanceName -eq $appliedReservationsInstance } | Select-Object quantity -ExpandProperty quantity
+    $reservedHoursToSubtract = $vmCosts | Where-Object { $_.instanceName -eq $appliedReservationsInstance -and ($_.term -eq '1Year' -or $_.term -eq '3Years') } | Select-Object quantity -ExpandProperty quantity
     $totalReservedHoursToSubtract = $totalReservedHoursToSubtract + $reservedHoursToSubtract
+}
+if ($reservedInstances1YearTerm) {
+    Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances were applied for machine type '$vmSize' totalling $totalReservedHoursToSubtract hours"
+}
+if ($reservedInstances3YearTerm) {
+    Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances were applied for machine type '$vmSize' totalling $totalReservedHoursToSubtract hours"
+}
+if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
+    Write-Output "No reserved instances were applied for machine type '$vmSize'"
 }
 
 # Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
@@ -315,7 +315,7 @@ if ($billingCurrency -ne 'USD') {
 }
 
 # Check correct hourly cost is available
-$hourlyVMCostUSD = $vmCosts.unitPrice | Sort-Object | Select-Object -First 1
+$hourlyVMCostUSD = $vmCosts.unitPrice | Sort-Object -Descending | Select-Object -First 1
 
 # If all VMs have had reserved instances applied then hourly cost will show as 0. If so set hourly cost returned from Retail Prices API
 if (!$hourlyVMCostUSD) {
@@ -327,7 +327,6 @@ if (!$hourlyVMCostUSD) {
 $hourlyVMCostBillingCurrency = $hourlyVMCostUSD * $conversionRate
 $hourlyReservedCostBillingCurrency1YearTerm = $hourlyReservedCostUSD1YearTerm * $conversionRate
 $hourlyReservedCostBillingCurrency3YearTerm = $hourlyReservedCostUSD3YearTerm * $conversionRate
-$usageHours = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
 $billingDayComputeSpendUSD = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
 $billingDayComputeSpendUSD = $billingDayComputeSpendUSD - $totalReservedHoursToSubtract
 $billingDayComputeSpendUSD = $billingDayComputeSpendUSD * $hourlyVMCostUSD
@@ -402,27 +401,30 @@ $fullDailyRunHours = $allVms.Count * 24
 # Get cost per VM and calculate recommendations for Reserved Instances
 $vmCostTable = @()
 foreach ($vm in $allVms) {
-    $vmUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId } | Select-Object instanceName, quantity, term
+    $vmPAYGUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and ($_.term -ne '1Year' -and $_.term -ne '3Years') } | Select-Object instanceName, quantity, term
+    $vm1YearUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and $_.term -eq '1Year' } | Select-Object instanceName, quantity, term
+    $vm3YearUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and $_.term -eq '3Years' } | Select-Object instanceName, quantity, term
 
-    if ($vmUsageHours) {
-        if ($vmUsageHours.term -eq '1Year') {
-            $vmCostUSD = $dailyReservedHoursPriceUSD1YearTerm
-            $vmCostBillingCurrency = $dailyReservedHoursPriceBillingCurrency1YearTerm
-            $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
-        }
-        elseif ($vmUsageHours.term -eq '3Years') {
-            $vmCostUSD = $dailyReservedHoursPriceUSD3YearTerm
-            $vmCostBillingCurrency = $dailyReservedHoursPriceBillingCurrency3YearTerm
-            $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
-        }
-        else {
-            $vmCostUSD = $vmUsageHours.quantity * $hourlyVMCostUSD
-            $vmCostBillingCurrency = $vmCostUSD * $conversionRate
-            $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
-        }
+    if ($vmPAYGUsageHours) {
+        $vmCostUSD = $vmPAYGUsageHours.quantity * $hourlyVMCostUSD
+        $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmPAYGUsageHours.instanceName; usageHours = $vmPAYGUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency; term = $vmPAYGUsageHours.term }
+        $totalVmPAYGUsageHours = $totalVmPAYGUsageHours + $vmPAYGUsageHours.quantity
+    }
+    if ($vm1YearUsageHours) {
+        $vmCostUSD = $vm1YearUsageHours.quantity * $hourlyReservedCostUSD1YearTerm
+        $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vm1YearUsageHours.instanceName; usageHours = $vm1YearUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency; term = $vm1YearUsageHours.term }
+        $totalVm1YearUsageHours = $totalVm1YearUsageHours + $vm1YearUsageHours.quantity
+    }
+    if ($vm3YearUsageHours) {
+        $vmCostUSD = $vm3YearUsageHours.quantity * $hourlyReservedCostUSD3YearTerm
+        $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vm3YearUsageHours.instanceName; usageHours = $vm3YearUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency; term = $vm3YearUsageHours.term }
+        $totalVm3YearUsageHours = $totalVm3YearUsageHours + $vm3YearUsageHours.quantity
     }
 }
-
+# Check vmCostTable for any missing VMs from host pool and add them with 0 compute cost
 foreach ($vm in $allVms) {
     if ($vmCostTable.instanceName -notcontains $vm.ResourceId) {
         $vmName = $vm.ResourceId | Out-String
@@ -442,9 +444,6 @@ $recommendedSavingsBillingCurrencyReserved3YearTerm = 0
 
 foreach ($vmCost in $vmCostTable) {
     if ($vmCost.costUSD -ge $dailyReservedHoursPriceUSD1YearTerm) {
-        $vmName = $vmCost.instanceName | Out-String
-        $vmName = $vmName.Split("/")[8]
-        $vmName = $vmName.Trim()
         $overSpendUSD = $vmCost.costUSD - $dailyReservedHoursPriceUSD1YearTerm
         $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency1YearTerm
         $overSpendUSD = [math]::Round($overSpendUSD, 2)
@@ -454,9 +453,6 @@ foreach ($vmCost in $vmCostTable) {
         $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
     }
     if ($vmCost.costUSD -ge $dailyReservedHoursPriceUSD3YearTerm) {
-        $vmName = $vmCost.instanceName | Out-String
-        $vmName = $vmName.Split("/")[8]
-        $vmName = $vmName.Trim()
         $overSpendUSD = $vmCost.costUSD - $dailyReservedHoursPriceUSD3YearTerm
         $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency3YearTerm
         $overSpendUSD = [math]::Round($overSpendUSD, 2)
@@ -477,19 +473,23 @@ $fullDailyReservedHoursPriceUSD3YearTerm = $fullDailyRunHours * $hourlyReservedC
 $fullDailyReservedHoursPriceBillingCurrency1YearTerm = $fullDailyRunHours * $hourlyReservedCostBillingCurrency1YearTerm
 $fullDailyReservedHoursPriceBillingCurrency3YearTerm = $fullDailyRunHours * $hourlyReservedCostBillingCurrency3YearTerm
 
-# Calculate costs for applied Reserved Instances and add to Billing Spend
-$billingCost1YearTermUSD = $reservedInstances1YearTerm * $hourlyReservedCostUSD1YearTerm * 24
-$billingCost3YearTermUSD = $reservedInstances3YearTerm * $hourlyReservedCostUSD3YearTerm * 24
-$billingCost1YearTermBillingCurrency = $reservedInstances1YearTerm * $hourlyReservedCostBillingCurrency1YearTerm * 24
-$billingCost3YearTermBillingCurrency = $reservedInstances3YearTerm * $hourlyReservedCostBillingCurrency3YearTerm * 24
+# Calculate costs for applied Reserved Instances and add to Billing Spend. Calculate savings from Applied Reserved Instances
+foreach ($vmCost in $vmCostTable) {
+    if ($vmCost.term -eq '1Year') {
+        $billingCost1YearTermUSD = $billingCost1YearTermUSD + $vmCost.costUSD
+        $reservationSavings1YearTermUSD = $reservationSavings1YearTermUSD + (($vmCost.usageHours * $hourlyVMCostUSD) - $vmCost.costUSD)
+    }
+    if ($vmCost.term -eq '3Years') {
+        $billingCost3YearTermUSD = $billingCost3YearTermUSD + $vmCost.costUSD
+        $reservationSavings3YearTermUSD = $reservationSavings3YearTermUSD + (($vmCost.usageHours * $hourlyVMCostUSD) - $vmCost.costUSD)
+    }
+}
+$billingCost1YearTermBillingCurrency = $billingCost1YearTermUSD * $conversionRate
+$billingCost3YearTermBillingCurrency = $billingCost3YearTermUSD * $conversionRate
 $billingDayComputeSpend = $billingDayComputeSpend + $billingCost1YearTermBillingCurrency + $billingCost3YearTermBillingCurrency
-$billingDayComputeSpendUSD = $billingDayComputeSpendUSD + $billingCost1YearTermUSD + $billingCost3YearTermUSD 
-
-# Calculate savings from applied Reserved Instances
-$reservationSavings1YearTermUSD = (($hourlyVMCostUSD * 24) * $reservedInstances1YearTerm) - $billingCost1YearTermUSD
-$reservationSavings3YearTermUSD = (($hourlyVMCostUSD * 24) * $reservedInstances3YearTerm) - $billingCost3YearTermUSD
-$reservationSavings1YearTermBillingCurrency = (($hourlyVMCostBillingCurrency * 24) * $reservedInstances1YearTerm) - $billingCost1YearTermBillingCurrency
-$reservationSavings3YearTermBillingCurrency = (($hourlyVMCostBillingCurrency * 24) * $reservedInstances3YearTerm) - $billingCost3YearTermBillingCurrency
+$billingDayComputeSpendUSD = $billingDayComputeSpendUSD + $billingCost1YearTermUSD + $billingCost3YearTermUSD
+$reservationSavings1YearTermBillingCurrency = $reservationSavings1YearTermUSD * $conversionRate
+$reservationSavings3YearTermBillingCurrency = $reservationSavings3YearTermUSD * $conversionRate
 
 # Calculate savings from auto-changing disk performance
 $diskSavingsUSD = 0
@@ -536,6 +536,7 @@ $fullDailyDiskCostsUSD = [math]::Round($fullDailyDiskCostsUSD, 2)
 $fullDailyDiskCostsBillingCurrency = [math]::Round($fullDailyDiskCostsBillingCurrency, 2)
 $totalBillingDaySpendUSD = [math]::Round($totalBillingDaySpendUSD, 2)
 $totalBillingDaySpendBillingCurrency = [math]::Round($totalBillingDaySpendBillingCurrency, 2)
+$usageHours = $totalVmPAYGUsageHours + $totalVm1YearUsageHours + $totalVm3YearUsageHours
 $usageHours = [math]::Round($usageHours, 2)
 
 # Calculate total savings from Autoscaling + applied Reserved Instances
@@ -727,24 +728,24 @@ if ($logAnalyticsQuery) {
                     }
                 }
             }
-            if ($reservedInstances1YearTerm) {
-                Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances were applied for machine type '$vmSize'"
-            }
-            if ($reservedInstances3YearTerm) {
-                Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances were applied for machine type '$vmSize'"
-            }
-            if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
-                Write-Output "No reserved instances were applied for machine type '$vmSize'"
-            }
 
             # Calculate usage hours to subtract from applied reserved instances
             $reservedHoursToSubtract = 0
             foreach ($appliedReservationsInstance in $appliedReservationsInstances) {
 
-                $reservedHoursToSubtract = $vmCosts | Where-Object { $_.instanceName -eq $appliedReservationsInstance } | Select-Object quantity -ExpandProperty quantity
+                $reservedHoursToSubtract = $vmCosts | Where-Object { $_.instanceName -eq $appliedReservationsInstance -and ($_.term -eq '1Year' -or $_.term -eq '3Years') } | Select-Object quantity -ExpandProperty quantity
                 $totalReservedHoursToSubtract = $totalReservedHoursToSubtract + $reservedHoursToSubtract
             }
-
+            if ($reservedInstances1YearTerm) {
+                Write-Output "Found x$reservedInstances1YearTerm 1-Year reserved instances were applied for machine type '$vmSize' totalling $totalReservedHoursToSubtract hours"
+            }
+            if ($reservedInstances3YearTerm) {
+                Write-Output "Found x$reservedInstances3YearTerm 3-Year reserved instances were applied for machine type '$vmSize' totalling $totalReservedHoursToSubtract hours"
+            }
+            if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
+                Write-Output "No reserved instances were applied for machine type '$vmSize'"
+            }
+            
             # Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
             $conversionRate = $vmCosts.exchangeRate | Sort-Object | Select-Object -First 1
             if ($billingCurrency -ne 'USD') {
@@ -775,7 +776,7 @@ if ($logAnalyticsQuery) {
             }
 
             # Check correct hourly cost is available
-            $hourlyVMCostUSD = $vmCosts.unitPrice | Sort-Object | Select-Object -First 1
+            $hourlyVMCostUSD = $vmCosts.unitPrice | Sort-Object -Descending | Select-Object -First 1
 
             # If all VMs have had reserved instances applied then hourly cost will show as 0. If so set hourly cost returned from Retail Prices API
             if (!$hourlyVMCostUSD) {
@@ -787,7 +788,6 @@ if ($logAnalyticsQuery) {
             $hourlyVMCostBillingCurrency = $hourlyVMCostUSD * $conversionRate
             $hourlyReservedCostBillingCurrency1YearTerm = $hourlyReservedCostUSD1YearTerm * $conversionRate
             $hourlyReservedCostBillingCurrency3YearTerm = $hourlyReservedCostUSD3YearTerm * $conversionRate
-            $usageHours = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
             $billingDayComputeSpendUSD = $vmCosts.quantity | Measure-Object -Sum | Select-Object -ExpandProperty Sum
             $billingDayComputeSpendUSD = $billingDayComputeSpendUSD - $totalReservedHoursToSubtract
             $billingDayComputeSpendUSD = $billingDayComputeSpendUSD * $hourlyVMCostUSD
@@ -862,27 +862,30 @@ if ($logAnalyticsQuery) {
             # Get cost per VM and calculate recommendations for Reserved Instances
             $vmCostTable = @()
             foreach ($vm in $allVms) {
-                $vmUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId } | Select-Object instanceName, quantity, term
+                $vmPAYGUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and ($_.term -ne '1Year' -and $_.term -ne '3Years') } | Select-Object instanceName, quantity, term
+                $vm1YearUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and $_.term -eq '1Year' } | Select-Object instanceName, quantity, term
+                $vm3YearUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and $_.term -eq '3Years' } | Select-Object instanceName, quantity, term
 
-                if ($vmUsageHours) {
-                    if ($vmUsageHours.term -eq '1Year') {
-                        $vmCostUSD = $dailyReservedHoursPriceUSD1YearTerm
-                        $vmCostBillingCurrency = $dailyReservedHoursPriceBillingCurrency1YearTerm
-                        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
-                    }
-                    elseif ($vmUsageHours.term -eq '3Years') {
-                        $vmCostUSD = $dailyReservedHoursPriceUSD3YearTerm
-                        $vmCostBillingCurrency = $dailyReservedHoursPriceBillingCurrency3YearTerm
-                        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
-                    }
-                    else {
-                        $vmCostUSD = $vmUsageHours.quantity * $hourlyVMCostUSD
-                        $vmCostBillingCurrency = $vmCostUSD * $conversionRate
-                        $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmUsageHours.instanceName; usageHours = $vmUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency }
-                    }
+                if ($vmPAYGUsageHours) {
+                    $vmCostUSD = $vmPAYGUsageHours.quantity * $hourlyVMCostUSD
+                    $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+                    $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vmPAYGUsageHours.instanceName; usageHours = $vmPAYGUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency; term = $vmPAYGUsageHours.term }
+                    $totalVmPAYGUsageHours = $totalVmPAYGUsageHours + $vmPAYGUsageHours.quantity
+                }
+                if ($vm1YearUsageHours) {
+                    $vmCostUSD = $vm1YearUsageHours.quantity * $hourlyReservedCostUSD1YearTerm
+                    $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+                    $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vm1YearUsageHours.instanceName; usageHours = $vm1YearUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency; term = $vm1YearUsageHours.term }
+                    $totalVm1YearUsageHours = $totalVm1YearUsageHours + $vm1YearUsageHours.quantity
+                }
+                if ($vm3YearUsageHours) {
+                    $vmCostUSD = $vm3YearUsageHours.quantity * $hourlyReservedCostUSD3YearTerm
+                    $vmCostBillingCurrency = $vmCostUSD * $conversionRate
+                    $vmCostTable += New-Object -TypeName psobject -Property @{instanceName = $vm3YearUsageHours.instanceName; usageHours = $vm3YearUsageHours.quantity; costUSD = $vmCostUSD; costBillingCurrency = $vmCostBillingCurrency; term = $vm3YearUsageHours.term }
+                    $totalVm3YearUsageHours = $totalVm3YearUsageHours + $vm3YearUsageHours.quantity
                 }
             }
-
+            # Check vmCostTable for any missing VMs from host pool and add them with 0 compute cost
             foreach ($vm in $allVms) {
                 if ($vmCostTable.instanceName -notcontains $vm.ResourceId) {
                     $vmName = $vm.ResourceId | Out-String
@@ -902,9 +905,6 @@ if ($logAnalyticsQuery) {
             
             foreach ($vmCost in $vmCostTable) {
                 if ($vmCost.costUSD -ge $dailyReservedHoursPriceUSD1YearTerm) {
-                    $vmName = $vmCost.instanceName | Out-String
-                    $vmName = $vmName.Split("/")[8]
-                    $vmName = $vmName.Trim()
                     $overSpendUSD = $vmCost.costUSD - $dailyReservedHoursPriceUSD1YearTerm
                     $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency1YearTerm
                     $overSpendUSD = [math]::Round($overSpendUSD, 2)
@@ -914,9 +914,6 @@ if ($logAnalyticsQuery) {
                     $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
                 }
                 if ($vmCost.costUSD -ge $dailyReservedHoursPriceUSD3YearTerm) {
-                    $vmName = $vmCost.instanceName | Out-String
-                    $vmName = $vmName.Split("/")[8]
-                    $vmName = $vmName.Trim()
                     $overSpendUSD = $vmCost.costUSD - $dailyReservedHoursPriceUSD3YearTerm
                     $overSpendBillingCurrency = $vmCost.costBillingCurrency - $dailyReservedHoursPriceBillingCurrency3YearTerm
                     $overSpendUSD = [math]::Round($overSpendUSD, 2)
@@ -937,19 +934,23 @@ if ($logAnalyticsQuery) {
             $fullDailyReservedHoursPriceBillingCurrency1YearTerm = $fullDailyRunHours * $hourlyReservedCostBillingCurrency1YearTerm
             $fullDailyReservedHoursPriceBillingCurrency3YearTerm = $fullDailyRunHours * $hourlyReservedCostBillingCurrency3YearTerm
 
-            # Calculate costs for applied Reserved Instances and add to Billing Spend
-            $billingCost1YearTermUSD = $reservedInstances1YearTerm * $hourlyReservedCostUSD1YearTerm * 24
-            $billingCost3YearTermUSD = $reservedInstances3YearTerm * $hourlyReservedCostUSD3YearTerm * 24
-            $billingCost1YearTermBillingCurrency = $reservedInstances1YearTerm * $hourlyReservedCostBillingCurrency1YearTerm * 24
-            $billingCost3YearTermBillingCurrency = $reservedInstances3YearTerm * $hourlyReservedCostBillingCurrency3YearTerm * 24
+            # Calculate costs for applied Reserved Instances and add to Billing Spend. Calculate savings from Applied Reserved Instances
+            foreach ($vmCost in $vmCostTable) {
+                if ($vmCost.term -eq '1Year') {
+                    $billingCost1YearTermUSD = $billingCost1YearTermUSD + $vmCost.costUSD
+                    $reservationSavings1YearTermUSD = $reservationSavings1YearTermUSD + (($vmCost.usageHours * $hourlyVMCostUSD) - $vmCost.costUSD)
+                }
+                if ($vmCost.term -eq '3Years') {
+                    $billingCost3YearTermUSD = $billingCost3YearTermUSD + $vmCost.costUSD
+                    $reservationSavings3YearTermUSD = $reservationSavings3YearTermUSD + (($vmCost.usageHours * $hourlyVMCostUSD) - $vmCost.costUSD)
+                }
+            }
+            $billingCost1YearTermBillingCurrency = $billingCost1YearTermUSD * $conversionRate
+            $billingCost3YearTermBillingCurrency = $billingCost3YearTermUSD * $conversionRate
             $billingDayComputeSpend = $billingDayComputeSpend + $billingCost1YearTermBillingCurrency + $billingCost3YearTermBillingCurrency
-            $billingDayComputeSpendUSD = $billingDayComputeSpendUSD + $billingCost1YearTermUSD + $billingCost3YearTermUSD 
-
-            # Calculate savings from applied Reserved Instances
-            $reservationSavings1YearTermUSD = (($hourlyVMCostUSD * 24) * $reservedInstances1YearTerm) - $billingCost1YearTermUSD
-            $reservationSavings3YearTermUSD = (($hourlyVMCostUSD * 24) * $reservedInstances3YearTerm) - $billingCost3YearTermUSD
-            $reservationSavings1YearTermBillingCurrency = (($hourlyVMCostBillingCurrency * 24) * $reservedInstances1YearTerm) - $billingCost1YearTermBillingCurrency
-            $reservationSavings3YearTermBillingCurrency = (($hourlyVMCostBillingCurrency * 24) * $reservedInstances3YearTerm) - $billingCost3YearTermBillingCurrency
+            $billingDayComputeSpendUSD = $billingDayComputeSpendUSD + $billingCost1YearTermUSD + $billingCost3YearTermUSD
+            $reservationSavings1YearTermBillingCurrency = $reservationSavings1YearTermUSD * $conversionRate
+            $reservationSavings3YearTermBillingCurrency = $reservationSavings3YearTermUSD * $conversionRate
 
             # Calculate savings from auto-changing disk performance
             $diskSavingsUSD = 0
@@ -996,6 +997,7 @@ if ($logAnalyticsQuery) {
             $fullDailyDiskCostsBillingCurrency = [math]::Round($fullDailyDiskCostsBillingCurrency, 2)
             $totalBillingDaySpendUSD = [math]::Round($totalBillingDaySpendUSD, 2)
             $totalBillingDaySpendBillingCurrency = [math]::Round($totalBillingDaySpendBillingCurrency, 2)
+            $usageHours = $totalVmPAYGUsageHours + $totalVm1YearUsageHours + $totalVm3YearUsageHours
             $usageHours = [math]::Round($usageHours, 2)
         
             # Calculate total savings from Autoscaling + applied Reserved Instances
