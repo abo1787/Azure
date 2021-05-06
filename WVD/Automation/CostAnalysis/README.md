@@ -1,12 +1,17 @@
 
 # Windows Virtual Desktop Cost Analysis
 
-
-### Latest Release - v1.6.6
+### Latest Release - v1.6.7
+#### v1.6.7
+##### Fixes
+###### * Fixed an issue with Disk Savings not calculating correctly
+###### * Fixed an issue with Automation vs Reserved Instances where it was not taking into account disk savings from automation
+---
 #### v1.6.6
 ##### Fixes
 ###### * Fixed an issue with Disk Savings not calculating correctly
 ###### * Fixed an issue with Automation vs Reserved Instances where it was not taking into account disk savings from automation
+---
 #### v1.6.5
 ##### New Features
 ###### * Automation Account now uses Managed Identity rather than Azure RunAs Account. No longer any need to renew certificate every 12 months
