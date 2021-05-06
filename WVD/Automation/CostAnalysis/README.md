@@ -4,8 +4,7 @@
 ### Latest Release - v1.6.7
 #### v1.6.7
 ##### Fixes
-###### * Fixed an issue with Disk Savings not calculating correctly
-###### * Fixed an issue with Automation vs Reserved Instances where it was not taking into account disk savings from automation
+###### * Fixed multiple issues with reserved instance calculations when a reserved instance was added to a host with PAYG usage as well
 ---
 #### v1.6.6
 ##### Fixes
