@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.6.7
+    Version : 1.6.8
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -538,6 +538,7 @@ $totalBillingDaySpendUSD = [math]::Round($totalBillingDaySpendUSD, 2)
 $totalBillingDaySpendBillingCurrency = [math]::Round($totalBillingDaySpendBillingCurrency, 2)
 $usageHours = $totalVmPAYGUsageHours + $totalVm1YearUsageHours + $totalVm3YearUsageHours
 $usageHours = [math]::Round($usageHours, 2)
+$totalReservedHoursToSubtract = [math]::Round($totalReservedHoursToSubtract, 2)
 
 # Calculate total savings from Autoscaling + applied Reserved Instances
 $automationHoursSaved = $fullDailyRunHours - $usageHours
@@ -589,7 +590,8 @@ $logMessage = @{
     totalComputeSavingsUSD_d                             = $totalComputeSavingsUSD;
     totalComputeSavingsBillingCurrency_d                 = $totalComputeSavingsBillingCurrency;
     bandwidthSpendUSD_d                                  = $billingDayBandwidthSpendUSD;
-    bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency
+    bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency;
+    reservedInstanceHours_d                              = $reservedHoursToSubtract
 }
 
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
@@ -702,7 +704,8 @@ if ($logAnalyticsQuery) {
                     totalComputeSavingsUSD_d                             = $null;
                     totalComputeSavingsBillingCurrency_d                 = $null;
                     bandwidthSpendUSD_d                                  = $null;
-                    bandwidthSpendBillingCurrency_d                      = $null
+                    bandwidthSpendBillingCurrency_d                      = $null;
+                    reservedInstanceHours_d                              = $null
                 }
                 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
                 continue
@@ -999,6 +1002,7 @@ if ($logAnalyticsQuery) {
             $totalBillingDaySpendBillingCurrency = [math]::Round($totalBillingDaySpendBillingCurrency, 2)
             $usageHours = $totalVmPAYGUsageHours + $totalVm1YearUsageHours + $totalVm3YearUsageHours
             $usageHours = [math]::Round($usageHours, 2)
+            $totalReservedHoursToSubtract = [math]::Round($totalReservedHoursToSubtract, 2)
         
             # Calculate total savings from Autoscaling + applied Reserved Instances
             $automationHoursSaved = $fullDailyRunHours - $usageHours
@@ -1050,7 +1054,8 @@ if ($logAnalyticsQuery) {
                 totalComputeSavingsUSD_d                             = $totalComputeSavingsUSD;
                 totalComputeSavingsBillingCurrency_d                 = $totalComputeSavingsBillingCurrency;
                 bandwidthSpendUSD_d                                  = $billingDayBandwidthSpendUSD;
-                bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency
+                bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency;
+                reservedInstanceHours_d                              = $reservedHoursToSubtract
             }
             Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
             Write-Output "Posted cost analysis data for date $missingDay to Log Analytics"
