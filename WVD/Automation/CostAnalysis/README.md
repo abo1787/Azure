@@ -1,7 +1,11 @@
 
 # Windows Virtual Desktop Cost Analysis
 
-### Latest Release - v1.6.7
+### Latest Release - v1.6.8
+#### v1.6.8
+##### Other
+###### * Added reserved instance hours metric to Log Analytics
+---
 #### v1.6.7
 ##### Fixes
 ###### * Fixed multiple issues with reserved instance calculations when a reserved instance was added to a host with PAYG usage as well
