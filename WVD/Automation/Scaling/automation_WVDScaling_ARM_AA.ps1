@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 4.3.1
+    Version : 4.3.2
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -344,7 +344,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
         }
 
         # Change the Azure VM disk tier before starting
-        if ($vmDisk.Sku.Name -ne $vmDiskType) {
+        if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne $vmDiskType) {
           try {
             $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
             Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
@@ -429,7 +429,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             }
 
             # Change the Azure VM disk tier before starting
-            if ($vmDisk.Sku.Name -ne $vmDiskType) {
+            if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne $vmDiskType) {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
@@ -561,7 +561,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             }
 
             # Change the Azure VM disk tier after shutting down to save on costs
-            if ($vmDisk.Sku.Name -ne 'Standard_LRS') {
+            if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
@@ -784,7 +784,7 @@ else {
           }
 
           # Change the Azure VM disk tier after shutting down to save on costs
-          if ($vmDisk.Sku.Name -ne 'Standard_LRS') {
+          if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
             try {
               $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
               Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
@@ -841,7 +841,7 @@ else {
         }
         
         # Change the Azure VM disk tier before starting
-        if ($vmDisk.Sku.Name -ne $vmDiskType) {
+        if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne $vmDiskType) {
           try {
             $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
             Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
@@ -926,7 +926,7 @@ else {
             }
   
             # Change the Azure VM disk tier before starting
-            if ($vmDisk.Sku.Name -ne $vmDiskType) {
+            if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne $vmDiskType) {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
@@ -1068,7 +1068,7 @@ else {
             }
   
             # Change the Azure VM disk tier after shutting down to save on costs
-            if ($vmDisk.Sku.Name -ne 'Standard_LRS') {
+            if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
