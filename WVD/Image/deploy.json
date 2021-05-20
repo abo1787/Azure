@@ -102,7 +102,10 @@
                 "AMD",
                 "NVidia"
             ],
-            "defaultValue": "None"
+            "defaultValue": "None",
+            "metadata": {
+                "description": "If using a GPU enabled machine, specify the GPU vendor"
+            }
         }
     },
     "variables": {
