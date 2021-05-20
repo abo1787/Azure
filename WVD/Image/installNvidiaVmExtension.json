@@ -1,0 +1,30 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "vmName": {
+            "type": "string"
+        },
+        "location": {
+            "type": "string"
+        }
+    },
+    "functions": [],
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Compute/virtualMachines/extensions",
+            "apiVersion": "2018-06-01",
+            "name": "[concat(parameters('vmName'),'/NvidiaGpuDriverWindows')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "publisher": "Microsoft.HpcCompute",
+                "type": "NvidiaGpuDriverWindows",
+                "typeHandlerVersion": "1.2",
+                "autoUpgradeMinorVersion": true,
+                "settings": {}
+            }
+        }
+    ],
+    "outputs": {}
+}
