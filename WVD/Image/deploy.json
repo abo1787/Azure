@@ -95,7 +95,7 @@
             ],
             "defaultValue": "Yes"
         },
-        "gpuMachineType": {
+        "gpuType": {
             "type": "string",
             "allowedValues": [
                 "None",
@@ -293,7 +293,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('gpuMachineType'), 'NVidia')]",
+            "condition": "[equals(parameters('gpuType'), 'NVidia')]",
             "name": "[concat(parameters('vmName'), '-GPU-NVidia-Extension')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
@@ -317,7 +317,7 @@
             }
         },
         {
-            "condition": "[equals(parameters('gpuMachineType'), 'AMD')]",
+            "condition": "[equals(parameters('gpuType'), 'AMD')]",
             "name": "[concat(parameters('vmName'), '-GPU-AMD-Extension')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
