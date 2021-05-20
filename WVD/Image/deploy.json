@@ -94,6 +94,15 @@
                 "No"
             ],
             "defaultValue": "Yes"
+        },
+        "gpuMachineType": {
+            "type": "string",
+            "allowedValues": [
+                "None",
+                "AMD",
+                "NVidia"
+            ],
+            "defaultValue": "None"
         }
     },
     "variables": {
@@ -104,6 +113,8 @@
         "TeamsTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installTeams.json",
         "FSLogixTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installFSLogix.json",
         "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json",
+        "GPUNVidiaTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installNvidiaVmExtension.json",
+        "GPUAMDTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installAMDVmExtension.json",
         "hostType": "[if(contains(parameters('osVersion'), 'evd'), 'MultiSession', 'SingleSession')]",
         "installFSLogix": "No"
     },
@@ -274,6 +285,54 @@
                     },
                     "osVersion": {
                         "value": "[parameters('osVersion')]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('gpuMachineType'), 'NVidia')]",
+            "name": "[concat(parameters('vmName'), '-GPU-NVidia-Extension')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-09-01",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-LanguageUk')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('GPUNVidiaTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
+                    },
+                    "location": {
+                        "value": "[variables('location')]"
+                    }
+                }
+            }
+        },
+        {
+            "condition": "[equals(parameters('gpuMachineType'), 'AMD')]",
+            "name": "[concat(parameters('vmName'), '-GPU-AMD-Extension')]",
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2016-09-01",
+            "dependsOn": [
+                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-GPU-NVidia-Extension')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "templateLink": {
+                    "uri": "[variables('GPUAMDTemplateUri')]",
+                    "contentVersion": "1.0.0.0"
+                },
+                "parameters": {
+                    "vmName": {
+                        "value": "[parameters('vmName')]"
                     },
                     "location": {
                         "value": "[variables('location')]"
