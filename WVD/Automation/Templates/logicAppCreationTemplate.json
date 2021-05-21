@@ -59,7 +59,7 @@
 		}
 	},
 	"variables": {
-		"azureBlobConnectionName": "azureblob",
+		"azureBlobConnectionName": "azureblob_AutoScaling",
 		"azureBlobConnectionDisplayName": "[concat('Blob_Connection_', parameters('azureBlobAccountName'))]"
 	},
 	"resources": [
