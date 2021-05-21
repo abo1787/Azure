@@ -53,7 +53,7 @@
 		}
 	},
 	"variables": {
-		"azureBlobConnectionName": "azureblob",
+		"azureBlobConnectionName": "azureblob_CostAnalysis",
 		"azureBlobConnectionDisplayName": "[concat('Blob_Connection_', parameters('azureBlobAccountName'))]"
 	},
 	"resources": [
@@ -80,7 +80,7 @@
 			"location": "[parameters('logicAppLocation')]",
 			"dependsOn": ["[resourceId('Microsoft.Web/connections', variables('azureblobConnectionName'))]"],
 			"properties": {
-				"state": "Disabled",
+				"state": "Enabled",
 				"definition": {
 					"$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
 					"contentVersion": "1.0.0.0",
