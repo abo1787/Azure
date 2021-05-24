@@ -50,6 +50,18 @@
 			"metadata": {
 				"description": "Name of the host pool"
 			}
+		},
+		"startTime": {
+			"type": "string",
+			"metadata": {
+				"description": "Time for first run"
+			}
+		},
+		"timeZone": {
+			"type": "string",
+			"metadata": {
+				"description": "Timezone"
+			}
 		}
 	},
 	"variables": {
@@ -103,7 +115,8 @@
                                         0
                                     ]
                                 },
-                                "timeZone": "GMT Standard Time"
+								"startTime": "[parameters('startTime')]",
+                                "timeZone": "[parameters('timeZone')]"
                             },
                             "type": "Recurrence"
                         }
