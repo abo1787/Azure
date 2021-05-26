@@ -1,7 +1,6 @@
 [CmdletBinding(SupportsShouldProcess = $true)]
 param (
     
-    [string] $hostType,
     [string] $ExecutableName = "Teams_windows_x64.msi"
 
 )
@@ -122,24 +121,15 @@ Invoke-Command $scriptBlockRTC -Verbose
 $MSIPath = "$($PSScriptRoot)\$ExecutableName"
 LogInfo("Installing teams from path $MSIPath")
 
-if ($hostType -eq "MultiSession"){
-    LogInfo("Setting registry key Teams")
-    if ((Test-Path "HKLM:\Software\Microsoft\Teams") -eq $false) {
-        New-Item -Path "HKLM:\Software\Microsoft\Teams" -Force
-    }
-    New-ItemProperty "HKLM:\Software\Microsoft\Teams" -Name "IsWVDEnvironment" -Value 1 -PropertyType DWord -Force
-    LogInfo("Set IsWVDEnvironment DWord to value 1 successfully.")
+LogInfo("Setting Teams registry key")
+if ((Test-Path "HKLM:\Software\Microsoft\Teams") -eq $false) {
+    New-Item -Path "HKLM:\Software\Microsoft\Teams" -Force
 }
+New-ItemProperty "HKLM:\Software\Microsoft\Teams" -Name "IsWVDEnvironment" -Value 1 -PropertyType DWord -Force
+LogInfo("Set IsWVDEnvironment DWord to value 1 successfully.")
 
-if ($hostType -eq "MultiSession"){
-    $scriptBlock = { msiexec /i $MSIPath /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\Teams\InstallLog.txt" ALLUSER=1 ALLUSERS=1 }
+$scriptBlock = { msiexec /i $MSIPath /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\Teams\InstallLog.txt" ALLUSER=1 ALLUSERS=1 }
 
-}
-
-if ($hostType -eq "SingleSession"){
-    $scriptBlock = { msiexec /i $MSIPath /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\Teams\InstallLog.txt" ALLUSERS=1 }
-
-}
 LogInfo("Invoking command with the following scriptblock: $scriptBlock")
 LogInfo("Install logs can be found in the InstallLog.txt file in this folder.")
 Invoke-Command $scriptBlock -Verbose
