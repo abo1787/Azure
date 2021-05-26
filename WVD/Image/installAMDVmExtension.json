@@ -1,5 +1,5 @@
 {
-    "$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
     "parameters": {
         "vmName": {
@@ -14,13 +14,13 @@
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
-            "apiVersion": "2018-06-01",
-            "name": "[concat(parameters('vmName'),'/NvidiaGpuDriverWindows')]",
+            "apiVersion": "2015-06-15",
+            "name": "[concat(parameters('vmName'),'/AmdGpuDriverWindows')]",
             "location": "[parameters('location')]",
             "properties": {
                 "publisher": "Microsoft.HpcCompute",
-                "type": "NvidiaGpuDriverWindows",
-                "typeHandlerVersion": "1.2",
+                "type": "AmdGpuDriverWindows",
+                "typeHandlerVersion": "1.0",
                 "autoUpgradeMinorVersion": true,
                 "settings": {}
             }
