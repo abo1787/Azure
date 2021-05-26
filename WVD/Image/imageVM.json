@@ -52,7 +52,6 @@
         }
     },
     "variables": { 
-        "vnetId": "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
         "networkInterfaceName": "[concat(parameters('VMName'),'_nic_01')]"
     },
      "resources": [               
