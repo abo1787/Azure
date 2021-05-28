@@ -120,6 +120,18 @@
                             "include:$true"
                         ],
                         "updateLimit": 40
+                    },
+                    {
+                        "type": "WindowsRestart",
+                        "restartCheckCommand": "Write-Host 'Restarting post Windows Updates'",
+                        "restartTimeout": "5m"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "Download Custom Sysprep",
+                        "runElevated": true,
+                        "runAsSystem": true,
+                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/azureImageBuilderSysprep.ps1"
                     }
                 ],
                 "distribute": [
@@ -198,6 +210,18 @@
                             "include:$true"
                         ],
                         "updateLimit": 40
+                    },
+                    {
+                        "type": "WindowsRestart",
+                        "restartCheckCommand": "Write-Host 'Restarting post Windows Updates'",
+                        "restartTimeout": "5m"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "Download Custom Sysprep",
+                        "runElevated": true,
+                        "runAsSystem": true,
+                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/azureImageBuilderSysprep.ps1"
                     }
                 ],
                 "distribute": [
@@ -276,6 +300,18 @@
                             "include:$true"
                         ],
                         "updateLimit": 40
+                    },
+                    {
+                        "type": "WindowsRestart",
+                        "restartCheckCommand": "Write-Host 'Restarting post Windows Updates'",
+                        "restartTimeout": "5m"
+                    },
+                    {
+                        "type": "PowerShell",
+                        "name": "Download Custom Sysprep",
+                        "runElevated": true,
+                        "runAsSystem": true,
+                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/azureImageBuilderSysprep.ps1"
                     }
                 ],
                 "distribute": [
