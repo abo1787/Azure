@@ -52,7 +52,7 @@
     "resources": [
         {
             "condition": "[equals(parameters('sourceImageType'), 'PlatformImage')]",
-            "name": "[parameters('imageTemplateName')]",
+            "name": "[concat(parameters('imageTemplateName'), '-PlatformImage')]",
             "type": "Microsoft.VirtualMachineImages/imageTemplates",
             "apiVersion": "[parameters('api-version')]",
             "location": "[parameters('location')]",
@@ -134,7 +134,7 @@
         },
         {
             "condition": "[equals(parameters('sourceImageType'), 'ManagedImage')]",
-            "name": "[parameters('imageTemplateName')]",
+            "name": "[concat(parameters('imageTemplateName'), '-ManagedImage')]",
             "type": "Microsoft.VirtualMachineImages/imageTemplates",
             "apiVersion": "[parameters('api-version')]",
             "location": "[parameters('location')]",
@@ -212,7 +212,7 @@
         },
         {
             "condition": "[equals(parameters('sourceImageType'), 'SharedImageVersion')]",
-            "name": "[parameters('imageTemplateName')]",
+            "name": "[concat(parameters('imageTemplateName'), '-SharedImageVersion')]",
             "type": "Microsoft.VirtualMachineImages/imageTemplates",
             "apiVersion": "[parameters('api-version')]",
             "location": "[parameters('location')]",
