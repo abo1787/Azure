@@ -120,11 +120,11 @@ Expand-Archive -Path $LangArchivePath -DestinationPath $filePath
 
 # Get xml File
 $xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
-Invoke-WebRequest -Uri $xmlUri -OutFile "$filePath\setLocaleUk.xml"
+Invoke-WebRequest -Uri $xmlUri -OutFile "$filePath\setLocaleUkAIB.xml"
 
 # Get Locale Script
 $localeUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUkAIB.ps1"
-Invoke-WebRequest -Uri $localeUri -OutFile "$filePath\setLocaleUk.ps1"
+Invoke-WebRequest -Uri $localeUri -OutFile "$filePath\setLocaleUkAIB.ps1"
 
 # Run setLocaleUk script
 & "$filePath\setLocaleUkAIB.ps1"
