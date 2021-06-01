@@ -10,7 +10,7 @@ The 'Deploy to Azure' buttons shown below can be used to create these resources
 Creates a VM from a Marketplace Image and gives you options to customize it by installing M365 Apps, Teams (Machine-Wide Installer), OneDrive (Machine-Wide Installer), FSLogix and downloading the scripts and files required to set the system to UK rather than US
 
 #### Install M365 Apps Standalone
-Installs specified M365 Apps on an existing VM. You have to choice to exclude certain Apps from being installed (Access, Publisher etc)
+Installs specified M365 Apps on an existing VM. You have a choice to exclude certain Apps from being installed (Access, Publisher etc)
 
 #### Install OneDrive Standalone
 Installs the OneDrive Machine-Wide Installer on an existing VM
