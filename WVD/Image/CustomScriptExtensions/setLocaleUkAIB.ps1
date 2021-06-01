@@ -45,7 +45,7 @@ Set-WinHomeLocation -GeoId 242
 Set-WinUserLanguageList en-GB -Force
 
 # Get xml File
-$xmlFile = "setLocaleUk.xml"
+$xmlFile = "setLocaleUkAIB.xml"
 $xmlPath = Join-Path $filePath $xmlFile
 
 # Set Language Admin Defaults
@@ -59,12 +59,10 @@ Write-Output "Setting timezone to GMT.."
 
 # Cleanup files
 Write-Output "Cleaning up files.."
-$desktopLink = "C:\Users\Public\Desktop\setLocaleUk.lnk"
 Remove-Item -Path $xmlPath -Force
 Remove-Item -Path "$filePath\en-GB" -Force -Recurse
 Remove-Item -Path "$filePath\en-GB.zip" -Force -Recurse
 Remove-Item $MyInvocation.MyCommand.Source
 Remove-Item $filePath -Force -Recurse
-Remove-Item $desktopLink -Force
 
 Write-Output "All settings have been updated"
