@@ -110,8 +110,6 @@ LogInfo("Installing OneDrive from path $MSIPath")
 $Switches = "/allusers"
 $ExePath = Join-Path $PSScriptRoot $ExecutableName
 
-LogInfo("Invoking command with the following scriptblock: $scriptBlock")
-LogInfo("Install logs can be found in the InstallLog.txt file in this folder.")
 $Installer = Start-Process -FilePath $ExePath -ArgumentList $Switches -Wait -PassThru
 
 LogInfo("The exit code is $($Installer.ExitCode)")
