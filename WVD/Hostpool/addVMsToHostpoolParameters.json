@@ -1,0 +1,158 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "nestedTemplatesLocation": {
+            "value": "https://catalogartifact.azureedge.net/publicartifacts/Microsoft.Hostpool-ARM-1.2.2/"
+        },
+        "artifactsLocation": {
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_3-10-2021.zip"
+        },
+        "hostpoolName": {
+            "value": "<hostpoolName>"
+        },
+        "hostpoolToken": {
+            "value": "<hostpoolToken>"
+        },
+        "hostpoolResourceGroup": {
+            "value": ""
+        },
+        "hostpoolLocation": {
+            "value": ""
+        },
+        "hostpoolProperties": {
+            "value": {}
+        },
+        "vmTemplate": {
+            "value": ""
+        },
+        "administratorAccountUsername": {
+            "value": "<administratorAccountUsername>"
+        },
+        "administratorAccountPassword": {
+            "value": "<administratorAccountPassword>"
+        },
+        "vmAdministratorAccountUsername": {
+            "value": "<vmAdministratorAccountUsername>"
+        },
+        "vmAdministratorAccountPassword": {
+            "value": "<vmAdministratorAccountPassword>"
+        },
+        "availabilityOption": {
+            "value": "<availabilityOption>"
+        },
+        "availabilitySetName": {
+            "value": "<availabilitySetName>"
+        },
+        "createAvailabilitySet": {
+            "value": false
+        },
+        "availabilitySetUpdateDomainCount": {
+            "value": 5
+        },
+        "availabilitySetFaultDomainCount": {
+            "value": 2
+        },
+        "availabilityZone": {
+            "value": 1
+        },
+        "vmResourceGroup": {
+            "value": "<vmResourceGroup>"
+        },
+        "vmLocation": {
+            "value": "<vmLocation>"
+        },
+        "vmSize": {
+            "value": "<vmSize>"
+        },
+        "vmInitialNumber": {
+            "value": <vmInitialNumber>
+        },
+        "vmNumberOfInstances": {
+            "value": <vmNumberOfInstances>
+        },
+        "vmNamePrefix": {
+            "value": "<vmNamePrefix>"
+        },
+        "vmImageType": {
+            "value": "<vmImageType>"
+        },
+        "vmGalleryImageOffer": {
+            "value": ""
+        },
+        "vmGalleryImagePublisher": {
+            "value": ""
+        },
+        "vmGalleryImageSKU": {
+            "value": ""
+        },
+        "vmImageVhdUri": {
+            "value": ""
+        },
+        "vmCustomImageSourceId": {
+            "value": "<vmCustomImageSourceId>"
+        },
+        "vmDiskType": {
+            "value": "<vmDiskType>"
+        },
+        "vmUseManagedDisks": {
+            "value": true
+        },
+        "storageAccountResourceGroupName": {
+            "value": ""
+        },
+        "existingVnetName": {
+            "value": "<existingVnetName>"
+        },
+        "existingSubnetName": {
+            "value": "<existingSubnetName>"
+        },
+        "virtualNetworkResourceGroupName": {
+            "value": "<virtualNetworkResourceGroupName>"
+        },
+        "createNetworkSecurityGroup": {
+            "value": false
+        },
+        "networkSecurityGroupId": {
+            "value": ""
+        },
+        "networkSecurityGroupRules": {
+            "value": []
+        },
+        "availabilitySetTags": {
+            "value": {}
+        },
+        "networkInterfaceTags": {
+            "value": {}
+        },
+        "networkSecurityGroupTags": {
+            "value": {}
+        },
+        "virtualMachineTags": {
+            "value": {
+                "VMMaintenance": "False"
+            }
+        },
+        "imageTags": {
+            "value": {}
+        },
+        "deploymentId": {
+            "value": "<deploymentId>"
+        },
+        "apiVersion": {
+            "value": "2019-12-10-preview"
+        },
+        "ouPath": {
+            "value": "<ouPath>"
+        },
+        "domain": {
+            "value": "<domain>"
+        },
+        "aadJoin": {
+            "value": false
+        },
+        "intune": {
+            "value": false
+        }
+    }
+}
