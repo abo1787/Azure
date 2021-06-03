@@ -30,13 +30,13 @@
             "value": "<administratorAccountUsername>"
         },
         "administratorAccountPassword": {
-            "value": "<administratorAccountPassword>"
+            "value": ""
         },
         "vmAdministratorAccountUsername": {
             "value": "<vmAdministratorAccountUsername>"
         },
         "vmAdministratorAccountPassword": {
-            "value": "<vmAdministratorAccountPassword>"
+            "value": ""
         },
         "availabilityOption": {
             "value": "<availabilityOption>"
