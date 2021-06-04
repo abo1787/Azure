@@ -130,7 +130,7 @@
         },
         "virtualMachineTags": {
             "value": {
-                "VMMaintenance": "False"
+                "VMMaintenance": "True"
             }
         },
         "imageTags": {
