@@ -55,7 +55,8 @@ $Process.ExitCode
 
 # Set Timezone
 Write-Output "Setting timezone to GMT.."
-& tzutil /s "GMT Standard Time"
+Set-TimeZone -Id 'GMT Standard Time'
+New-ItemProperty "HKLM:\SYSTEM\CurrentControlSet\Control\TimeZoneInformation" -Name "TimeZoneKeyName" -Value "GMT Standard Time" -PropertyType String -Force
 
 # Cleanup files
 Write-Output "Cleaning up files.."
