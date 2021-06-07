@@ -15,4 +15,9 @@ while($true) {
   if ($imageState -eq 'IMAGE_STATE_GENERALIZE_RESEAL_TO_OOBE') { break }
   Start-Sleep -s 5
 }
+
+# Cleanup files
+Write-Output "Cleaning up files.."
+Remove-Item $MyInvocation.MyCommand.Source
+
 Write-Output '>>> Sysprep complete ...'
