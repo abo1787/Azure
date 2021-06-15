@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 4.3.2
+    Version : 4.3.3
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -347,10 +347,11 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
         if ($vmDisk.Sku.Name -ne $vmDiskType) {
           try {
             $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+            Write-Output "Changing disk on host $vmName to $vmDiskType..."
             Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
           }
           catch {
-            Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+            Write-Error "Failed to change disk $($vmDisk.Name) tier to $vmDiskType with error: $($_.exception.message)"
             exit
           }
         }
@@ -432,10 +433,11 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             if ($vmDisk.Sku.Name -ne $vmDiskType) {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+                Write-Output "Changing disk on host $vmName to $vmDiskType..."
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
               }
               catch {
-                Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+                Write-Error "Failed to change disk $($vmDisk.Name) tier to $vmDiskType with error: $($_.exception.message)"
                 exit
               }
             }
@@ -564,10 +566,11 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
+                Write-Output "Changing disk on host $vmName to Standard HDD..."
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
               }
               catch {
-                Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+                Write-Error "Failed to change disk $($vmDisk.Name) tier to 'Standard_LRS' with error: $($_.exception.message)"
                 exit
               }
             }
@@ -787,10 +790,11 @@ else {
           if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
             try {
               $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
+              Write-Output "Changing disk on host $vmName to Standard HDD..."
               Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
             }
             catch {
-              Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+              Write-Error "Failed to change disk $($vmDisk.Name) tier to 'Standard_LRS' with error: $($_.exception.message)"
               exit
             }
           }
@@ -844,10 +848,11 @@ else {
         if ($vmDisk.Sku.Name -ne $vmDiskType) {
           try {
             $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+            Write-Output "Changing disk on host $vmName to $vmDiskType..."
             Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
           }
           catch {
-            Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+            Write-Error "Failed to change disk $($vmDisk.Name) tier to $vmDiskType with error: $($_.exception.message)"
             exit
           }
         }
@@ -929,10 +934,11 @@ else {
             if ($vmDisk.Sku.Name -ne $vmDiskType) {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+                Write-Output "Changing disk on host $vmName to $vmDiskType..."
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
               }
               catch {
-                Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+                Write-Error "Failed to change disk $($vmDisk.Name) tier to $vmDiskType with error: $($_.exception.message)"
                 exit
               }
             }
@@ -1071,10 +1077,11 @@ else {
             if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
+                Write-Output "Changing disk on host $vmName to Standard HDD..."
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
               }
               catch {
-                Write-Error "Failed to change disk $vmDisk.Name tier to $vmDiskType with error: $($_.exception.message)"
+                Write-Error "Failed to change disk $($vmDisk.Name) tier to 'Standard_LRS' with error: $($_.exception.message)"
                 exit
               }
             }
