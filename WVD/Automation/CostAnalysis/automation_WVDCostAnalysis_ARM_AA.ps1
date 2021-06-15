@@ -146,11 +146,14 @@ foreach ($diskTier in $diskTiers) {
 
 # Calculate hourly costs for Disk Tiers
 $standardHDDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard HDD Managed Disks' } | Select-Object -ExpandProperty unitPrice
-$hourlyStandardHDDCostUSD = $standardHDDCostUSD / 730
+$monthlyStandardHDDCostUSD = $standardHDDCostUSD / 30
+$hourlyStandardHDDCostUSD = $monthlyStandardHDDCostUSD / 24
 $standardSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' } | Select-Object -ExpandProperty unitPrice
-$hourlyStandardSSDCostUSD = $standardSSDCostUSD / 730
+$monthlyStandardSSDCostUSD = $standardSSDCostUSD / 30
+$hourlyStandardSSDCostUSD = $monthlyStandardSSDCostUSD / 24
 $premiumSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' } | Select-Object -ExpandProperty unitPrice
-$hourlyPremiumSSDCostUSD = $premiumSSDCostUSD / 730
+$monthlyPremiumSSDCostUSD = $premiumSSDCostUSD / 30
+$hourlyPremiumSSDCostUSD = $monthlyPremiumSSDCostUSD / 24
 
 # Get Meter Id for each Disk Tier
 $standardHDDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard HDD Managed Disks' } | Select-Object -ExpandProperty meterId
