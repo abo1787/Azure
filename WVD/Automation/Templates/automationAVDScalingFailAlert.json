@@ -11,9 +11,9 @@
         }
     },
     "variables": {
-        "alertName": "WVD Scaling Job Failure",
-        "actionGroupName": "WVD-Administrator-AG",
-        "automationAccountName": "WVDAutomationAccount"
+        "alertName": "AVD Scaling Job Failure",
+        "actionGroupName": "AVD-Administrator-AG",
+        "automationAccountName": "AVDAutomationAccount"
     },
     "resources": [
         {
@@ -22,7 +22,7 @@
             "name": "[variables('actionGroupName')]",
             "location": "Global",
             "properties": {
-                "groupShortName": "WVDActionGrp",
+                "groupShortName": "AVDActionGrp",
                 "enabled": true,
                 "emailReceivers": [
                     {
@@ -51,7 +51,7 @@
                 "[resourceId('Microsoft.Insights/actionGroups/', variables('actionGroupName'))]"
             ],
             "properties": {
-                "description": "WARNING - Windows Virtual Desktop AutoScaling job has failed. Please check the latest job status within the Automation Account",
+                "description": "WARNING - Azure Virtual Desktop AutoScaling job has failed. Please check the latest job status within the Automation Account",
                 "severity": 1,
                 "enabled": true,
                 "scopes": [
@@ -71,7 +71,7 @@
                                     "name": "Runbook",
                                     "operator": "Include",
                                     "values": [
-                                        "automation_WVDScaling_ARM_Runbook"
+                                        "automation_AVDScaling_ARM_Runbook"
                                     ]
                                 },
                                 {
