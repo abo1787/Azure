@@ -1,9 +1,9 @@
 <# 
 .SYNOPSIS
-    This script automates the powering on and off of session hosts within a WVD hostpool. 
+    This script automates the powering on and off of session hosts within a AVD hostpool. 
 
 .DESCRIPTION
-    This script is designed to help organisations to both save compute costs for their WVD environment by ensuring only the required amount of resource is running at 
+    This script is designed to help organisations to both save compute costs for their AVD environment by ensuring only the required amount of resource is running at 
     the time and ensure that there are enough resources available to satisfy user density. The runbook is ran on a specified schedule, usually every 15 minutes, and 
     performs the following steps:
       1.	Receives all the parameters in from the scaling parameters file
@@ -90,7 +90,7 @@ $observeUKBankHolidays = $Input.ObserveUKBankHolidays
 $customHolidays = $Input.CustomHolidays
 
 # Set Log Analytics log name
-$logName = 'WVDScaling_CL'
+$logName = 'AVDScaling_CL'
 
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
@@ -563,7 +563,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             }
 
             # Change the Azure VM disk tier after shutting down to save on costs if StartVMOnConnect is not used
-            if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
+            if ($hostpoolInfo.StartVMOnConnect -eq $False -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
                 Write-Output "Changing disk on host $vmName to Standard HDD..."
@@ -741,7 +741,7 @@ else {
           $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
           $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
 
-          # Wait for the drained sessions to update on the WVD service
+          # Wait for the drained sessions to update on the AVD service
           $HaveSessionsDrained = $false
           while (!$HaveSessionsDrained) {
 
@@ -787,7 +787,7 @@ else {
           }
 
           # Change the Azure VM disk tier after shutting down to save on costs if StartVMOnConnect is not used
-          if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
+          if ($hostpoolInfo.StartVMOnConnect -eq $False -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
             try {
               $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
               Write-Output "Changing disk on host $vmName to Standard HDD..."
@@ -1074,7 +1074,7 @@ else {
             }
   
             # Change the Azure VM disk tier after shutting down to save on costs if StartVMOnConnect is not used
-            if ($hostpoolInfo.StartVMOnConnect -eq $false -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
+            if ($hostpoolInfo.StartVMOnConnect -eq $False -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
                 Write-Output "Changing disk on host $vmName to Standard HDD..."
