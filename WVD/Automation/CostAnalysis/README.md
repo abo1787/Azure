@@ -1,5 +1,5 @@
 
-# Windows Virtual Desktop Cost Analysis
+# Azure Virtual Desktop Cost Analysis
 
 ### Latest Release - v1.6.8
 #### v1.6.8
