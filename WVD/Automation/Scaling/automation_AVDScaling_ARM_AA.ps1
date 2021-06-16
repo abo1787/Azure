@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 4.3.2
+    Version : 4.3.3
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -266,7 +266,7 @@ foreach ($sessionHost in $allSessionHosts) {
   $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
 
   if ($vmInfo.Tags.ContainsKey($maintenanceTagName) -and $vmInfo.Tags.ContainsValue($True)) {
-    Write-Output "The host $vmName is in maintenance mode, so is not allowing any further connections"
+    Write-Output "The host '$vmName' is in maintenance mode, so is not allowing any further connections"
     Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName -Name $sessionHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
   }
   else {
@@ -328,7 +328,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
         
         # Check to see if the Session host is in maintenance mode
         if ($vmInfo.Tags.ContainsKey($maintenanceTagName) -and $vmInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host $vmName is in maintenance mode, so this host will be skipped"
+          Write-Output "Host '$vmName' is in maintenance mode, so this host will be skipped"
           continue
         }
 
@@ -338,7 +338,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostPoolName -Name $sessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
           }
           catch {
-            Write-Error "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+            Write-Error "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
             exit 1
           }
         }
@@ -347,23 +347,23 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
         if ($vmDisk.Sku.Name -ne $vmDiskType) {
           try {
             $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
-            Write-Output "Changing disk on host $vmName to $vmDiskType..."
+            Write-Output "Changing disk on host '$vmName' to '$vmDiskType'..."
             Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
           }
           catch {
-            Write-Error "Failed to change disk $($vmDisk.Name) tier to $vmDiskType with error: $($_.exception.message)"
+            Write-Error "Failed to change disk '$($vmDisk.Name)' tier to '$vmDiskType' with error: $($_.exception.message)"
             exit
           }
         }
 
         # Start the Azure VM in Fast-Scale Mode for parallel processing
         try {
-          Write-Output "Starting host $vmName..."
+          Write-Output "Starting host '$vmName'..."
           Start-AzVM -Name $vmName -ResourceGroupName $vmInfo.ResourceGroupName -AsJob | Out-Null
 
         }
         catch {
-          Write-Error "Failed to start host $vmName with error: $($_.exception.message)"
+          Write-Error "Failed to start host '$vmName' with error: $($_.exception.message)"
           exit
         }
         
@@ -414,7 +414,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
 
             # Check to see if the Session host is in maintenance mode
             if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host $VMName is in maintenance mode, so this host will be skipped"
+              Write-Output "Host '$VMName' is in maintenance mode, so this host will be skipped"
               continue
             }
 
@@ -424,7 +424,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
                 Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
               }
               catch {
-                Write-Error "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+                Write-Error "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
                 exit 1
               }
             }
@@ -433,11 +433,11 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             if ($vmDisk.Sku.Name -ne $vmDiskType) {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
-                Write-Output "Changing disk on host $vmName to $vmDiskType..."
+                Write-Output "Changing disk on host '$vmName' to '$vmDiskType'..."
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
               }
               catch {
-                Write-Error "Failed to change disk $($vmDisk.Name) tier to $vmDiskType with error: $($_.exception.message)"
+                Write-Error "Failed to change disk '$($vmDisk.Name)' tier to '$vmDiskType' with error: $($_.exception.message)"
                 exit
               }
             }
@@ -445,11 +445,11 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             # Start the Azure VM
             try {
               Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
-              Write-Output "Starting host $VMName..."
+              Write-Output "Starting host '$VMName'..."
               Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName | Out-Null
             }
             catch {
-              Write-Error "Failed to start host $VMName with error: $($_.exception.message)"
+              Write-Error "Failed to start host '$VMName' with error: $($_.exception.message)"
               exit
             }
 
@@ -517,26 +517,26 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
 
             # Check if the Session host is in maintenance
             if ($vmInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host $vmName is in maintenance mode, so this host will be skipped"
+              Write-Output "Host '$vmName' is in maintenance mode, so this host will be skipped"
               continue
             }
 
-            Write-Output "Identified free host $vmName with $($activeHost.Session) sessions that can be shut down to save resource"
+            Write-Output "Identified free host '$vmName' with $($activeHost.Session) sessions that can be shut down to save resource"
 
             # Ensure the running Azure VM is set into drain mode
             try {
               Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
             }
             catch {
-              Write-Error "Unable to set 'Allow New Sessions' to False on host $VMName with error: $($_.exception.message)"
+              Write-Error "Unable to set 'Allow New Sessions' to False on host '$VMName' with error: $($_.exception.message)"
               exit
             }
             try {
-              Write-Output "Stopping host $vmName..."
+              Write-Output "Stopping host '$vmName'..."
               Stop-AzVM -Name $vmName -ResourceGroupName $vmInfo.ResourceGroupName -Force | Out-Null
             }
             catch {
-              Write-Error "Failed to stop host $VMName with error: $($_.exception.message)"
+              Write-Error "Failed to stop host '$VMName' with error: $($_.exception.message)"
               exit
             }
             # Check if the session host server is healthy before enable allowing new connections
@@ -546,7 +546,7 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
                 Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
               }
               catch {
-                Write-Output "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+                Write-Output "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
                 exit
               }
             }
@@ -566,11 +566,11 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
             if ($hostpoolInfo.StartVMOnConnect -eq $False -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
-                Write-Output "Changing disk on host $vmName to Standard HDD..."
+                Write-Output "Changing disk on host '$vmName' to 'Standard HDD'..."
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
               }
               catch {
-                Write-Error "Failed to change disk $($vmDisk.Name) tier to 'Standard_LRS' with error: $($_.exception.message)"
+                Write-Error "Failed to change disk '$($vmDisk.Name)' tier to 'Standard_LRS' with error: $($_.exception.message)"
                 exit
               }
             }
@@ -638,11 +638,11 @@ else {
             $HostPoolUserSessions = Get-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
           }
           catch {
-            Write-Error "Failed to retrieve user sessions in hostpool $($HostpoolName) with error: $($_.exception.message)"
+            Write-Error "Failed to retrieve user sessions in hostpool '$($HostpoolName)' with error: $($_.exception.message)"
             exit
           }
 
-          Write-Output "Current sessions running on host $VMName : $($SessionHost.Session)"
+          Write-Output "Current sessions running on host '$VMName' : $($SessionHost.Session)"
         }
       } 
       
@@ -682,7 +682,7 @@ else {
 
         # Check to see if the Session host is in maintenance
         if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host $VMName is in maintenance mode, so this host will be skipped"
+          Write-Output "Host '$VMName' is in maintenance mode, so this host will be skipped"
           $NumberOfRunningHost = $NumberOfRunningHost - 1
           continue
         }
@@ -690,7 +690,7 @@ else {
           Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
         }
         catch {
-          Write-Error "Unable to set 'Allow New Sessions' to False on host $VMName with error: $($_.exception.message)"
+          Write-Error "Unable to set 'Allow New Sessions' to False on host '$VMName' with error: $($_.exception.message)"
           exit
         }
       }
@@ -706,7 +706,7 @@ else {
         $HostPoolUserSessions = Get-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
       }
       catch {
-        Write-Error "Failed to retrieve list of user sessions in hostpool $HostpoolName with error: $($_.exception.message)"
+        Write-Error "Failed to retrieve list of user sessions in hostpool '$HostpoolName' with error: $($_.exception.message)"
         exit
       }
       $ExistingSession = 0
@@ -723,7 +723,7 @@ else {
           Remove-AzWvdUserSession -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -SessionHostName $SessionHostName -Id $SessionId | Out-Null
         }
         catch {
-          Write-Error "Failed to log off user session $($Session.UserSessionid) on host $vmName with error: $($_.exception.message)"
+          Write-Error "Failed to log off user session '$($Session.UserSessionid)' on host '$vmName' with error: $($_.exception.message)"
           exit
         }
         $ExistingSession = $ExistingSession + 1
@@ -749,17 +749,17 @@ else {
 
             if ($SessionHostStatus.Session -eq 0) {
               $HaveSessionsDrained = $true
-              Write-Output "Host $VMName now has 0 sessions"
+              Write-Output "Host '$VMName' now has 0 sessions"
             }
           }
 
           # Shutdown the Azure VM
           try {
-            Write-Output "Stopping host $VMName..."
+            Write-Output "Stopping host '$VMName'..."
             Stop-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName -Force
           }
           catch {
-            Write-Error "Failed to stop host $VMName with error: $($_.exception.message)"
+            Write-Error "Failed to stop host '$VMName' with error: $($_.exception.message)"
             exit
           }
 
@@ -770,7 +770,7 @@ else {
               Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue
             }
             catch {
-              Write-Error "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+              Write-Error "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
               exit 1
             }
           }
@@ -790,11 +790,11 @@ else {
           if ($hostpoolInfo.StartVMOnConnect -eq $False -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
             try {
               $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
-              Write-Output "Changing disk on host $vmName to Standard HDD..."
+              Write-Output "Changing disk on host '$vmName' to Standard HDD..."
               Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
             }
             catch {
-              Write-Error "Failed to change disk $($vmDisk.Name) tier to 'Standard_LRS' with error: $($_.exception.message)"
+              Write-Error "Failed to change disk '$($vmDisk.Name)' tier to 'Standard_LRS' with error: $($_.exception.message)"
               exit
             }
           }
@@ -829,7 +829,7 @@ else {
 
         # Check to see if the Session host is in maintenance
         if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host $VMName is in maintenance mode, so this host will be skipped"
+          Write-Output "Host '$VMName' is in maintenance mode, so this host will be skipped"
           continue
         }
 
@@ -839,7 +839,7 @@ else {
             Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
           }
           catch {
-            Write-Error "Unable to set it to allow connections on host $VMName with error: $($_.exception.message)"
+            Write-Error "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
             exit 1
           }
         }
@@ -848,23 +848,23 @@ else {
         if ($vmDisk.Sku.Name -ne $vmDiskType) {
           try {
             $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
-            Write-Output "Changing disk on host $vmName to $vmDiskType..."
+            Write-Output "Changing disk on host '$vmName' to '$vmDiskType'..."
             Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
           }
           catch {
-            Write-Error "Failed to change disk $($vmDisk.Name) tier to $vmDiskType with error: $($_.exception.message)"
+            Write-Error "Failed to change disk '$($vmDisk.Name)' tier to '$vmDiskType' with error: $($_.exception.message)"
             exit
           }
         }
 
         # Start the Azure VM in Fast-Scale Mode for parallel processing
         try {
-          Write-Output "Starting host $VMName..."
-          Start-AzVM -Name $VMName -ResourceGroupName $VmInfo.ResourceGroupName -AsJob | Out-Null
+          Write-Output "Starting host '$vmName'..."
+          Start-AzVM -Name $vmName -ResourceGroupName $VmInfo.ResourceGroupName -AsJob | Out-Null
 
         }
         catch {
-          Write-Output "Failed to start host $VMName with error: $($_.exception.message)"
+          Write-Output "Failed to start host '$vmName' with error: $($_.exception.message)"
           exit
         }
         
@@ -885,7 +885,7 @@ else {
   
         # Check if a hosts sessions have exceeded the Peak scale factor
         if (($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) -and ($global:capacityTrigger -eq $False -or !$global:capacityTrigger)) {
-          Write-Output "One or more hosts have surpassed the Scale Factor of $SessionHostLimit. Checking other active host capacities now..."
+          Write-Output "One or more hosts have surpassed the Scale Factor of '$SessionHostLimit'. Checking other active host capacities now..."
           $global:capacityTrigger = $True
         }
   
@@ -915,7 +915,7 @@ else {
   
             # Check to see if the Session host is in maintenance mode
             if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host $VMName is in maintenance mode, so this host will be skipped"
+              Write-Output "Host '$VMName' is in maintenance mode, so this host will be skipped"
               continue
             }
   
@@ -925,7 +925,7 @@ else {
                 Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
               }
               catch {
-                Write-Error "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+                Write-Error "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
                 exit 1
               }
             }
@@ -934,11 +934,11 @@ else {
             if ($vmDisk.Sku.Name -ne $vmDiskType) {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
-                Write-Output "Changing disk on host $vmName to $vmDiskType..."
+                Write-Output "Changing disk on host '$vmName' to '$vmDiskType'..."
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
               }
               catch {
-                Write-Error "Failed to change disk $($vmDisk.Name) tier to $vmDiskType with error: $($_.exception.message)"
+                Write-Error "Failed to change disk '$($vmDisk.Name)' tier to '$vmDiskType' with error: $($_.exception.message)"
                 exit
               }
             }
@@ -946,11 +946,11 @@ else {
             # Start the Azure VM
             try {
               Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
-              Write-Output "Starting host $VMName..."
+              Write-Output "Starting host '$VMName'..."
               Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName | Out-Null
             }
             catch {
-              Write-Error "Failed to start host $VMName with error: $($_.exception.message)"
+              Write-Error "Failed to start host '$VMName' with error: $($_.exception.message)"
               exit
             }
   
@@ -1028,26 +1028,26 @@ else {
   
             # Check if the Session host is in maintenance
             if ($vmInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host $vmName is in maintenance mode, so this host will be skipped"
+              Write-Output "Host '$vmName' is in maintenance mode, so this host will be skipped"
               continue
             }
   
-            Write-Output "Identified free host $vmName with $($activeHost.Session) sessions that can be shut down to save resource"
+            Write-Output "Identified free host '$vmName' with $($activeHost.Session) sessions that can be shut down to save resource"
   
             # Ensure the running Azure VM is set into drain mode
             try {
               Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
             }
             catch {
-              Write-Error "Unable to set 'Allow New Sessions' to False on host $VMName with error: $($_.exception.message)"
+              Write-Error "Unable to set 'Allow New Sessions' to False on host '$VMName' with error: $($_.exception.message)"
               exit
             }
             try {
-              Write-Output "Stopping host $vmName..."
+              Write-Output "Stopping host '$vmName'..."
               Stop-AzVM -Name $vmName -ResourceGroupName $vmInfo.ResourceGroupName -Force | Out-Null
             }
             catch {
-              Write-Error "Failed to stop host $VMName with error: $($_.exception.message)"
+              Write-Error "Failed to stop host '$VMName' with error: $($_.exception.message)"
               exit
             }
             # Check if the session host server is healthy before enable allowing new connections
@@ -1057,7 +1057,7 @@ else {
                 Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
               }
               catch {
-                Write-Output "Unable to set 'Allow New Sessions' to True on host $VMName with error: $($_.exception.message)"
+                Write-Output "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
                 exit
               }
             }
@@ -1077,11 +1077,11 @@ else {
             if ($hostpoolInfo.StartVMOnConnect -eq $False -and $vmDisk.Sku.Name -ne 'Standard_LRS') {
               try {
                 $diskConfig = New-AzDiskUpdateConfig -SkuName 'Standard_LRS'
-                Write-Output "Changing disk on host $vmName to Standard HDD..."
+                Write-Output "Changing disk on host '$vmName' to Standard HDD..."
                 Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
               }
               catch {
-                Write-Error "Failed to change disk $($vmDisk.Name) tier to 'Standard_LRS' with error: $($_.exception.message)"
+                Write-Error "Failed to change disk '$($vmDisk.Name)' tier to 'Standard_LRS' with error: $($_.exception.message)"
                 exit
               }
             }
