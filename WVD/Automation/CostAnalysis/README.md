@@ -1,7 +1,12 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v1.6.8
+### Latest Release - v1.6.9
+#### v1.6.9
+##### Other
+###### * Renamed to Azure Virtual Desktop
+###### * Changed missing days to check for last 90 days instead of 30
+---
 #### v1.6.8
 ##### Other
 ###### * Added reserved instance hours metric to Log Analytics
