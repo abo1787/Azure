@@ -1,6 +1,6 @@
 <# 
 .SYNOPSIS
-    This script calculates WVD cost savings for a hostpool from using Bistech Automation 
+    This script calculates AVD cost savings for a hostpool from using Bistech Automation 
 
 .DESCRIPTION
     This script will gather billing information for the VM's within a hostpool (resource group) and calculate the customer cost savings achieved by using Bistech's
@@ -53,7 +53,7 @@ $vmDiskType = $Input.VmDiskType
 $billingCurrency = $Input.BillingCurrency
 
 # Set Log Analytics log name
-$logName = 'WVDCostAnalysis_CL'
+$logName = 'AVDCostAnalysis_CL'
 
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
@@ -194,7 +194,7 @@ if (!$azurePrices.Items) {
     Write-Error "Azure Retail Prices API has not returned any data for machine type '$vmSize' in location '$vmLocation' with price type of 'Consumption' and SKU name '$skuName' so the script was terminated"
 }
 
-# Get meter id associated (using Linux pricing due to WVD)
+# Get meter id associated (using Linux pricing due to AVD)
 $meterId = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceName -eq 'Virtual Machines' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty meterId
 $retailHourlyPriceUSD = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceName -eq 'Virtual Machines' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty unitPrice
 
@@ -247,7 +247,7 @@ while ($billingInfo.nextLink) {
 
 # Check that billing data returned includes data for the machine type, bandwidth or disks contained in resource group
 if (!$vmCosts -and !$diskCosts -and !$bandwidthCosts) {
-    Write-Error "No billing data has been returned for WVD resources on $billingDay so the script was terminated"
+    Write-Error "No billing data has been returned for AVD resources on $billingDay so the script was terminated"
 }
 Write-Output "Successfully retrieved billing data for date $billingDay, calculating costs..."
 
@@ -1064,5 +1064,5 @@ if ($logAnalyticsQuery) {
             Write-Output "Posted cost analysis data for date $missingDay to Log Analytics"
         }
     }
-    Write-Output "All WVD cost analysis data successfully posted to Log Analytics"
+    Write-Output "All AVD cost analysis data successfully posted to Log Analytics"
 }
