@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.6.8
+    Version : 1.6.9
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -601,23 +601,23 @@ Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWo
 Write-Output "Posted cost analysis data for date $billingDay to Log Analytics"
 
 # Check to see if any Cost Analysis logs are missing for the last 31 days
-Write-Output "Checking for any missing cost analysis data in the last 31 days..."
+Write-Output "Checking for any missing cost analysis data in the last 90 days..."
 
-# Query Log Analytics Cost Analysis log file for the last 31 days
-$logAnalyticsQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(31d)" -ErrorAction SilentlyContinue
+# Query Log Analytics Cost Analysis log file for the last 90 days
+$logAnalyticsQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(90d)" -ErrorAction SilentlyContinue
 
 if (!$logAnalyticsQuery) {
-    Write-Warning "An error was received from the endpoint whilst querying Log Analytics. Checks for any missing cost analysis data in the last 31 days will not be performed"
+    Write-Warning "An error was received from the endpoint whilst querying Log Analytics. Checks for any missing cost analysis data in the last 90 days will not be performed"
     Write-Warning "Error message: $($error[0].Exception.Message)"
 }
 
 if ($logAnalyticsQuery) {
     $loggedDays = $logAnalyticsQuery.Results.billingDay_s | foreach { Get-Date -Date $_ -Format yyyy-MM-dd }
-    $startDate = -32
+    $startDate = -92
     $daysToCheck = $startDate..-3 | ForEach-Object { (Get-Date).AddDays($_).ToString('yyyy-MM-dd') }
     $missingDays = @()
 
-    # Check for any missing days in Log Analytics Cost Analysis log file within the last 31 days
+    # Check for any missing days in Log Analytics Cost Analysis log file within the last 90 days
     foreach ($dayToCheck in $daysToCheck) {
         if ($loggedDays -notcontains $dayToCheck) {
             $missingDays += $dayToCheck
