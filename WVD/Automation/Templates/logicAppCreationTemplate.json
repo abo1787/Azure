@@ -121,7 +121,7 @@
 								}
 							},
 							"metadata": {
-                    						"[parameters('convertedPath')]": "[concat('/wvd-automation/', parameters('hostPoolName'), '.json')]"
+                    						"[parameters('convertedPath')]": "[concat('/avd-automation/', parameters('hostPoolName'), '.json')]"
                 					},
 							"runAfter": {}
 						},
