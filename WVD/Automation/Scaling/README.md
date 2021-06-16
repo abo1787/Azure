@@ -1,4 +1,4 @@
-# Windows Virtual Desktop AutoScaling
+# Azure Virtual Desktop AutoScaling
 
 
 ### Latest Release - v4.3.2
