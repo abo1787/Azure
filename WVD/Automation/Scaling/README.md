@@ -1,10 +1,16 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v4.3.2
+### Latest Release - v4.3.3
+#### v4.3.3
+##### Fixes
+###### * Fixed an issue with disk tiers not changing when StartVMOnConnect was turned off
+##### Other
+###### * Updated naming from WVD to AVD
+---
 #### v4.3.2
 ##### Other
-###### * Added check for upcoming feature 'Start VM on Connect' - disks will not be resized to save costs if using this feature as 'Start on VM on Connect' feature is independent and will start the VM with Standard HDD if powered off by automation.
+###### * Added check for upcoming feature 'Start VM on Connect' - disks will not be resized to save costs if using this feature as 'Start on VM on Connect' feature is independent and will start the VM with Standard HDD if powered off by automation
 ---
 #### v4.3.1
 ##### Other
