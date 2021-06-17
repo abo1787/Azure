@@ -403,6 +403,10 @@ $fullDailyRunHours = $allVms.Count * 24
 
 # Get cost per VM and calculate recommendations for Reserved Instances
 $vmCostTable = @()
+$totalVmPAYGUsageHours = 0
+$totalVm1YearUsageHours = 0
+$totalVm3YearUsageHours = 0
+
 foreach ($vm in $allVms) {
     $vmPAYGUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and ($_.term -ne '1Year' -and $_.term -ne '3Years') } | Select-Object instanceName, quantity, term
     $vm1YearUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and $_.term -eq '1Year' } | Select-Object instanceName, quantity, term
@@ -867,6 +871,10 @@ if ($logAnalyticsQuery) {
 
             # Get cost per VM and calculate recommendations for Reserved Instances
             $vmCostTable = @()
+            $totalVmPAYGUsageHours = 0
+            $totalVm1YearUsageHours = 0
+            $totalVm3YearUsageHours = 0
+            
             foreach ($vm in $allVms) {
                 $vmPAYGUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and ($_.term -ne '1Year' -and $_.term -ne '3Years') } | Select-Object instanceName, quantity, term
                 $vm1YearUsageHours = $vmCosts | Where-Object { $_.instanceName -eq $vm.ResourceId -and $_.term -eq '1Year' } | Select-Object instanceName, quantity, term
