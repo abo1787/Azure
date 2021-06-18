@@ -51,12 +51,6 @@
 				"description": "Name of the host pool"
 			}
 		},
-		"startTime": {
-			"type": "string",
-			"metadata": {
-				"description": "Time for first run"
-			}
-		},
 		"timeZone": {
 			"type": "string",
 			"metadata": {
@@ -117,7 +111,6 @@
 										0
 									]
 								},
-								"startTime": "[parameters('startTime')]",
 								"timeZone": "[parameters('timeZone')]"
 							},
 							"type": "Recurrence"
