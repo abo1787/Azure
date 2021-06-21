@@ -275,6 +275,7 @@ if ($appliedReservations) {
 
 # Calculate usage hours to subtract from applied reserved instances
 $reservedHoursToSubtract = 0
+$totalReservedHoursToSubtract = 0
 foreach ($appliedReservationsInstance in $appliedReservationsInstances) {
 
     $reservedHoursToSubtract = $vmCosts | Where-Object { $_.instanceName -eq $appliedReservationsInstance -and ($_.term -eq '1Year' -or $_.term -eq '3Years') } | Select-Object quantity -ExpandProperty quantity
@@ -744,6 +745,7 @@ if ($logAnalyticsQuery) {
 
             # Calculate usage hours to subtract from applied reserved instances
             $reservedHoursToSubtract = 0
+            $totalReservedHoursToSubtract = 0
             foreach ($appliedReservationsInstance in $appliedReservationsInstances) {
 
                 $reservedHoursToSubtract = $vmCosts | Where-Object { $_.instanceName -eq $appliedReservationsInstance -and ($_.term -eq '1Year' -or $_.term -eq '3Years') } | Select-Object quantity -ExpandProperty quantity
