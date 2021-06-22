@@ -1,7 +1,7 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v1.6.9
+### Latest Release - v1.7.0
 #### v1.7.0
 ##### Fixes
 ###### * Fixed issue when multiple reserved instances were applied to the same VM
