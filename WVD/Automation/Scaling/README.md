@@ -1,7 +1,13 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v4.3.3
+### Latest Release - v4.4.0
+#### v4.4.0
+##### Fixes
+###### * Fixed an issue with excessive output when checking spare capacity
+##### Other
+###### * Reduced script run time by 45%
+---
 #### v4.3.3
 ##### Fixes
 ###### * Fixed an issue with disk tiers not changing when StartVMOnConnect was turned off
