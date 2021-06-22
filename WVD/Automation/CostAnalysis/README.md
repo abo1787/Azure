@@ -4,8 +4,7 @@
 ### Latest Release - v1.6.9
 #### v1.7.0
 ##### Fixes
-###### * Renamed to Azure Virtual Desktop
-###### * Changed missing days to check for last 90 days instead of 30
+###### * Fixed issue when multiple reserved instances were applied to the same VM
 ---
 #### v1.6.9
 ##### Other
