@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 4.3.3
+    Version : 4.4.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -328,7 +328,6 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
         
         # Check to see if the Session host is in maintenance mode
         if ($vmInfo.Tags.ContainsKey($maintenanceTagName) -and $vmInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host '$vmName' is in maintenance mode, so this host will be skipped"
           continue
         }
 
@@ -388,86 +387,87 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
           $global:capacityTrigger = $True
         }
 
-        :startupLoop  foreach ($sessionHost in $allSessionHosts) {
+        if ($global:spareCapacity -ne $True) {
+          :startupLoop  foreach ($sessionHost in $allSessionHosts) {
 
-          # Check the existing session hosts for spare capacity before starting another host
-          if ($sessionHost.Status -eq "Available" -and $sessionHost.Session -lt $SessionHostLimit -and $SessionHost.AllowNewSession -eq $True) {
-            $sessionHostName = $SessionHost.Name
-            $sessionHostName = $SessionHostName.Split("/")[1]
-            $VMName = $SessionHostName.Split(".")[0]
+            # Check the existing session hosts for spare capacity before starting another host
+            if ($sessionHost.Status -eq "Available" -and $sessionHost.Session -lt $SessionHostLimit -and $SessionHost.AllowNewSession -eq $True) {
+              $sessionHostName = $SessionHost.Name
+              $sessionHostName = $SessionHostName.Split("/")[1]
+              $VMName = $SessionHostName.Split(".")[0]
 
-            if ($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) {
-              Write-Output "Found spare capacity so don't need to start another host"
-              $global:exceededHostCapacity = $True
-              $global:spareCapacity = $True
-            }
-            break startupLoop
-          }
-
-          # Check the session hosts status to determine it's healthy before starting it
-          if (($SessionHost.Status -eq "NoHeartbeat" -or $SessionHost.Status -eq "Unavailable") -and ($SessionHost.UpdateState -eq "Succeeded")) {
-            $SessionHostName = $SessionHost.Name
-            $SessionHostName = $SessionHostName.Split("/")[1]
-            $VMName = $SessionHostName.Split(".")[0]
-            $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
-            $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
-
-            # Check to see if the Session host is in maintenance mode
-            if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host '$VMName' is in maintenance mode, so this host will be skipped"
-              continue
+              if ($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) {
+                Write-Output "Found spare capacity so don't need to start another host"
+                $global:exceededHostCapacity = $True
+                $global:spareCapacity = $True
+              }
+              break startupLoop
             }
 
-            # Ensure the host has allow new connections set to True
-            if ($SessionHost.AllowNewSession = $False) {
+            # Check the session hosts status to determine it's healthy before starting it
+            if (($SessionHost.Status -eq "NoHeartbeat" -or $SessionHost.Status -eq "Unavailable") -and ($SessionHost.UpdateState -eq "Succeeded")) {
+              $SessionHostName = $SessionHost.Name
+              $SessionHostName = $SessionHostName.Split("/")[1]
+              $VMName = $SessionHostName.Split(".")[0]
+              $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
+              $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
+
+              # Check to see if the Session host is in maintenance mode
+              if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
+                continue
+              }
+
+              # Ensure the host has allow new connections set to True
+              if ($SessionHost.AllowNewSession = $False) {
+                try {
+                  Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
+                }
+                catch {
+                  Write-Error "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
+                  exit 1
+                }
+              }
+
+              # Change the Azure VM disk tier before starting
+              if ($vmDisk.Sku.Name -ne $vmDiskType) {
+                try {
+                  $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+                  Write-Output "Changing disk on host '$vmName' to '$vmDiskType'..."
+                  Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
+                }
+                catch {
+                  Write-Error "Failed to change disk '$($vmDisk.Name)' tier to '$vmDiskType' with error: $($_.exception.message)"
+                  exit
+                }
+              }
+
+              # Start the Azure VM
               try {
-                Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
+                Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
+                Write-Output "Starting host '$VMName'..."
+                Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName | Out-Null
               }
               catch {
-                Write-Error "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
-                exit 1
-              }
-            }
-
-            # Change the Azure VM disk tier before starting
-            if ($vmDisk.Sku.Name -ne $vmDiskType) {
-              try {
-                $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
-                Write-Output "Changing disk on host '$vmName' to '$vmDiskType'..."
-                Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
-              }
-              catch {
-                Write-Error "Failed to change disk '$($vmDisk.Name)' tier to '$vmDiskType' with error: $($_.exception.message)"
+                Write-Error "Failed to start host '$VMName' with error: $($_.exception.message)"
                 exit
               }
-            }
 
-            # Start the Azure VM
-            try {
-              Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
-              Write-Output "Starting host '$VMName'..."
-              Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName | Out-Null
-            }
-            catch {
-              Write-Error "Failed to start host '$VMName' with error: $($_.exception.message)"
-              exit
-            }
+              # Wait for the session host to become available
+              $isHostAvailable = $false
+              while (!$isHostAvailable) {
 
-            # Wait for the session host to become available
-            $isHostAvailable = $false
-            while (!$isHostAvailable) {
+                $sessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostPoolName -Name $sessionHostName
 
-              $sessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostPoolName -Name $sessionHostName
-
-              if ($SessionHostStatus.Status -eq "Available") {
-                $isHostAvailable = $true
+                if ($SessionHostStatus.Status -eq "Available") {
+                  $isHostAvailable = $true
+                }
               }
-            }
-            $numberOfRunningHost = $numberOfRunningHost + 1
-            $global:spareCapacity = $True
-            Write-Output "Current number of available running hosts is now: $numberOfRunningHost"
-            break mainLoop
+              $numberOfRunningHost = $numberOfRunningHost + 1
+              $global:spareCapacity = $True
+              Write-Output "Current number of available running hosts is now: $numberOfRunningHost"
+              break mainLoop
 
+            }
           }
         }
       }
@@ -517,7 +517,6 @@ if (($CurrentDateTime -ge $BeginPeakDateTime -and $CurrentDateTime -le $EndPeakD
 
             # Check if the Session host is in maintenance
             if ($vmInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host '$vmName' is in maintenance mode, so this host will be skipped"
               continue
             }
 
@@ -682,7 +681,6 @@ else {
 
         # Check to see if the Session host is in maintenance
         if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host '$VMName' is in maintenance mode, so this host will be skipped"
           $NumberOfRunningHost = $NumberOfRunningHost - 1
           continue
         }
@@ -829,7 +827,6 @@ else {
 
         # Check to see if the Session host is in maintenance
         if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-          Write-Output "Host '$VMName' is in maintenance mode, so this host will be skipped"
           continue
         }
 
@@ -889,86 +886,87 @@ else {
           $global:capacityTrigger = $True
         }
   
-        :startupLoop  foreach ($sessionHost in $allSessionHosts) {
+        if ($global:spareCapacity -ne $True) {
+          :startupLoop  foreach ($sessionHost in $allSessionHosts) {
   
-          # Check the existing session hosts for spare capacity before starting another host
-          if ($sessionHost.Status -eq "Available" -and $sessionHost.Session -lt $SessionHostLimit -and $SessionHost.AllowNewSession -eq $True) {
-            $sessionHostName = $SessionHost.Name
-            $sessionHostName = $SessionHostName.Split("/")[1]
-            $VMName = $SessionHostName.Split(".")[0]
+            # Check the existing session hosts for spare capacity before starting another host
+            if ($sessionHost.Status -eq "Available" -and $sessionHost.Session -lt $SessionHostLimit -and $SessionHost.AllowNewSession -eq $True) {
+              $sessionHostName = $SessionHost.Name
+              $sessionHostName = $SessionHostName.Split("/")[1]
+              $VMName = $SessionHostName.Split(".")[0]
   
-            if ($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) {
-              Write-Output "Found spare capacity so don't need to start another host"
-              $global:exceededHostCapacity = $True
-              $global:spareCapacity = $True
-            }
-            break startupLoop
-          }
-  
-          # Check the session hosts status to determine it's healthy before starting it
-          if (($SessionHost.Status -eq "NoHeartbeat" -or $SessionHost.Status -eq "Unavailable") -and ($SessionHost.UpdateState -eq "Succeeded")) {
-            $SessionHostName = $SessionHost.Name
-            $SessionHostName = $SessionHostName.Split("/")[1]
-            $VMName = $SessionHostName.Split(".")[0]
-            $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
-            $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
-  
-            # Check to see if the Session host is in maintenance mode
-            if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host '$VMName' is in maintenance mode, so this host will be skipped"
-              continue
+              if ($global:exceededHostCapacity -eq $False -or !$global:exceededHostCapacity) {
+                Write-Output "Found spare capacity so don't need to start another host"
+                $global:exceededHostCapacity = $True
+                $global:spareCapacity = $True
+              }
+              break startupLoop
             }
   
-            # Ensure the host has allow new connections set to True
-            if ($SessionHost.AllowNewSession = $False) {
+            # Check the session hosts status to determine it's healthy before starting it
+            if (($SessionHost.Status -eq "NoHeartbeat" -or $SessionHost.Status -eq "Unavailable") -and ($SessionHost.UpdateState -eq "Succeeded")) {
+              $SessionHostName = $SessionHost.Name
+              $SessionHostName = $SessionHostName.Split("/")[1]
+              $VMName = $SessionHostName.Split(".")[0]
+              $VmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
+              $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
+  
+              # Check to see if the Session host is in maintenance mode
+              if ($VMInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
+                continue
+              }
+  
+              # Ensure the host has allow new connections set to True
+              if ($SessionHost.AllowNewSession = $False) {
+                try {
+                  Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
+                }
+                catch {
+                  Write-Error "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
+                  exit 1
+                }
+              }
+  
+              # Change the Azure VM disk tier before starting
+              if ($vmDisk.Sku.Name -ne $vmDiskType) {
+                try {
+                  $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
+                  Write-Output "Changing disk on host '$vmName' to '$vmDiskType'..."
+                  Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
+                }
+                catch {
+                  Write-Error "Failed to change disk '$($vmDisk.Name)' tier to '$vmDiskType' with error: $($_.exception.message)"
+                  exit
+                }
+              }
+  
+              # Start the Azure VM
               try {
-                Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
+                Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
+                Write-Output "Starting host '$VMName'..."
+                Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName | Out-Null
               }
               catch {
-                Write-Error "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
-                exit 1
-              }
-            }
-  
-            # Change the Azure VM disk tier before starting
-            if ($vmDisk.Sku.Name -ne $vmDiskType) {
-              try {
-                $diskConfig = New-AzDiskUpdateConfig -SkuName $vmDiskType
-                Write-Output "Changing disk on host '$vmName' to '$vmDiskType'..."
-                Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $diskConfig | Out-Null
-              }
-              catch {
-                Write-Error "Failed to change disk '$($vmDisk.Name)' tier to '$vmDiskType' with error: $($_.exception.message)"
+                Write-Error "Failed to start host '$VMName' with error: $($_.exception.message)"
                 exit
               }
-            }
   
-            # Start the Azure VM
-            try {
-              Write-Output "There is not enough spare capacity on other active hosts. A new host will now be started..."
-              Write-Output "Starting host '$VMName'..."
-              Start-AzVM -Name $VMName -ResourceGroupName $VMInfo.ResourceGroupName | Out-Null
-            }
-            catch {
-              Write-Error "Failed to start host '$VMName' with error: $($_.exception.message)"
-              exit
-            }
+              # Wait for the session host to become available
+              $isHostAvailable = $false
+              while (!$isHostAvailable) {
   
-            # Wait for the session host to become available
-            $isHostAvailable = $false
-            while (!$isHostAvailable) {
+                $sessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostPoolName -Name $sessionHostName
   
-              $sessionHostStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostPoolName -Name $sessionHostName
-  
-              if ($SessionHostStatus.Status -eq "Available") {
-                $isHostAvailable = $true
+                if ($SessionHostStatus.Status -eq "Available") {
+                  $isHostAvailable = $true
+                }
               }
-            }
-            $numberOfRunningHost = $numberOfRunningHost + 1
-            $global:spareCapacity = $True
-            Write-Output "Current number of available running hosts is now: $numberOfRunningHost"
-            break mainLoop
+              $numberOfRunningHost = $numberOfRunningHost + 1
+              $global:spareCapacity = $True
+              Write-Output "Current number of available running hosts is now: $numberOfRunningHost"
+              break mainLoop
   
+            }
           }
         }
       }
@@ -1028,7 +1026,6 @@ else {
   
             # Check if the Session host is in maintenance
             if ($vmInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-              Write-Output "Host '$vmName' is in maintenance mode, so this host will be skipped"
               continue
             }
   
