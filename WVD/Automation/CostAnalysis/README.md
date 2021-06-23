@@ -1,7 +1,11 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v1.7.1
+### Latest Release - v1.7.2
+#### v1.7.2
+##### Fixes
+###### * Fixed an issue with execution when no reservations exist
+---
 #### v1.7.1
 ##### New Features
 ###### * Added reservation utilization
