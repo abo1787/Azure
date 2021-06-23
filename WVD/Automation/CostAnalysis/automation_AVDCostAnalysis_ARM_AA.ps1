@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.7.0
+    Version : 1.7.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -198,11 +198,9 @@ if (!$azurePrices.Items) {
 $meterId = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceName -eq 'Virtual Machines' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty meterId
 $retailHourlyPriceUSD = $azurePrices.Items | Where-Object { $_.productName -NotLike '*Windows' -and $_.serviceName -eq 'Virtual Machines' -and $_.serviceFamily -eq 'Compute' } | Select-Object -ExpandProperty unitPrice
 
-
 # Set billing day to day before yesterday
 $yesterday = (Get-Date).AddDays(-2)
 $billingDay = Get-Date $yesterday -Format yyyy-MM-dd
-
 
 # Get token for API call
 $azContext = Get-AzContext
@@ -283,6 +281,54 @@ if ($reservedInstances3YearTerm) {
 }
 if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
     Write-Output "No reserved instances were applied for machine type '$vmSize'"
+}
+
+# Check for reservation orders
+$reservationOrderIds = @()
+$reservations = Get-AzReservationOrderId
+foreach ($reservation in $reservations) {
+
+    $reservationOrderId = $reservation.AppliedReservationOrderId
+    $reservationOrderId = $reservationOrderId.Split("/")[4]
+    $reservationOrderIds += $reservationOrderId
+
+}
+
+# If any reservation orders exist and contain VM size then get Utilization % 
+if ($reservationOrderIds) {
+    # Get token for API call
+    $azContext = Get-AzContext
+    $subscriptionId = $azContext.Subscription.Id
+    $azProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
+    $profileClient = New-Object -TypeName Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient -ArgumentList ($azProfile)
+    $token = $profileClient.AcquireAccessToken($azContext.Subscription.TenantId)
+    $authHeader = @{
+        'Content-Type'  = 'application/json'
+        'Authorization' = 'Bearer ' + $token.AccessToken
+    }
+
+    $utilizationPercentages = @()
+    foreach ($reservationOrderId in $reservationOrderIds) {
+
+        # Invoke the REST API and pull in reservation data for billing day
+        Write-Output "Retrieving reservation data for reservation order $reservationOrderId..."
+        $reservationUri = "https://management.azure.com/providers/Microsoft.Capacity/reservationorders/$reservationOrderId/providers/Microsoft.Consumption/reservationSummaries?grain=daily&`$filter=properties/usageDate ge $billingDay AND properties/usageDate le $billingDay&api-version=2019-10-01"
+        try {
+            $reservationInfo = Invoke-WebRequest -Uri $reservationUri -Method Get -Headers $authHeader -UseBasicParsing
+            $reservationInfo = $reservationInfo | ConvertFrom-Json
+            if ($reservationInfo.value.properties.skuName -eq $vmSize) {
+                $utilizationPercentages += $reservationInfo.value.properties.avgUtilizationPercentage
+            }
+        }
+        catch {
+            Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API so the script was terminated"
+        }
+    }
+    $reservationUtilization = $utilizationPercentages | Measure-Object -Average | Select-Object -ExpandProperty Average
+}
+
+if (!$reservationUtilization) {
+    $reservationUtilization = 0
 }
 
 # Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
@@ -519,10 +565,7 @@ if ($vmDiskType -eq 'Premium_LRS') {
     $diskSavingsUSD = ($dailyPremiumSSDCostUSD * $allVms.Count) - $diskUsagecostsPremiumSSDUSD - $diskUsageCostsStandardHDDUSD
     $fullDailyDiskCostsUSD = $dailyPremiumSSDCostUSD * $allVms.Count
 }
-# Fix costs sometimes reporting as -0.01 due to hours costed at 23.999999 rather than 24
-if ($diskSavingsUSD -eq -0.01) {
-    $diskSavingsUSD = 0.00
-}
+
 $diskSavingsBillingCurrency = $diskSavingsUSD * $conversionRate
 $fullDailyDiskCostsBillingCurrency = $fullDailyDiskCostsUSD * $conversionRate
 
@@ -558,6 +601,12 @@ $totalBillingDaySpendBillingCurrency = [math]::Round($totalBillingDaySpendBillin
 $usageHours = $totalVmPAYGUsageHours + $totalVm1YearUsageHours + $totalVm3YearUsageHours
 $usageHours = [math]::Round($usageHours, 2)
 $totalReservedHoursToSubtract = [math]::Round($totalReservedHoursToSubtract, 2)
+
+# Fix disk savings sometimes reporting as -0.01 due to hours costed at 23.999999 rather than 24
+if ($diskSavingsUSD -eq -0.01) {
+    $diskSavingsUSD = 0.00
+    $diskSavingsBillingCurrency = 0.00
+}
 
 # Calculate total savings from Autoscaling + applied Reserved Instances
 $automationHoursSaved = $fullDailyRunHours - $usageHours
@@ -610,7 +659,8 @@ $logMessage = @{
     totalComputeSavingsBillingCurrency_d                 = $totalComputeSavingsBillingCurrency;
     bandwidthSpendUSD_d                                  = $billingDayBandwidthSpendUSD;
     bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency;
-    reservedInstanceHours_d                              = $totalReservedHoursToSubtract
+    reservedInstanceHours_d                              = $totalReservedHoursToSubtract;
+    reservationUtilization_d                             = $reservationUtilization
 }
 
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
@@ -621,7 +671,7 @@ Write-Output "Posted cost analysis data for date $billingDay to Log Analytics"
 Write-Output "Checking for any missing cost analysis data in the last 90 days..."
 
 # Query Log Analytics Cost Analysis log file for the last 90 days
-$logAnalyticsQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(90d)" -ErrorAction SilentlyContinue
+$logAnalyticsQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(90d) and hostPoolName_s == '$hostpoolName'" -ErrorAction SilentlyContinue
 
 if (!$logAnalyticsQuery) {
     Write-Warning "An error was received from the endpoint whilst querying Log Analytics. Checks for any missing cost analysis data in the last 90 days will not be performed"
@@ -725,7 +775,8 @@ if ($logAnalyticsQuery) {
                     totalComputeSavingsBillingCurrency_d                 = $null;
                     bandwidthSpendUSD_d                                  = $null;
                     bandwidthSpendBillingCurrency_d                      = $null;
-                    reservedInstanceHours_d                              = $null
+                    reservedInstanceHours_d                              = $null;
+                    reservationUtilization_d                             = $null
                 }
                 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
                 continue
@@ -764,6 +815,54 @@ if ($logAnalyticsQuery) {
                 Write-Output "No reserved instances were applied for machine type '$vmSize'"
             }
             
+            # Check for reservation orders
+            $reservationOrderIds = @()
+            $reservations = Get-AzReservationOrderId
+            foreach ($reservation in $reservations) {
+
+                $reservationOrderId = $reservation.AppliedReservationOrderId
+                $reservationOrderId = $reservationOrderId.Split("/")[4]
+                $reservationOrderIds += $reservationOrderId
+
+            }
+
+            # If any reservation orders exist and contain VM size then get Utilization % 
+            if ($reservationOrderIds) {
+                # Get token for API call
+                $azContext = Get-AzContext
+                $subscriptionId = $azContext.Subscription.Id
+                $azProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
+                $profileClient = New-Object -TypeName Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient -ArgumentList ($azProfile)
+                $token = $profileClient.AcquireAccessToken($azContext.Subscription.TenantId)
+                $authHeader = @{
+                    'Content-Type'  = 'application/json'
+                    'Authorization' = 'Bearer ' + $token.AccessToken
+                }
+
+                $utilizationPercentages = @()
+                foreach ($reservationOrderId in $reservationOrderIds) {
+
+                    # Invoke the REST API and pull in reservation data for billing day
+                    Write-Output "Retrieving reservation data for reservation order $reservationOrderId..."
+                    $reservationUri = "https://management.azure.com/providers/Microsoft.Capacity/reservationorders/$reservationOrderId/providers/Microsoft.Consumption/reservationSummaries?grain=daily&`$filter=properties/usageDate ge $missingDay AND properties/usageDate le $missingDay&api-version=2019-10-01"
+                    try {
+                        $reservationInfo = Invoke-WebRequest -Uri $reservationUri -Method Get -Headers $authHeader -UseBasicParsing
+                        $reservationInfo = $reservationInfo | ConvertFrom-Json
+                        if ($reservationInfo.value.properties.skuName -eq $vmSize) {
+                            $utilizationPercentages += $reservationInfo.value.properties.avgUtilizationPercentage
+                        }
+                    }
+                    catch {
+                        Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API so the script was terminated"
+                    }
+                }
+                $reservationUtilization = $utilizationPercentages | Measure-Object -Average | Select-Object -ExpandProperty Average
+            }
+
+            if (!$reservationUtilization) {
+                $reservationUtilization = 0
+            }
+
             # Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
             $conversionRate = $vmCosts.exchangeRate | Sort-Object | Select-Object -First 1
             if ($billingCurrency -ne 'USD') {
@@ -998,10 +1097,7 @@ if ($logAnalyticsQuery) {
                 $diskSavingsUSD = ($dailyPremiumSSDCostUSD * $allVms.Count) - $diskUsagecostsPremiumSSDUSD - $diskUsageCostsStandardHDDUSD
                 $fullDailyDiskCostsUSD = $dailyPremiumSSDCostUSD * $allVms.Count
             }
-            # Fix costs sometimes reporting as -0.01 due to hours costed at 23.999999 rather than 24
-            if ($diskSavingsUSD -eq -0.01) {
-                $diskSavingsUSD = 0.00
-            }
+           
             $diskSavingsBillingCurrency = $diskSavingsUSD * $conversionRate
             $fullDailyDiskCostsBillingCurrency = $fullDailyDiskCostsUSD * $conversionRate
 
@@ -1038,6 +1134,12 @@ if ($logAnalyticsQuery) {
             $usageHours = [math]::Round($usageHours, 2)
             $totalReservedHoursToSubtract = [math]::Round($totalReservedHoursToSubtract, 2)
         
+            # Fix disk savings sometimes reporting as -0.01 due to hours costed at 23.999999 rather than 24
+            if ($diskSavingsUSD -eq -0.01) {
+                $diskSavingsUSD = 0.00
+                $diskSavingsBillingCurrency = 0.00
+            }
+
             # Calculate total savings from Autoscaling + applied Reserved Instances
             $automationHoursSaved = $fullDailyRunHours - $usageHours
             $automationHoursSaved = [math]::Round($automationHoursSaved, 2)
@@ -1089,7 +1191,8 @@ if ($logAnalyticsQuery) {
                 totalComputeSavingsBillingCurrency_d                 = $totalComputeSavingsBillingCurrency;
                 bandwidthSpendUSD_d                                  = $billingDayBandwidthSpendUSD;
                 bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency;
-                reservedInstanceHours_d                              = $totalReservedHoursToSubtract
+                reservedInstanceHours_d                              = $totalReservedHoursToSubtract;
+                reservationUtilization_d                             = $reservationUtilization
             }
             Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
             Write-Output "Posted cost analysis data for date $missingDay to Log Analytics"
