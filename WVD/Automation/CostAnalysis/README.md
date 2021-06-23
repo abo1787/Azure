@@ -1,7 +1,13 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v1.7.0
+### Latest Release - v1.7.1
+#### v1.7.1
+##### New Features
+###### * Added reservation utilization
+##### Fixes
+###### * Fixed an issue with Disk Savings not calculating correctly
+---
 #### v1.7.0
 ##### Fixes
 ###### * Fixed issue when multiple reserved instances were applied to the same VM
