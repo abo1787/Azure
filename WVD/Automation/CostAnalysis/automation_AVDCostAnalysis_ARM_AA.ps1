@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.7.1
+    Version : 1.7.2
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -286,12 +286,14 @@ if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
 # Check for reservation orders
 $reservationOrderIds = @()
 $reservations = Get-AzReservationOrderId
-foreach ($reservation in $reservations) {
+if ($reservations.AppliedReservationOrderId) {
+    foreach ($reservation in $reservations) {
 
-    $reservationOrderId = $reservation.AppliedReservationOrderId
-    $reservationOrderId = $reservationOrderId.Split("/")[4]
-    $reservationOrderIds += $reservationOrderId
+        $reservationOrderId = $reservation.AppliedReservationOrderId
+        $reservationOrderId = $reservationOrderId.Split("/")[4]
+        $reservationOrderIds += $reservationOrderId
 
+    }
 }
 
 # If any reservation orders exist and contain VM size then get Utilization % 
@@ -818,12 +820,14 @@ if ($logAnalyticsQuery) {
             # Check for reservation orders
             $reservationOrderIds = @()
             $reservations = Get-AzReservationOrderId
-            foreach ($reservation in $reservations) {
+            if ($reservations.AppliedReservationOrderId) {
+                foreach ($reservation in $reservations) {
 
-                $reservationOrderId = $reservation.AppliedReservationOrderId
-                $reservationOrderId = $reservationOrderId.Split("/")[4]
-                $reservationOrderIds += $reservationOrderId
+                    $reservationOrderId = $reservation.AppliedReservationOrderId
+                    $reservationOrderId = $reservationOrderId.Split("/")[4]
+                    $reservationOrderIds += $reservationOrderId
 
+                }
             }
 
             # If any reservation orders exist and contain VM size then get Utilization % 
