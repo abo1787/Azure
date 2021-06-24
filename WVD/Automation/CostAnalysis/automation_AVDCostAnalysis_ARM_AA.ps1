@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.7.2
+    Version : 1.7.4
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -284,6 +284,7 @@ if (!$reservedInstances1YearTerm -and !$reservedInstances3YearTerm) {
 }
 
 # Check for reservation orders
+$totalUnusedReservedHours = 0
 $reservationOrderIds = @()
 $reservations = Get-AzReservationOrderId
 if ($reservations.AppliedReservationOrderId) {
@@ -320,13 +321,22 @@ if ($reservationOrderIds) {
             $reservationInfo = $reservationInfo | ConvertFrom-Json
             if ($reservationInfo.value.properties.skuName -eq $vmSize) {
                 $utilizationPercentages += $reservationInfo.value.properties.avgUtilizationPercentage
+                $unusedReservedHours = $reservationInfo.value.properties.reservedHours - $reservationInfo.value.properties.usedHours
+                $totalUnusedReservedHours = $totalUnusedReservedHours + $unusedReservedHours
             }
         }
         catch {
-            Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API so the script was terminated"
+            if ( $($_.Exception.Response.StatusCode.Value__) -eq 401) {
+                Write-Warning "The AVD Automation Account is not authorized to query utilization for reservation '$reservationOrderId'. Please add the 'Reader' role for this account within the reservation order"
+            }
+            else {
+                Write-Error "An error was received from the endpoint whilst querying the Microsoft Capacity API so the script was terminated"
+            }
         }
     }
-    $reservationUtilization = $utilizationPercentages | Measure-Object -Average | Select-Object -ExpandProperty Average
+    if ($utilizationPercentages) {
+        $reservationUtilization = $utilizationPercentages | Measure-Object -Average | Select-Object -ExpandProperty Average
+    }
 }
 
 if (!$reservationUtilization) {
@@ -662,7 +672,8 @@ $logMessage = @{
     bandwidthSpendUSD_d                                  = $billingDayBandwidthSpendUSD;
     bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency;
     reservedInstanceHours_d                              = $totalReservedHoursToSubtract;
-    reservationUtilization_d                             = $reservationUtilization
+    reservationUtilization_d                             = $reservationUtilization;
+    totalUnusedReservedHours_d                           = $totalUnusedReservedHours
 }
 
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
@@ -778,7 +789,8 @@ if ($logAnalyticsQuery) {
                     bandwidthSpendUSD_d                                  = $null;
                     bandwidthSpendBillingCurrency_d                      = $null;
                     reservedInstanceHours_d                              = $null;
-                    reservationUtilization_d                             = $null
+                    reservationUtilization_d                             = $null;
+                    totalUnusedReservedHours_d                           = $null
                 }
                 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
                 continue
@@ -818,6 +830,7 @@ if ($logAnalyticsQuery) {
             }
             
             # Check for reservation orders
+            $totalUnusedReservedHours = 0
             $reservationOrderIds = @()
             $reservations = Get-AzReservationOrderId
             if ($reservations.AppliedReservationOrderId) {
@@ -846,7 +859,7 @@ if ($logAnalyticsQuery) {
                 $utilizationPercentages = @()
                 foreach ($reservationOrderId in $reservationOrderIds) {
 
-                    # Invoke the REST API and pull in reservation data for billing day
+                    # Invoke the REST API and pull in reservation data for missing day
                     Write-Output "Retrieving reservation data for reservation order $reservationOrderId..."
                     $reservationUri = "https://management.azure.com/providers/Microsoft.Capacity/reservationorders/$reservationOrderId/providers/Microsoft.Consumption/reservationSummaries?grain=daily&`$filter=properties/usageDate ge $missingDay AND properties/usageDate le $missingDay&api-version=2019-10-01"
                     try {
@@ -854,13 +867,22 @@ if ($logAnalyticsQuery) {
                         $reservationInfo = $reservationInfo | ConvertFrom-Json
                         if ($reservationInfo.value.properties.skuName -eq $vmSize) {
                             $utilizationPercentages += $reservationInfo.value.properties.avgUtilizationPercentage
+                            $unusedReservedHours = $reservationInfo.value.properties.reservedHours - $reservationInfo.value.properties.usedHours
+                            $totalUnusedReservedHours = $totalUnusedReservedHours + $unusedReservedHours
                         }
                     }
                     catch {
-                        Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API so the script was terminated"
+                        if ( $($_.Exception.Response.StatusCode.Value__) -eq 401) {
+                            Write-Warning "The AVD Automation Account is not authorized to query utilization for reservation '$reservationOrderId'. Please add the 'Reader' role for this account within the reservation order"
+                        }
+                        else {
+                            Write-Error "An error was received from the endpoint whilst querying the Microsoft Capacity API so the script was terminated"
+                        }
                     }
                 }
-                $reservationUtilization = $utilizationPercentages | Measure-Object -Average | Select-Object -ExpandProperty Average
+                if ($utilizationPercentages) {
+                    $reservationUtilization = $utilizationPercentages | Measure-Object -Average | Select-Object -ExpandProperty Average
+                }
             }
 
             if (!$reservationUtilization) {
@@ -1196,7 +1218,8 @@ if ($logAnalyticsQuery) {
                 bandwidthSpendUSD_d                                  = $billingDayBandwidthSpendUSD;
                 bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency;
                 reservedInstanceHours_d                              = $totalReservedHoursToSubtract;
-                reservationUtilization_d                             = $reservationUtilization
+                reservationUtilization_d                             = $reservationUtilization;
+                totalUnusedReservedHours_d                           = $totalUnusedReservedHours
             }
             Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
             Write-Output "Posted cost analysis data for date $missingDay to Log Analytics"
