@@ -1,7 +1,15 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v1.7.2
+### Latest Release - v1.7.4
+#### v1.7.4
+##### New Features
+###### * Added unused reserved hours
+---
+#### v1.7.3
+##### Fixes
+###### * Fixed an issue with Automation account not having access to reservations
+---
 #### v1.7.2
 ##### Fixes
 ###### * Fixed an issue with execution when no reservations exist
