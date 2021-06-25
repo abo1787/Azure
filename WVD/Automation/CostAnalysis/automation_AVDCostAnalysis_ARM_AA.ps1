@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.7.4
+    Version : 1.7.5
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -756,6 +756,66 @@ if ($logAnalyticsQuery) {
             if (!$vmCosts -and !$diskCosts -and !$bandwidthCosts) {
                 Write-Output "No billing data was returned for $missingDay so resource must have been created after this date"
 
+                # Check for reservation orders
+                $totalUnusedReservedHours = 0
+                $reservationOrderIds = @()
+                $reservations = Get-AzReservationOrderId
+                if ($reservations.AppliedReservationOrderId) {
+                    foreach ($reservation in $reservations) {
+
+                        $reservationOrderId = $reservation.AppliedReservationOrderId
+                        $reservationOrderId = $reservationOrderId.Split("/")[4]
+                        $reservationOrderIds += $reservationOrderId
+
+                    }
+                }
+
+                # If any reservation orders exist and contain VM size then get Utilization % 
+                if ($reservationOrderIds) {
+                    # Get token for API call
+                    $azContext = Get-AzContext
+                    $subscriptionId = $azContext.Subscription.Id
+                    $azProfile = [Microsoft.Azure.Commands.Common.Authentication.Abstractions.AzureRmProfileProvider]::Instance.Profile
+                    $profileClient = New-Object -TypeName Microsoft.Azure.Commands.ResourceManager.Common.RMProfileClient -ArgumentList ($azProfile)
+                    $token = $profileClient.AcquireAccessToken($azContext.Subscription.TenantId)
+                    $authHeader = @{
+                        'Content-Type'  = 'application/json'
+                        'Authorization' = 'Bearer ' + $token.AccessToken
+                    }
+
+                    $utilizationPercentages = @()
+                    foreach ($reservationOrderId in $reservationOrderIds) {
+
+                        # Invoke the REST API and pull in reservation data for missing day
+                        Write-Output "Retrieving reservation data for reservation order $reservationOrderId..."
+                        $reservationUri = "https://management.azure.com/providers/Microsoft.Capacity/reservationorders/$reservationOrderId/providers/Microsoft.Consumption/reservationSummaries?grain=daily&`$filter=properties/usageDate ge $missingDay AND properties/usageDate le $missingDay&api-version=2019-10-01"
+                        try {
+                            $reservationInfo = Invoke-WebRequest -Uri $reservationUri -Method Get -Headers $authHeader -UseBasicParsing
+                            $reservationInfo = $reservationInfo | ConvertFrom-Json
+                            if ($reservationInfo.value.properties.skuName -eq $vmSize) {
+                                $utilizationPercentages += $reservationInfo.value.properties.avgUtilizationPercentage
+                                $unusedReservedHours = $reservationInfo.value.properties.reservedHours - $reservationInfo.value.properties.usedHours
+                                $totalUnusedReservedHours = $totalUnusedReservedHours + $unusedReservedHours
+                            }
+                        }
+                        catch {
+                            if ( $($_.Exception.Response.StatusCode.Value__) -eq 401) {
+                                Write-Warning "The AVD Automation Account is not authorized to query utilization for reservation '$reservationOrderId'. Please add the 'Reader' role for this account within the reservation order"
+                            }
+                            else {
+                                Write-Error "An error was received from the endpoint whilst querying the Microsoft Capacity API so the script was terminated"
+                            }
+                        }
+                    }
+                    if ($utilizationPercentages) {
+                        $reservationUtilization = $utilizationPercentages | Measure-Object -Average | Select-Object -ExpandProperty Average
+                    }
+                }
+
+                if (!$reservationUtilization) {
+                    $reservationUtilization = $null
+                }
+
                 # Post blank set of data to Log Analytics so this missing day is not queried again
                 $logMessage = @{ 
                     billingDay_s                                         = $missingDay;
@@ -791,8 +851,8 @@ if ($logAnalyticsQuery) {
                     bandwidthSpendUSD_d                                  = $null;
                     bandwidthSpendBillingCurrency_d                      = $null;
                     reservedInstanceHours_d                              = $null;
-                    reservationUtilization_d                             = $null;
-                    totalUnusedReservedHours_d                           = $null;
+                    reservationUtilization_d                             = $reservationUtilization;
+                    totalUnusedReservedHours_d                           = $totalUnusedReservedHours;
                     reservedInstanceCost1YearTermBillingCurrency_d       = $null;
                     reservedInstanceCost3YearTermBillingCurrency_d       = $null
                 }
