@@ -340,7 +340,7 @@ if ($reservationOrderIds) {
 }
 
 if (!$reservationUtilization) {
-    $reservationUtilization = 0
+    $reservationUtilization = $null
 }
 
 # Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
@@ -673,7 +673,9 @@ $logMessage = @{
     bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency;
     reservedInstanceHours_d                              = $totalReservedHoursToSubtract;
     reservationUtilization_d                             = $reservationUtilization;
-    totalUnusedReservedHours_d                           = $totalUnusedReservedHours
+    totalUnusedReservedHours_d                           = $totalUnusedReservedHours;
+    reservedInstanceCost1YearTermBillingCurrency_d       = $billingCost1YearTermBillingCurrency;
+    reservedInstanceCost3YearTermBillingCurrency_d       = $billingCost3YearTermBillingCurrency
 }
 
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
@@ -790,7 +792,9 @@ if ($logAnalyticsQuery) {
                     bandwidthSpendBillingCurrency_d                      = $null;
                     reservedInstanceHours_d                              = $null;
                     reservationUtilization_d                             = $null;
-                    totalUnusedReservedHours_d                           = $null
+                    totalUnusedReservedHours_d                           = $null;
+                    reservedInstanceCost1YearTermBillingCurrency_d       = $null;
+                    reservedInstanceCost3YearTermBillingCurrency_d       = $null
                 }
                 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
                 continue
@@ -886,7 +890,7 @@ if ($logAnalyticsQuery) {
             }
 
             if (!$reservationUtilization) {
-                $reservationUtilization = 0
+                $reservationUtilization = $null
             }
 
             # Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
@@ -1219,7 +1223,9 @@ if ($logAnalyticsQuery) {
                 bandwidthSpendBillingCurrency_d                      = $billingDayBandwidthSpendBillingCurrency;
                 reservedInstanceHours_d                              = $totalReservedHoursToSubtract;
                 reservationUtilization_d                             = $reservationUtilization;
-                totalUnusedReservedHours_d                           = $totalUnusedReservedHours
+                totalUnusedReservedHours_d                           = $totalUnusedReservedHours;
+                reservedInstanceCost1YearTermBillingCurrency_d       = $billingCost1YearTermBillingCurrency;
+                reservedInstanceCost3YearTermBillingCurrency_d       = $billingCost3YearTermBillingCurrency
             }
             Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
             Write-Output "Posted cost analysis data for date $missingDay to Log Analytics"
