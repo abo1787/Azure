@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v4.4.0
+### Latest Release - v4.4.1
+#### v4.4.1
+##### Fixes
+###### * Fixed an issue that caused a VM to yoyo stopping and starting between script runs when a certain condition was met
+---
 #### v4.4.0
 ##### Fixes
 ###### * Fixed an issue with excessive output when checking spare capacity
