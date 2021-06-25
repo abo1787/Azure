@@ -1,8 +1,8 @@
-# Microsoft Azure Windows Virtual Desktop
+# Microsoft Azure Virtual Desktop
 
-Windows Virtual Desktop is a desktop and app virtualization service that runs on the cloud
+Azure Virtual Desktop is a desktop and app virtualization service that runs on the cloud
 
-This repository contains scripts to create WVD Resources and deploy Automation
+This repository contains scripts to create AVD Resources and deploy Automation
 
 The 'Deploy to Azure' buttons shown below can be used to create these resources
 
@@ -16,7 +16,7 @@ Installs specified M365 Apps on an existing VM. You have a choice to exclude cer
 Installs the OneDrive Machine-Wide Installer on an existing VM
 
 #### Install Teams Standalone
-Installs the Teams Machine-Wide Installer and Web-RTC AV redirection on an existing VM. Sets the 'IsWVDEnvironment' registry key if it is a Multi-Session environment
+Installs the Teams Machine-Wide Installer and Web-RTC AV redirection on an existing VM
 
 #### Install FSLogix Standalone
 Installs FSLogix on an existing VM
@@ -25,7 +25,7 @@ Installs FSLogix on an existing VM
 Downloads the UK Language Packs and associated scripts to an existing VM. Run the 'setLocaleUk' script on the desktop to complete the setup.
 
 #### Provision Custom Analytics
-Creates a custom WVD Insights workbook generated from the Azure Monitor WVD Insights and customized to include Bistech Automation and Cost Analysis
+Creates a custom AVD Insights workbook generated from the Azure Monitor AVD Insights and customized to include Bistech Automation and Cost Analysis
 
 ## Deploy to Azure buttons
 
@@ -37,4 +37,4 @@ Name | Description   | Auto-deploy   |
 | Install Teams Standalone | Install Teams Machine-Wide Installer on an already provisioned VM | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FWVD%2FImage%2FinstallTeams.json)
 | Install FSLogix Standalone | Install FSLogix on an already provisioned VM | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FWVD%2FImage%2FinstallFSLogix.json)
 | Install UK Language Pack Standalone | Download UK Language Packs and scripts to an already provisioned VM | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FWVD%2FImage%2FdownloadLocaleUk.json)
-| Provision Custom Analytics | Provisions the WVD Insights Workbook with customization for Bistech Automation and Cost Analysis| [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FWVD%2FAutomation%2FTemplates%2FwvdCustomWorkbookCreationTemplate.json)
+| Provision Custom Analytics | Provisions the AVD Insights Workbook with customization for Bistech Automation and Cost Analysis| [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FWVD%2FAutomation%2FTemplates%2FwvdCustomWorkbookCreationTemplate.json)
