@@ -84,7 +84,7 @@
 ##### Fixes
 ###### * Fixed reserved instance cost calculations
 ##### Other
-###### * Added fallback options for VMN cost and exchange rate
+###### * Added fallback options for VM cost and exchange rate
 ###### * Added additional error checking
 ---
 #### v1.0.9
