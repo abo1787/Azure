@@ -1,7 +1,14 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v4.4.1
+### Latest Release - v5.0.0
+#### v5.0.0
+##### New Features
+###### * Complete code rewrite to enhance troubleshooting, execution and reduce duplication
+###### * Execution time reduced by ~50%
+##### Breaking Changes
+###### * Parameters file now needs EnhancedLogging (boolean)
+---
 #### v4.4.1
 ##### Fixes
 ###### * Fixed an issue that caused a VM to yoyo stopping and starting between script runs when a certain condition was met
@@ -10,7 +17,7 @@
 ##### Fixes
 ###### * Fixed an issue with excessive output when checking spare capacity
 ##### Other
-###### * Reduced script run time by 45%
+###### * Reduced script run time by ~45%
 ---
 #### v4.3.3
 ##### Fixes
