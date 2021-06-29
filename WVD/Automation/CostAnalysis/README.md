@@ -1,7 +1,12 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v1.7.5
+### Latest Release - v1.8.0
+#### v1.8.0
+##### Fixes
+###### * Fixed issue with number rounding for Reserved Instances recommendations
+###### * Split reserved instance and compute costs to allow better representation in the Savings section of the workbook
+---
 #### v1.7.5
 ##### Fixes
 ###### * Added check for reservation utilization even if costed resource did not exist
