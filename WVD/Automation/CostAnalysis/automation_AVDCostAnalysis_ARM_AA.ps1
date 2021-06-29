@@ -1270,8 +1270,8 @@ if ($logAnalyticsQuery) {
             $totalSavingsReservedInstancesBillingCurrency = [math]::Round($totalSavingsReservedInstancesBillingCurrency, 2)
             $totalComputeSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDayComputeSpendUSD
             $totalComputeSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDayComputeSpend
-            $totalSavingsUSD = ($fullPAYGDailyRunHoursPriceUSD + $fullDailyDiskCostsUSD) - $billingDayComputeSpendUSD - $billingDayDiskSpendUSD
-            $totalSavingsBillingCurrency = ($fullPAYGDailyRunHoursPriceBillingCurrency + $fullDailyDiskCostsBillingCurrency) - $billingDayComputeSpend - $billingDayDiskSpendBillingCurrency
+            $totalSavingsUSD = $totalComputeSavingsUSD + $diskSavingsUSD + $totalSavingsReservedInstancesUSD
+            $totalSavingsBillingCurrency = $totalComputeSavingsBillingCurrency + $diskSavingsBillingCurrency + $totalSavingsReservedInstancesBillingCurrency
 
             # Compare daily cost vs all VMs running as Reserved Instances
             $allReservedSavings1YearTermUSD = ($billingDayComputeSpendUSD + $billingCost1YearTermUSD + $billingCost3YearTermUSD) - $fullDailyReservedHoursPriceUSD1YearTerm - $diskSavingsUSD
