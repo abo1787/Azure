@@ -640,8 +640,8 @@ $automationHoursSaved = [math]::Round($automationHoursSaved, 2)
 $totalSavingsReservedInstancesUSD = $reservationSavings1YearTermUSD + $reservationSavings3YearTermUSD
 $totalSavingsReservedInstancesBillingCurrency = $reservationSavings1YearTermBillingCurrency + $reservationSavings3YearTermBillingCurrency
 $totalSavingsReservedInstancesBillingCurrency = [math]::Round($totalSavingsReservedInstancesBillingCurrency, 2)
-$totalComputeSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDayComputeSpendUSD
-$totalComputeSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDayComputeSpend
+$totalComputeSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDayComputeSpendUSD - $billingCost1YearTermUSD - $billingCost3YearTermUSD
+$totalComputeSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDayComputeSpend - $billingCost1YearTermBillingCurrency - $billingCost3YearTermBillingCurrency
 $totalSavingsUSD = $totalComputeSavingsUSD + $diskSavingsUSD + $totalSavingsReservedInstancesUSD
 $totalSavingsBillingCurrency = $totalComputeSavingsBillingCurrency + $diskSavingsBillingCurrency + $totalSavingsReservedInstancesBillingCurrency
 
@@ -1268,8 +1268,8 @@ if ($logAnalyticsQuery) {
             $totalSavingsReservedInstancesUSD = $reservationSavings1YearTermUSD + $reservationSavings3YearTermUSD
             $totalSavingsReservedInstancesBillingCurrency = $reservationSavings1YearTermBillingCurrency + $reservationSavings3YearTermBillingCurrency
             $totalSavingsReservedInstancesBillingCurrency = [math]::Round($totalSavingsReservedInstancesBillingCurrency, 2)
-            $totalComputeSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDayComputeSpendUSD
-            $totalComputeSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDayComputeSpend
+            $totalComputeSavingsUSD = $fullPAYGDailyRunHoursPriceUSD - $billingDayComputeSpendUSD - $billingCost1YearTermUSD - $billingCost3YearTermUSD
+            $totalComputeSavingsBillingCurrency = $fullPAYGDailyRunHoursPriceBillingCurrency - $billingDayComputeSpend - $billingCost1YearTermBillingCurrency - $billingCost3YearTermBillingCurrency
             $totalSavingsUSD = $totalComputeSavingsUSD + $diskSavingsUSD + $totalSavingsReservedInstancesUSD
             $totalSavingsBillingCurrency = $totalComputeSavingsBillingCurrency + $diskSavingsBillingCurrency + $totalSavingsReservedInstancesBillingCurrency
 
