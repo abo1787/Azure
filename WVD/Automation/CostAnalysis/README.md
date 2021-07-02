@@ -1,7 +1,11 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v1.8.0
+### Latest Release - v1.8.1
+#### v1.8.1
+##### Fixes
+###### * Fixed issue with Reserved Instances recommendations when RIs were already used
+---
 #### v1.8.0
 ##### Fixes
 ###### * Fixed issue with number rounding for Reserved Instances recommendations
