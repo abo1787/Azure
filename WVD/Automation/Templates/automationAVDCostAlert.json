@@ -1,0 +1,69 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "workspaceId": {
+            "defaultValue": "",
+            "type": "string",
+            "metadata": {
+                "description": "The ID of the Log Analytics Workspace"
+            }
+        },
+        "workspaceLocation": {
+            "defaultValue": "",
+            "type": "string",
+            "metadata": {
+                "description": "The location of the Log Analytics Workspace"
+            }
+        },
+        "actionGroupId": {
+            "defaultValue": "",
+            "type": "string",
+            "metadata": {
+                "description": "The ID of the Monitor Alert Action Group"
+            }
+        }
+    },
+    "variables": {
+        "alertName": "AVD Cost Alert"
+    },
+    "resources": [
+        {
+            "type": "microsoft.insights/scheduledqueryrules",
+            "apiVersion": "2021-02-01-preview",
+            "name": "[variables('alertName')]",
+            "location": "[parameters('workspaceLocation')]",
+            "properties": {
+                "displayName": "[variables('alertName')]",
+                "description": "You have VMs in maintenance mode still running overnight incurring costs.\n\nCheck the below Insights to view the amount of VMs and their associated Host Pools",
+                "severity": 3,
+                "enabled": true,
+                "evaluationFrequency": "P1D",
+                "scopes": [
+                    "[parameters('workspaceId')]"
+                ],
+                "windowSize": "P1D",
+                "criteria": {
+                    "allOf": [
+                        {
+                            "query": "AVDScaling_CL \n| where TimeGenerated > startofday(ago(0d))\n| extend hour = datetime_part(\"hour\", TimeGenerated)\n| where hour == 0\n| extend minute = datetime_part(\"minute\", TimeGenerated)\n| where minute < 15\n| extend MaintenanceRunningHosts = (runningHosts_d - availableRunningHosts_d)\n| where MaintenanceRunningHosts > 0\n| project TimeGenerated, hostPoolName_s, MaintenanceRunningHosts",
+                            "timeAggregation": "Count",
+                            "operator": "GreaterThan",
+                            "threshold": 0,
+                            "failingPeriods": {
+                                "numberOfEvaluationPeriods": 1,
+                                "minFailingPeriodsToAlert": 1
+                            }
+                        }
+                    ]
+                },
+                "muteActionsDuration": "PT23H50M",
+                "actions": {
+                    "actionGroups": [
+                        "[parameters('actionGroupId')]"
+                    ]
+                }
+            }
+        }
+    ]
+}
