@@ -331,6 +331,7 @@ if ($reservationOrderIds) {
             }
             else {
                 Write-Error "An error was received from the endpoint whilst querying the Microsoft Capacity API so the script was terminated"
+                exit
             }
         }
     }
@@ -826,6 +827,7 @@ if ($logAnalyticsQuery) {
                             }
                             else {
                                 Write-Error "An error was received from the endpoint whilst querying the Microsoft Capacity API so the script was terminated"
+                                exit
                             }
                         }
                     }
@@ -965,6 +967,7 @@ if ($logAnalyticsQuery) {
                         }
                         else {
                             Write-Error "An error was received from the endpoint whilst querying the Microsoft Capacity API so the script was terminated"
+                            exit
                         }
                     }
                 }
