@@ -529,7 +529,7 @@ foreach ($vmConsolidatedCost in $vmConsolidatedCostTable) {
     $vmCostUSD = $vmConsolidatedCost.Group.costUSD | Measure-Object -Sum | Select-Object -ExpandProperty Sum
     $vmCostBillingCurrency = $vmConsolidatedCost.Group.costBillingCurrency | Measure-Object -Sum | Select-Object -ExpandProperty Sum
 
-    if ($vmCostUSD -ge $dailyReservedHoursPriceUSD1YearTerm) {
+    if ($vmCostUSD -gt $dailyReservedHoursPriceUSD1YearTerm) {
         $overSpendUSD = $vmCostUSD - $dailyReservedHoursPriceUSD1YearTerm
         $overSpendBillingCurrency = $vmCostBillingCurrency - $dailyReservedHoursPriceBillingCurrency1YearTerm
         $overSpendUSD = [math]::Round($overSpendUSD, 2)
@@ -538,7 +538,7 @@ foreach ($vmConsolidatedCost in $vmConsolidatedCostTable) {
         $recommendedSavingsBillingCurrencyReserved1YearTerm = $recommendedSavingsBillingCurrencyReserved1YearTerm + $overSpendBillingCurrency
         $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
     }
-    if ($vmCostUSD -ge $dailyReservedHoursPriceUSD3YearTerm) {
+    if ($vmCostUSD -gt $dailyReservedHoursPriceUSD3YearTerm) {
         $overSpendUSD = $vmCostUSD - $dailyReservedHoursPriceUSD3YearTerm
         $overSpendBillingCurrency = $vmCostBillingCurrency - $dailyReservedHoursPriceBillingCurrency3YearTerm
         $overSpendUSD = [math]::Round($overSpendUSD, 2)
@@ -1163,7 +1163,7 @@ if ($logAnalyticsQuery) {
                 $vmCostUSD = $vmConsolidatedCost.Group.costUSD | Measure-Object -Sum | Select-Object -ExpandProperty Sum
                 $vmCostBillingCurrency = $vmConsolidatedCost.Group.costBillingCurrency | Measure-Object -Sum | Select-Object -ExpandProperty Sum
 
-                if ($vmCostUSD -ge $dailyReservedHoursPriceUSD1YearTerm) {
+                if ($vmCostUSD -gt $dailyReservedHoursPriceUSD1YearTerm) {
                     $overSpendUSD = $vmCostUSD - $dailyReservedHoursPriceUSD1YearTerm
                     $overSpendBillingCurrency = $vmCostBillingCurrency - $dailyReservedHoursPriceBillingCurrency1YearTerm
                     $overSpendUSD = [math]::Round($overSpendUSD, 2)
@@ -1172,7 +1172,7 @@ if ($logAnalyticsQuery) {
                     $recommendedSavingsBillingCurrencyReserved1YearTerm = $recommendedSavingsBillingCurrencyReserved1YearTerm + $overSpendBillingCurrency
                     $recommendedReserved1YearTerm = $recommendedReserved1YearTerm + 1
                 }
-                if ($vmCostUSD -ge $dailyReservedHoursPriceUSD3YearTerm) {
+                if ($vmCostUSD -gt $dailyReservedHoursPriceUSD3YearTerm) {
                     $overSpendUSD = $vmCostUSD - $dailyReservedHoursPriceUSD3YearTerm
                     $overSpendBillingCurrency = $vmCostBillingCurrency - $dailyReservedHoursPriceBillingCurrency3YearTerm
                     $overSpendUSD = [math]::Round($overSpendUSD, 2)
