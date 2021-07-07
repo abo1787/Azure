@@ -1,7 +1,14 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v1.8.1
+### Latest Release - v2.0.0
+#### v2.0.0
+##### New Features
+###### * Added a check for existing Log Analytics data for billing day to prevent unintended duplicate data import
+##### Fixes
+###### * Fixed issue with disk costs returning no tier when not using Premium SSD
+###### * Fixed issue with no disk costs when disk tiers had been changed previously
+---
 #### v1.8.1
 ##### Fixes
 ###### * Fixed issue with Reserved Instances recommendations when RIs were already used
