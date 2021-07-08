@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.0.0
+### Latest Release - v5.0.1
+#### v5.0.1
+##### Fixes
+###### * Fixed an issue with maintenance hosts showing -1 at peak start up
+---
 #### v5.0.0
 ##### New Features
 ###### * Complete code rewrite to enhance troubleshooting, execution and reduce duplication
