@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.0.0
+    Version : 2.1.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -52,6 +52,7 @@ $logAnalyticsPrimaryKey = $Input.LogAnalyticsPrimaryKey
 $hostpoolName = $Input.HostPoolName
 $vmDiskType = $Input.VmDiskType
 $billingCurrency = $Input.BillingCurrency
+$legacyPAYGSubscription = $Input.LegacyPAYGSubscription
 
 # Set Log Analytics log name
 $logName = 'AVDCostAnalysis_CL'
@@ -253,7 +254,12 @@ if (!$skipBillingDay) {
 
     # Invoke the REST API and pull in billing data for previous day
     Write-Output "Retrieving billing data for billing day $billingDay..."
-    $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$billingDay&endDate=$billingDay&api-version=2019-10-01"
+    if ($legacyPAYGSubscription -eq $True) {
+        $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`$filter=properties%2FusageStart%20ge%20'$billingDay'%20and%20properties%2FusageEnd%20le%20'$billingDay'&api-version=2019-10-01"
+    }
+    else {
+        $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$billingDay&endDate=$billingDay&api-version=2019-10-01"
+    }
     try {
         $billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing
         $billingInfo = $billingInfo | ConvertFrom-Json
@@ -342,7 +348,12 @@ if (!$skipBillingDay) {
             }
 
             # Invoke the REST API and pull in billing data for previous day
-            $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$billingDay&endDate=$billingDay&api-version=2019-10-01"
+            if ($legacyPAYGSubscription -eq $True) {
+                $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`$filter=properties%2FusageStart%20ge%20'$billingDay'%20and%20properties%2FusageEnd%20le%20'$billingDay'&api-version=2019-10-01"
+            }
+            else {
+                $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$billingDay&endDate=$billingDay&api-version=2019-10-01"
+            }
             try {
                 $billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing
                 $billingInfo = $billingInfo | ConvertFrom-Json
@@ -872,7 +883,12 @@ if ($logAnalyticsQuery) {
                 'Authorization' = 'Bearer ' + $token.AccessToken
             }
             # Invoke the REST API and pull in billing data for missing day
-            $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$missingDay&endDate=$missingDay&api-version=2019-10-01"
+            if ($legacyPAYGSubscription -eq $True) {
+                $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`$filter=properties%2FusageStart%20ge%20'$missingDay'%20and%20properties%2FusageEnd%20le%20'$missingDay'&api-version=2019-10-01"
+            }
+            else {
+                $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$missingDay&endDate=$missingDay&api-version=2019-10-01"
+            }
             try {
                 $billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing
                 $billingInfo = $billingInfo | ConvertFrom-Json
@@ -961,7 +977,12 @@ if ($logAnalyticsQuery) {
                     }
         
                     # Invoke the REST API and pull in billing data for missing day
-                    $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$missingDay&endDate=$missingDay&api-version=2019-10-01"
+                    if ($legacyPAYGSubscription -eq $True) {
+                        $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`$filter=properties%2FusageStart%20ge%20'$missingDay'%20and%20properties%2FusageEnd%20le%20'$missingDay'&api-version=2019-10-01"
+                    }
+                    else {
+                        $billingUri = "https://management.azure.com/subscriptions/$subscriptionId/providers/Microsoft.Consumption/usageDetails?`startDate=$missingDay&endDate=$missingDay&api-version=2019-10-01"
+                    }
                     try {
                         $billingInfo = Invoke-WebRequest -Uri $billingUri -Method Get -Headers $authHeader -UseBasicParsing
                         $billingInfo = $billingInfo | ConvertFrom-Json
