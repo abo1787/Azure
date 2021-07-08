@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.0.0
+    Version : 5.0.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -356,7 +356,8 @@ $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -H
 $hostsAvailableToStart = $allSessionHosts | Where-Object { $_.Status -eq "Unavailable" -and $_.AllowNewSession -eq $True -and $_.UpdateState -eq "Succeeded" } | Sort-Object { Get-Random }
 
 # Check the number of available running session hosts
-$numberOfRunningHost = 0
+$maintenanceRunningSessionHost = 0
+$availableRunningSessionHost = 0
 foreach ($sessionHost in $allSessionHosts) {
   $sessionHostName = $sessionHost.Name
   $sessionHostName = $sessionHostName.Split("/")[1]
@@ -364,10 +365,13 @@ foreach ($sessionHost in $allSessionHosts) {
   Write-Output "Host: $vmName, Current Sessions: $($sessionHost.Session), Status: $($sessionHost.Status), Allow New Sessions: $($sessionHost.AllowNewSession)"
 
   if ($sessionHost.Status -eq "Available" -and $sessionHost.AllowNewSession -eq $True) {
-    $numberOfRunningHost = $numberOfRunningHost + 1
+    $availableRunningSessionHost = $availableRunningSessionHost + 1
+  }
+  if ($sessionHost.Status -eq "Available" -and $sessionHost.AllowNewSession -eq $False) {
+    $maintenanceRunningSessionHost = $maintenanceRunningSessionHost + 1
   }
 }
-Write-Output "Current number of available running hosts: $numberOfRunningHost"
+Write-Output "Current number of available running hosts: $availableRunningSessionHost"
 if ($enhancedLogging -eq $True) {
   Write-Output "*** REGION *** Exited the 'Output All Host Status' region"
 }
@@ -381,8 +385,8 @@ if ($enhancedLogging -eq $True) {
 if ($limitSecondsToForceLogOffUser -ne 0 -and $peakToOffPeakTransitionTrigger -eq $True) {
   Write-Output "The hostpool has recently transitioned to Off-Peak from Peak and force logging-off of users in Off-Peak is enabled. Checking if any resource can be saved..."
 
-  if ($numberOfRunningHost -gt $minimumNumberOfRDSH) {
-    Write-Output "The number of available running hosts ($numberOfRunningHost) is greater than the Off-Peak Minimum Number of running hosts ($minimumNumberOfRDSH). Logging-off procedure will now be started..."
+  if ($availableRunningSessionHost -gt $minimumNumberOfRDSH) {
+    Write-Output "The number of available running hosts ($availableRunningSessionHost) is greater than the Off-Peak Minimum Number of running hosts ($minimumNumberOfRDSH). Logging-off procedure will now be started..."
 
     if ($enhancedLogging -eq $True) {
       Write-Output "*** LOGGING *** Enumerating User Sessions..."
@@ -498,7 +502,7 @@ if ($limitSecondsToForceLogOffUser -ne 0 -and $peakToOffPeakTransitionTrigger -e
     Write-Output "$ExistingSession user(s) were logged off"
 
     foreach ($sessionHost in $forceLogoffSessionHosts) {
-      if ($numberOfRunningHost -gt $minimumNumberOfRDSH) {
+      if ($availableRunningSessionHost -gt $minimumNumberOfRDSH) {
 
         $SessionHostName = $SessionHost.Name
         $SessionHostName = $SessionHostName.Split("/")[1]
@@ -564,7 +568,7 @@ if ($limitSecondsToForceLogOffUser -ne 0 -and $peakToOffPeakTransitionTrigger -e
           }
         }
         # Decrement the number of running session host
-        $NumberOfRunningHost = $NumberOfRunningHost - 1
+        $availableRunningSessionHost = $availableRunningSessionHost - 1
       }
     }
   }
@@ -581,15 +585,15 @@ if ($enhancedLogging -eq $True) {
   Write-Output "*** REGION *** Entered the 'Minimum Number Start-Up' region"
 }
 # Start more hosts if available host number is less than the specified minimum number of hosts
-if ($numberOfRunningHost -lt $minimumNumberOfRDSH) {
-  Write-Output "Current number of available running hosts ($numberOfRunningHost) is less than the specified minimum number of running hosts ($minimumNumberOfRDSH) - Need to start additional hosts"
+if ($availableRunningSessionHost -lt $minimumNumberOfRDSH) {
+  Write-Output "Current number of available running hosts ($availableRunningSessionHost) is less than the specified minimum number of running hosts ($minimumNumberOfRDSH) - Need to start additional hosts"
 
   $global:MinRDSHcapacityTrigger = $True
 
   if ($hostsAvailableToStart) {
     foreach ($sessionHost in $hostsAvailableToStart) {
 
-      if ($numberOfRunningHost -ge $minimumNumberOfRDSH) {
+      if ($availableRunningSessionHost -ge $minimumNumberOfRDSH) {
         Write-Output "The number of available running hosts should soon equal the specified minimum number of running hosts ($minimumNumberOfRDSH)"
         break   
       }
@@ -630,7 +634,7 @@ if ($numberOfRunningHost -lt $minimumNumberOfRDSH) {
         exit
       }
         
-      $numberOfRunningHost = $numberOfRunningHost + 1
+      $availableRunningSessionHost = $availableRunningSessionHost + 1
       $global:spareCapacity = $True
     }
   }
@@ -725,10 +729,10 @@ if ($global:spareCapacity -ne $True -and $doNotStartHost -ne $True) {
         $isHostAvailable = $true
       }
     }
-    $numberOfRunningHost = $numberOfRunningHost + 1
+    $availableRunningSessionHost = $availableRunningSessionHost + 1
     $global:spareCapacity = $True
     $global:hostWasStarted = $True
-    Write-Output "Current number of available running hosts is now: $numberOfRunningHost"
+    Write-Output "Current number of available running hosts is now: $availableRunningSessionHost"
   }  
 }
 if ($enhancedLogging -eq $True) {
@@ -778,8 +782,8 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
     foreach ($activeHost in $activeHostsZeroSessions) {
           
       # Ensure there is at least the MinimumNumberOfRDSH sessions available
-      if ($numberOfRunningHost -le $minimumNumberOfRDSH) {
-        Write-Output "Found no available resource to save as the number of available running hosts = $numberOfRunningHost and the specified minimum number of running hosts = $minimumNumberOfRDSH"
+      if ($availableRunningSessionHost -le $minimumNumberOfRDSH) {
+        Write-Output "Found no available resource to save as the number of available running hosts = $availableRunningSessionHost and the specified minimum number of running hosts = $minimumNumberOfRDSH"
         break
       }
 
@@ -852,8 +856,8 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
         }
 
         # Decrement the number of running session hosts
-        $NumberOfRunningHost = $NumberOfRunningHost - 1
-        Write-Output "Current number of available running hosts is now: $NumberOfRunningHost"
+        $availableRunningSessionHost = $availableRunningSessionHost - 1
+        Write-Output "Current number of available running hosts is now: $availableRunningSessionHost"
       }
     }
   }
@@ -872,7 +876,7 @@ if (($global:spareCapacity -eq $False -or !$global:spareCapacity) -and ($global:
 }
 
 if (($global:spareCapacity -eq $False -or !$global:spareCapacity) -and ($global:MinRDSHcapacityTrigger -eq $True)) { 
-  Write-Warning "WARNING - Current number of available running hosts ($NumberOfRunningHost) is less than the specified minimum number of running hosts ($minimumNumberOfRDSH) but there are no additional hosts available to start"
+  Write-Warning "WARNING - Current number of available running hosts ($availableRunningSessionHost) is less than the specified minimum number of running hosts ($minimumNumberOfRDSH) but there are no additional hosts available to start"
 }
 
 Write-Output "Waiting for any outstanding jobs to complete..."
@@ -901,14 +905,7 @@ $disconnectedUsers = $currentUsers | Where-Object { $_.SessionState -eq 'Disconn
 $disconnectedUserCount = $disconnectedUsers.Count
 
 # Get number of running hosts regardless of Maintenance Mode
-$RunningSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName
-$NumberOfRunningSessionHost = 0
-foreach ($RunningSessionHost in $RunningSessionHosts) {
-
-  if ($RunningSessionHost.Status -eq "Available") {
-    $NumberOfRunningSessionHost = $NumberOfRunningSessionHost + 1
-  }
-}
+$NumberOfRunningSessionHost = $availableRunningSessionHost + $maintenanceRunningSessionHost
 
 # Post data to Log Analytics
 Write-Output "Posting data to Log Analytics"
@@ -917,7 +914,7 @@ $logMessage = @{
   hostPoolName_s                  = $HostpoolName;
   resourceGroupName_s             = $resourceGroupName;
   runningHosts_d                  = $NumberOfRunningSessionHost;
-  availableRunningHosts_d         = $NumberOfRunningHost;
+  availableRunningHosts_d         = $availableRunningSessionHost;
   userSessions_d                  = $currentUserCount;
   userDetail_s                    = $userDetail;
   workDays_s                      = $workDays;
