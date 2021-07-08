@@ -6,7 +6,7 @@
 ##### New Features
 ###### * Added support for Legacy and PAYG subscriptions
 ##### Breaking Changes
-###### * 
+###### * Parameters file now needs LegacyPAYGSubscription (boolean)
 ---
 #### v2.0.0
 ##### New Features
