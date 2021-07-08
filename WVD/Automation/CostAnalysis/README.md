@@ -5,8 +5,6 @@
 #### v2.1.0
 ##### New Features
 ###### * Added support for Legacy and PAYG subscriptions
-##### Fixes
-###### * Fixed issue on workbook when no reservation utilization had ever been posted
 ##### Breaking Changes
 ###### * Parameters file now needs LegacyPAYGSubscription (boolean)
 ---
