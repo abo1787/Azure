@@ -1,7 +1,11 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v2.1.0
+### Latest Release - v2.1.1
+#### v2.1.1
+##### Fixes
+###### * Fixed issue with looking up disk tiers for days with no cost
+---
 #### v2.1.0
 ##### New Features
 ###### * Added support for Legacy and PAYG subscriptions
