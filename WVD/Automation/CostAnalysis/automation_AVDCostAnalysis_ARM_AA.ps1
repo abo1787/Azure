@@ -476,7 +476,7 @@ if (!$skipBillingDay) {
     }
 
     if (!$reservationUtilization) {
-        $reservationUtilization = 0
+        $reservationUtilization = $null
     }
 
     # Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
@@ -1069,7 +1069,7 @@ if ($logAnalyticsQuery) {
                 }
 
                 if (!$reservationUtilization) {
-                    $reservationUtilization = 0
+                    $reservationUtilization = $null
                 }
 
                 # Post blank set of data to Log Analytics so this missing day is not queried again
@@ -1209,7 +1209,7 @@ if ($logAnalyticsQuery) {
             }
 
             if (!$reservationUtilization) {
-                $reservationUtilization = 0
+                $reservationUtilization = $null
             }
 
             # Check correct exchange rate is available from Compute costs. If not, try and retrieve from bandwidth or disk costs
