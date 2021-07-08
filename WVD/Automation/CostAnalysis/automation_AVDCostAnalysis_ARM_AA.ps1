@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.1.0
+    Version : 2.1.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -155,6 +155,7 @@ $standardSSD = 'E' + $diskSize + ' Disks'
 $premiumSSD = 'P' + $diskSize + ' Disks'
 $diskTiers = @($standardHDD, $standardSSD, $premiumSSD)
 $retailDiskPrices = @()
+$originalDiskSize = $diskSize
 
 # Get Azure price list for disks matching VM disk tier
 Write-Output "Retrieving retail prices for S$diskSize, E$diskSize and P$diskSize disks..."
@@ -919,7 +920,7 @@ if ($logAnalyticsQuery) {
             }
 
             if (!$diskCosts) {
-                Write-Warning "No disk costs were found for S$diskSize, E$diskSize and P$diskSize disks on $missingDay. Checking to see if the disks have changed tier since..."
+                Write-Warning "No disk costs were found for S$diskSize, E$diskSize and P$diskSize disks on $missingDay. Checking to see if the disks were a different tier on that date..."
         
                 # Check for any disk costs in the resource group
                 $diskSize = $billingInfo.value.properties | Where-Object { $_.serviceFamily -Like 'Storage' -and $_.resourceGroup -eq $resourceGroupName -and $_.unitOfMeasure -eq '1/Month' } | Select-Object -First 1
@@ -1005,6 +1006,10 @@ if ($logAnalyticsQuery) {
                         }
                         $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
                     }
+                }
+                else {
+                    $diskSize = $originalDiskSize
+                    Write-Output "No disk costs found for any tier"
                 }
             }
 
