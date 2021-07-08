@@ -1,7 +1,13 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v2.0.0
+### Latest Release - v2.1.0
+#### v2.1.0
+##### New Features
+###### * Added support for Legacy and PAYG subscriptions
+##### Breaking Changes
+###### * 
+---
 #### v2.0.0
 ##### New Features
 ###### * Added a check for existing Log Analytics data for billing day to prevent unintended duplicate data import
