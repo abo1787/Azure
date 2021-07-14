@@ -12,12 +12,12 @@ Invoke-WebRequest -Uri "https://github.com/microsoft/winget-cli/releases/downloa
 # Install Winget Dependencies
 Write-Output "Installing Microsoft.VCLibs.140.00_14.0.30035.0_x64__8wekyb3d8bbwe.Appx"
 Add-AppxProvisionedPackage -Online -PackagePath C:\Windows\Temp\Microsoft.VCLibs.140.00_14.0.30035.0_x64__8wekyb3d8bbwe.Appx -SkipLicense
-#Add-AppxPackage -Path C:\Windows\Temp\Microsoft.VCLibs.140.00_14.0.30035.0_x64__8wekyb3d8bbwe.Appx
+Add-AppxPackage -Path C:\Windows\Temp\Microsoft.VCLibs.140.00_14.0.30035.0_x64__8wekyb3d8bbwe.Appx
 Write-Output "Installing Microsoft.VCLibs.140.00.UWPDesktop_14.0.30035.0_x64__8wekyb3d8bbwe.Appx"
 Add-AppxProvisionedPackage -Online -PackagePath C:\Windows\Temp\Microsoft.VCLibs.140.00.UWPDesktop_14.0.30035.0_x64__8wekyb3d8bbwe.Appx -SkipLicense
-#Add-AppxPackage -Path C:\Windows\Temp\Microsoft.VCLibs.140.00.UWPDesktop_14.0.30035.0_x64__8wekyb3d8bbwe.Appx
+Add-AppxPackage -Path C:\Windows\Temp\Microsoft.VCLibs.140.00.UWPDesktop_14.0.30035.0_x64__8wekyb3d8bbwe.Appx
 
 # Install Winget
 Write-Output "Installing Winget"
 Add-AppxProvisionedPackage -Online -PackagePath C:\Windows\Temp\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle -SkipLicense
-#Add-AppxPackage -Path C:\Windows\Temp\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
+Add-AppxPackage -Path C:\Windows\Temp\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
