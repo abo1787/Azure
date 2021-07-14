@@ -5,12 +5,12 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force -Confirm:$
 $softwarePath = "C:\Windows\Temp\aibVendorSoftwareToInstall.csv"
 
 # Import software list to install
-Write-Host "Installing packages"
+Write-Output "Installing packages"
 $software = Import-Csv -Path $softwarePath
 foreach ($package in $software) {
 
-    winget install --id $package.Id -h
-    Write-Host "Installed package $package"
+    C:\Users\packer\AppData\Local\Microsoft\WindowsApps\winget.exe winget install --id $package.Id -h
+    Write-Output "Installed package $package"
     
 }
 
