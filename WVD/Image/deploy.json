@@ -81,6 +81,14 @@
             ],
             "defaultValue": "None"
         },
+        "installFSLogix": {
+            "type": "string",
+            "allowedValues": [
+                "Yes",
+                "No"
+            ],
+            "defaultValue": "Yes"
+        },
         "installOneDrive": {
             "type": "string",
             "allowedValues": [
@@ -127,8 +135,7 @@
         "FSLogixTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installFSLogix.json",
         "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json",
         "GPUNVidiaTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installNvidiaVmExtension.json",
-        "GPUAMDTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installAMDVmExtension.json",
-        "installFSLogix": "No"
+        "GPUAMDTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installAMDVmExtension.json"
     },
     "resources": [
         {
@@ -251,7 +258,7 @@
             }
         },
         {
-            "condition": "[not(equals(variables('installFSLogix'), 'No'))]",
+            "condition": "[not(equals(parameters('installFSLogix'), 'No'))]",
             "name": "[concat(parameters('vmName'), '-FSLogix')]",
             "type": "Microsoft.Resources/deployments",
             "apiVersion": "2016-09-01",
