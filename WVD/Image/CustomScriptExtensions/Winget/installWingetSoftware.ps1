@@ -24,7 +24,8 @@ Write-Output "Installing packages"
 $software = Import-Csv -Path $softwarePath
 foreach ($package in $software) {
 
-    .\AppInstallerCLI.exe install --id $package.Id -h
+    #.\AppInstallerCLI.exe install --id $package.Id -h
+    cmd.exe /c winget install --id $package.Id -h
     Write-Output "Installed package $package"
     
 }
