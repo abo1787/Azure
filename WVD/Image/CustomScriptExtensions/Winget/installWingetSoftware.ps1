@@ -7,7 +7,11 @@ $softwarePath = "C:\Windows\Temp\aibVendorSoftwareToInstall.csv"
 # Change directory
 Set-Location "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_1.12.11692.0_x64__8wekyb3d8bbwe"
 
+Get-AppxPackage Microsoft.DesktopAppInstaller
+
 # Output for troubleshooting
+$appVersion = Get-AppxPackage Microsoft.DesktopAppInstaller
+Write-Output "AppVersion is $appVersion"
 $location = Get-Location
 Write-Output "Directory is $location"
 $enviromentPath = $env:Path -split ';'
