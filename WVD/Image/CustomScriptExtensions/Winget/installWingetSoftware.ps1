@@ -5,20 +5,22 @@ Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force -Confirm:$
 $softwarePath = "C:\Windows\Temp\aibVendorSoftwareToInstall.csv"
 
 # Change directory
-Set-Location C:\Users\packer\AppData\Local\Microsoft\WindowsApps
+Set-Location "C:\Program Files\WindowsApps\Microsoft.DesktopAppInstaller_1.12.11692.0_x64__8wekyb3d8bbwe"
 
 # Output for troubleshooting
 $location = Get-Location
 Write-Output "Directory is $location"
 $enviromentPath = $env:Path -split ';'
 Write-Output "Environment path is $enviromentPath"
+$listDirs = Get-ChildItem "C:\Program Files\WindowsApps" | Where-Object {$_.Name -like "Microsoft.DesktopAppInstaller*"}
+Write-Output "Directories are $listDirs"
 
 # Import software list to install
 Write-Output "Installing packages"
 $software = Import-Csv -Path $softwarePath
 foreach ($package in $software) {
 
-    .\winget.exe install --id $package.Id -h
+    .\AppInstallerCLI.exe install --id $package.Id -h
     Write-Output "Installed package $package"
     
 }
