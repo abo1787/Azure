@@ -57,7 +57,7 @@
                         }
                     ]
                 },
-                "muteActionsDuration": "PT23H50M",
+                "muteActionsDuration": "P1D",
                 "actions": {
                     "actionGroups": [
                         "[parameters('actionGroupId')]"
