@@ -1,6 +1,3 @@
-# Set the ExecutionPolicy
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force -Confirm:$false
-
 # Remove Chocolatey
 $userKey = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Environment')
 $userPath = $userKey.GetValue('PATH', [string]::Empty, 'DoNotExpandEnvironmentNames').ToString()
