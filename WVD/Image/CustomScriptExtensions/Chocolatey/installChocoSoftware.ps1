@@ -1,6 +1,3 @@
-# Set the ExecutionPolicy
-Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force -Confirm:$false
-
 # Set path for software instruction file
 $softwarePath = "C:\Windows\Temp\aibVendorSoftwareToInstall.csv"
 
