@@ -14,7 +14,7 @@ $customOfficeFile = "C:\Windows\Temp\OfficeConfiguration.xml"
 $switches = "/configure $customOfficeFile"
 
 # Install Office
-Start-Process -FilePath $executableName -ArgumentList $switches -PassThru
+$installer = Start-Process -FilePath $executableName -ArgumentList $switches -Wait -PassThru
 
 # Write to AIB Output
 Write-Output "*** COMPLETED OFFICE 365 INSTALL ***"
