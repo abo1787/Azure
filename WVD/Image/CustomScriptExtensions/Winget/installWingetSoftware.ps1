@@ -1,3 +1,6 @@
+# Write to AIB Output
+Write-Output "*** STARTING WINGET SOFTWARE INSTALL ***"
+
 # Set the ExecutionPolicy
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force -Confirm:$false
 
@@ -32,3 +35,6 @@ foreach ($package in $software) {
 
 # Remove software instruction file
 Remove-Item $softwarePath
+
+# Write to AIB Output
+Write-Output "*** COMPLETED WINGET SOFTWARE INSTALL ***"
