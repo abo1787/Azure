@@ -1,3 +1,6 @@
+# Write to AIB Output
+Write-Output "*** STARTING OPTIMIZATION SCRIPT ***"
+
 # Create directory for file download
 $dirPath = "C:\Windows\Temp"
 New-Item -Path $dirPath -Name "optimizationFiles" -ItemType Directory
@@ -84,3 +87,6 @@ else {
     Write-Output "No Services set to disabled in $servicesFilePath"
 }
 #endregion
+
+# Write to AIB Output
+Write-Output "*** COMPLETED OPTMIZATION SCRIPT ***"
