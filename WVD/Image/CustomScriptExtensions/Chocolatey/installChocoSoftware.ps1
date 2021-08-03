@@ -1,3 +1,6 @@
+# Write to AIB Output
+Write-Output "*** STARTING CHOCOLATEY SOFTWARE INSTALL ***"
+
 # Set path for software instruction file
 $softwarePath = "C:\Windows\Temp\aibVendorSoftwareToInstall.csv"
 
@@ -13,3 +16,6 @@ foreach ($package in $software) {
 
 # Remove software instruction file
 Remove-Item $softwarePath
+
+# Write to AIB Output
+Write-Output "*** COMPLETED CHOCOLATEY SOFTWARE INSTALL ***"
