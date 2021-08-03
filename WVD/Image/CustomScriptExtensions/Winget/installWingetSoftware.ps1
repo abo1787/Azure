@@ -1,5 +1,6 @@
 # Write to AIB Output
-Write-Output "*** STARTING WINGET SOFTWARE INSTALL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** STARTING WINGET SOFTWARE INSTALL ***"
 
 # Set the ExecutionPolicy
 Set-ExecutionPolicy -ExecutionPolicy Bypass -Scope CurrentUser -Force -Confirm:$false
@@ -37,4 +38,5 @@ foreach ($package in $software) {
 Remove-Item $softwarePath
 
 # Write to AIB Output
-Write-Output "*** COMPLETED WINGET SOFTWARE INSTALL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** COMPLETED WINGET SOFTWARE INSTALL ***"
