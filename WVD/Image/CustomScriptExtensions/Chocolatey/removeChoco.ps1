@@ -1,20 +1,9 @@
+# Write to AIB Output
+Write-Output "*** STARTING CHOCOLATEY REMOVAL ***"
+
 # Remove Chocolatey
-$userKey = [Microsoft.Win32.Registry]::CurrentUser.OpenSubKey('Environment')
-$userPath = $userKey.GetValue('PATH', [string]::Empty, 'DoNotExpandEnvironmentNames').ToString()
-
-$machineKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey('SYSTEM\ControlSet001\Control\Session Manager\Environment\')
+$machineKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey('SYSTEM\ControlSet001\Control\Session Manager\Environment\', $true)
 $machinePath = $machineKey.GetValue('PATH', [string]::Empty, 'DoNotExpandEnvironmentNames').ToString()
-
-if ($userPath -like "*$env:ChocolateyInstall*") {
-    Write-Output "Chocolatey Install location found in User Path. Removing..."
-
-    $newUserPATH = @(
-        $userPath -split [System.IO.Path]::PathSeparator |
-        Where-Object { $_ -and $_ -ne "$env:ChocolateyInstall\bin" }
-    ) -join [System.IO.Path]::PathSeparator
-
-    $userKey.SetValue('PATH', $newUserPATH, 'ExpandString')
-}
 
 if ($machinePath -like "*$env:ChocolateyInstall*") {
     Write-Output "Chocolatey Install location found in Machine Path. Removing..."
@@ -42,7 +31,6 @@ Remove-Item -Path $env:ChocolateyInstall -Recurse -Force
 }
 
 $machineKey.Close()
-$userKey.Close()
 
 if ($env:ChocolateyToolsLocation -and (Test-Path $env:ChocolateyToolsLocation)) {
     Remove-Item -Path $env:ChocolateyToolsLocation -Recurse -Force
@@ -51,3 +39,6 @@ if ($env:ChocolateyToolsLocation -and (Test-Path $env:ChocolateyToolsLocation)) 
 foreach ($scope in 'User', 'Machine') {
     [Environment]::SetEnvironmentVariable('ChocolateyToolsLocation', [string]::Empty, $scope)
 }
+
+# Write to AIB Output
+Write-Output "*** COMPLETED CHOCOLATEY REMOVAL ***"
