@@ -1,5 +1,6 @@
 # Write to AIB Output
-Write-Output "*** STARTING WINGET INSTALL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** STARTING WINGET INSTALL ***"
 
 # Do not prompt user for confirmations
 Set-Variable -Name 'ConfirmPreference' -Value 'None' -Scope Global
@@ -26,4 +27,5 @@ Add-AppxProvisionedPackage -Online -PackagePath C:\Windows\Temp\Microsoft.Deskto
 #Add-AppxPackage -Path C:\Windows\Temp\Microsoft.DesktopAppInstaller_8wekyb3d8bbwe.msixbundle
 
 ## Write to AIB Output
-Write-Output "*** COMPLETED WINGET INSTALL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** COMPLETED WINGET INSTALL ***"
