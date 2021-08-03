@@ -1,5 +1,6 @@
 # Write to AIB Output
-Write-Output "*** STARTING CHOCOLATEY REMOVAL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** STARTING CHOCOLATEY REMOVAL ***"
 
 # Remove Chocolatey
 $machineKey = [Microsoft.Win32.Registry]::LocalMachine.OpenSubKey('SYSTEM\ControlSet001\Control\Session Manager\Environment\', $true)
@@ -41,4 +42,5 @@ foreach ($scope in 'User', 'Machine') {
 }
 
 # Write to AIB Output
-Write-Output "*** COMPLETED CHOCOLATEY REMOVAL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** COMPLETED CHOCOLATEY REMOVAL ***"
