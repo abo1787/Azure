@@ -1,5 +1,6 @@
 # Write to AIB Output
-Write-Output "*** STARTING CHOCOLATEY SOFTWARE INSTALL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** STARTING CHOCOLATEY SOFTWARE INSTALL ***"
 
 # Set path for software instruction file
 $softwarePath = "C:\Windows\Temp\aibVendorSoftwareToInstall.csv"
@@ -18,4 +19,5 @@ foreach ($package in $software) {
 Remove-Item $softwarePath
 
 # Write to AIB Output
-Write-Output "*** COMPLETED CHOCOLATEY SOFTWARE INSTALL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** COMPLETED CHOCOLATEY SOFTWARE INSTALL ***"
