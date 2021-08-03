@@ -97,7 +97,8 @@ function Set-Logger {
 #endregion
 
 # Write to AIB Output
-Write-Output "*** STARTING UK LANGUAGE INSTALL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** STARTING UK LANGUAGE INSTALL ***"
 
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\UKLocale" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
@@ -133,4 +134,5 @@ Invoke-WebRequest -Uri $localeUri -OutFile "$filePath\setLocaleUkAIB.ps1"
 & "$filePath\setLocaleUkAIB.ps1"
 
 # Write to AIB Output
-Write-Output "*** COMPLETED UK LANGUAGE INSTALL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** COMPLETED UK LANGUAGE INSTALL ***"
