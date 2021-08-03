@@ -1,6 +1,6 @@
 # Write to AIB Output
 $timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Write-Output "*** STARTING OFFICE 365 INSTALL ***"
+Write-Output "$timeStamp *** STARTING OFFICE 365 INSTALL ***"
 
 # Download Office365
 $office365Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/OfficeDeploy.zip"
