@@ -1,4 +1,5 @@
 # Write to AIB Output
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 Write-Output "*** STARTING OFFICE 365 INSTALL ***"
 
 # Download Office365
@@ -14,7 +15,8 @@ $customOfficeFile = "C:\Windows\Temp\OfficeConfiguration.xml"
 $switches = "/configure $customOfficeFile"
 
 # Install Office
-$installer = Start-Process -FilePath $executableName -ArgumentList $switches -Wait -PassThru
+Start-Process -FilePath $executableName -ArgumentList $switches -Wait -PassThru -NoNewWindow
 
 # Write to AIB Output
-Write-Output "*** COMPLETED OFFICE 365 INSTALL ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** COMPLETED OFFICE 365 INSTALL ***"
