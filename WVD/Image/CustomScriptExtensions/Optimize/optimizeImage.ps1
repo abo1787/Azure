@@ -1,5 +1,6 @@
 # Write to AIB Output
-Write-Output "*** STARTING OPTIMIZATION SCRIPT ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** STARTING OPTIMIZATION SCRIPT ***"
 
 # Create directory for file download
 $dirPath = "C:\Windows\Temp"
@@ -89,4 +90,5 @@ else {
 #endregion
 
 # Write to AIB Output
-Write-Output "*** COMPLETED OPTMIZATION SCRIPT ***"
+$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+Write-Output "$timeStamp *** COMPLETED OPTMIZATION SCRIPT ***"
