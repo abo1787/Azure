@@ -1,4 +1,5 @@
-
+# Write to AIB Output
+Write-Output "*** STARTING DISK CLEANUP ***"
 
 # Run disk cleanup on all possible areas
 $sections = @(
@@ -70,4 +71,4 @@ Write-Output 'Cleaning complete!'
 Stop-Process -Name cleanmgr
 Write-Output 'Restoring default disk cleanup settings...'
 Get-ItemProperty @getItemParams | Remove-ItemProperty -Name StateFlags0001 -ErrorAction SilentlyContinue
-Write-Output 'Disk cleanup complete'
+Write-Output "*** COMPLETED DISK CLEANUP ***"
