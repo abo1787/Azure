@@ -1,20 +1,13 @@
 {
-    "properties": {
-        "roleName": "Start VM on Connect",
-        "description": "Gives Start VM on Connect access to start Virtual Machines when requested",
-        "assignableScopes": [
-            "/subscriptions/<subscriptionID>"
-        ],
-        "permissions": [
-            {
-                "actions": [
-                    "Microsoft.Compute/virtualMachines/start/action",
-                    "Microsoft.Compute/virtualMachines/read"
-                ],
-                "notActions": [],
-                "dataActions": [],
-                "notDataActions": []
-            }
-        ]
-    }
+    "Name": "Start VM on Connect",
+    "IsCustom": true,
+    "Description": "Gives Start VM on Connect access to start Virtual Machines when requested",
+    "Actions": [
+        "Microsoft.Compute/virtualMachines/start/action",
+        "Microsoft.Compute/virtualMachines/read"
+    ],
+    "NotActions": [],
+    "AssignableScopes": [
+        "/subscriptions/<subscriptionID>"
+    ]
 }
