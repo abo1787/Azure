@@ -16,7 +16,9 @@
         }
     },
     "functions": [],
-    "variables": {},
+    "variables": {
+        "scriptName": "removeVMsFromDomain.ps1"
+    },
     "resources": [
         {
             "type": "Microsoft.Compute/virtualMachines/extensions",
@@ -33,7 +35,7 @@
                     "fileUris": [
                         "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Hostpool/removeVMsFromDomain.ps1"
                     ],
-                    "commandToExecute": "[concat('powershell.exe -ExecutionPolicy Unrestricted -File removeVMsFromDomain.ps1 ', parameters('domainUser'), parameters('domainPass'))]"
+                    "commandToExecute": "[concat('powershell -ExecutionPolicy Unrestricted -File ', variables('scriptName'), ' ', parameters('domainUser'), ' ', parameters('domainPass'))]"
                 }
             }
         }
