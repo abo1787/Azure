@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.0.1
+    Version : 5.0.2
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -321,8 +321,10 @@ foreach ($sessionHost in $allSessionHosts) {
   $sessionHostName = $sessionHostName.Split("/")[1]
   $vmName = $sessionHostName.Split(".")[0]
   $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $VMName }
+  $tagTable = New-Object PSObject
+  $vmInfo.Tags.GetEnumerator() | ForEach-Object { Add-Member -InputObject $tagTable -MemberType NoteProperty -Name $_.Key -Value $_.Value }
 
-  if ($vmInfo.Tags.ContainsKey($maintenanceTagName) -and $vmInfo.Tags.ContainsValue($True)) {
+  if ($tagTable.$maintenanceTagName -eq $True) {
     Write-Output "The host '$vmName' is in maintenance mode, so is not allowing any further connections"
     if ($sessionHost.AllowNewSession -ne $False) {
       Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName -Name $sessionHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
@@ -604,12 +606,7 @@ if ($availableRunningSessionHost -lt $minimumNumberOfRDSH) {
       $vmName = $sessionHostName.Split(".")[0]
       $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $vmName }
       $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
-        
-      # Check to see if the Session host is in maintenance mode
-      if ($vmInfo.Tags.ContainsKey($maintenanceTagName) -and $vmInfo.Tags.ContainsValue($True)) {
-        continue
-      }
-
+      
       # Change the Azure VM disk tier before starting
       if ($vmDisk.Sku.Name -ne $vmDiskType) {
         try {
@@ -795,11 +792,6 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
         $vmName = $activeHostName.Split(".")[0]
         $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $vmName }
         $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
-
-        # Check if the Session host is in maintenance
-        if ($vmInfo.Tags.ContainsKey($MaintenanceTagName) -and $VMInfo.Tags.ContainsValue($True)) {
-          continue
-        }
 
         Write-Output "Identified free host '$vmName' with $($activeHost.Session) sessions that can be shut down to save resource"
 
