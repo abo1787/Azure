@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.0.1
+### Latest Release - v5.0.2
+#### v5.0.2
+##### Fixes
+###### * Changed Tag value collection to support host VMs having additional tags
+---
 #### v5.0.1
 ##### Fixes
 ###### * Fixed an issue with maintenance hosts showing -1 at peak start up
