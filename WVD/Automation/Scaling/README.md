@@ -64,7 +64,7 @@
 #### v4.0.0
 ##### New Features
 ###### * Disk cost optimization - VM disks will be changed to Standard HDD when powered off to save on storage costs. They will be changed to required performance tier when powered on
-###### * Minimum Number of Hosts now supports being set to 0 - All hosts can be powered off in Off-Peak if required
+###### * Minimum Number of Hosts now supports being set to 0 - All hosts can be powered off if required
 ###### * Scale Factor - This now uses session number rather than a percentage calculation making it easier to set and less error prone
 ##### Other
 ###### * Condensed and tidied Job outputs
