@@ -15,7 +15,7 @@
 ###### * Complete code rewrite to enhance troubleshooting, execution and reduce duplication
 ###### * Execution time reduced by ~50%
 ##### Breaking Changes
-###### * Parameters file now needs EnhancedLogging (boolean)
+###### * Parameters file now requires EnhancedLogging (boolean)
 ---
 #### v4.4.1
 ##### Fixes
@@ -51,7 +51,7 @@
 ##### New Features
 ###### * Custom Holiday Support - Custom holiday dates can now be specified. Host pools will be kept in Off-Peak mode when it's a Custom Holiday
 ##### Breaking Changes
-###### * Parameters file now needs customHolidays (array)
+###### * Parameters file now requires customHolidays (array)
 ---
 #### v4.1.0
 ##### New Features
@@ -59,7 +59,7 @@
 ##### Fixes
 ###### * Fixed an issue where last host wouldn't shut down if minimum number of hosts was set to 0
 ##### Breaking Changes
-###### * Parameters file now needs observeUKBankHolidays (bool)
+###### * Parameters file now requires observeUKBankHolidays (bool)
 ---
 #### v4.0.0
 ##### New Features
@@ -70,8 +70,8 @@
 ###### * Condensed and tidied Job outputs
 ###### * Various code optimizations
 ##### Breaking Changes
-###### * Parameters file now needs vmDiskType (string)
-###### * Parameters file Scale Factor variables now need to be number of sessions (int) rather than percentage of total sessions allowed
+###### * Parameters file now requires vmDiskType (string)
+###### * Parameters file Scale Factor variables now required to be number of sessions (int) rather than percentage of total sessions allowed
 ---
 #### v3.2.1
 ##### Other
@@ -81,7 +81,7 @@
 ##### New Features
 ###### * Added daylight saving support
 ##### Breaking Changes
-###### * Parameters file now needs timeZone (string) instead of timeDifferenceInHours
+###### * Parameters file now requires timeZone (string) instead of timeDifferenceInHours
 ---
 #### v3.1.02
 ##### Fixes
