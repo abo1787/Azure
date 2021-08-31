@@ -8,13 +8,6 @@
             "description": "Workspace name"
          }
       },
-      "location": {
-         "type": "string",
-         "defaultValue": "[resourceGroup().location]",
-         "metadata": {
-            "description": "Location for all resources."
-         }
-      },
       "gpuType": {
          "type": "string",
          "allowedValues": [
@@ -28,13 +21,16 @@
          }
       }
    },
+   "variables": {
+      "location": "[resourceGroup().location]"
+   },
    "resources": [
       {
          "properties": {},
          "apiVersion": "2020-10-01",
          "type": "Microsoft.OperationalInsights/workspaces",
          "name": "[parameters('workspaceName')]",
-         "location": "[parameters('location')]",
+         "location": "[variables('location')]",
          "resources": [
             {
                "apiVersion": "2020-10-01",
