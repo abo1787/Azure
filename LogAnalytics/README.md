@@ -1,8 +1,8 @@
-# Microsoft Azure Virtual Desktop
+# Microsoft Azure Log Analytics
 
-Azure Virtual Desktop is a desktop and app virtualization service that runs on the cloud
+Log Analytics is a tool in the Azure portal used to edit and run log queries with data in Azure Monitor Logs
 
-This repository contains scripts to create AVD Resources and deploy Automation
+This repository contains scripts to create Log Analytics resources
 
 The 'Deploy to Azure' buttons shown below can be used to create these resources
 
