@@ -13,4 +13,4 @@ Creates the Event Log and Performance Counter Agent configuration required for A
 
 Name | Description   | Auto-deploy   |
 -----| ------------- |--------------- | 
-| Create Image VM | Create a VM from a Marketplace Image and customize it with required software relevant to WVD | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FWVD%2FImage%2Fdeploy.json)
+| Create Image VM | Create a VM from a Marketplace Image and customize it with required software relevant to WVD | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FLogAnalytics%2FAVD%2FavdInsightsCounters.json)
