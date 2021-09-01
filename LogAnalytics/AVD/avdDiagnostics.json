@@ -1,0 +1,113 @@
+{
+   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "parameters": {
+      "avdHostpoolName": {
+         "type": "String"
+      },
+      "avdApplicationGroupName": {
+         "type": "String"
+      },
+      "avdWorkspaceName": {
+         "type": "String"
+      },
+      "logAnalyticsWorkspaceName": {
+         "type": "String"
+      },
+      "logAnalyticsResourceGroup": {
+         "type": "String"
+      }
+   },
+   "variables": {
+      "settingName": "Insights",
+      "subscription": "[subscription().subscriptionId]",
+      "workspaceId": "[concat('/subscriptions/', variables('subscription'), '/resourceGroups/', parameters('logAnalyticsResourceGroup'), '/providers/Microsoft.OperationalInsights/workspaces/', parameters('logAnalyticsWorkspaceName'))]"
+   },
+   "resources": [
+      {
+         "type": "Microsoft.DesktopVirtualization/hostpools/providers/diagnosticSettings",
+         "apiVersion": "2021-05-01-preview",
+         "name": "[concat(parameters('avdHostpoolName'), '/Microsoft.Insights/', variables('settingName'))]",
+         "dependsOn": [],
+         "properties": {
+            "workspaceId": "[variables('workspaceId')]",
+            "logs": [
+               {
+                  "category": "Checkpoint",
+                  "enabled": true
+               },
+               {
+                  "category": "Error",
+                  "enabled": true
+               },
+               {
+                  "category": "Management",
+                  "enabled": true
+               },
+               {
+                  "category": "Connection",
+                  "enabled": true
+               },
+               {
+                  "category": "HostRegistration",
+                  "enabled": true
+               },
+               {
+                  "category": "AgentHealthStatus",
+                  "enabled": true
+               }
+            ]
+         }
+      },
+      {
+         "type": "Microsoft.DesktopVirtualization/applicationgroups/providers/diagnosticSettings",
+         "apiVersion": "2021-05-01-preview",
+         "name": "[concat(parameters('avdApplicationGroupName'), '/Microsoft.Insights/', variables('settingName'))]",
+         "dependsOn": [],
+         "properties": {
+            "workspaceId": "[variables('workspaceId')]",
+            "logs": [
+               {
+                  "category": "Checkpoint",
+                  "enabled": true
+               },
+               {
+                  "category": "Error",
+                  "enabled": true
+               },
+               {
+                  "category": "Management",
+                  "enabled": true
+               }
+            ]
+         }
+      },
+      {
+         "type": "Microsoft.DesktopVirtualization/workspaces/providers/diagnosticSettings",
+         "apiVersion": "2021-05-01-preview",
+         "name": "[concat(parameters('avdWorkspaceName'), '/Microsoft.Insights/', variables('settingName'))]",
+         "dependsOn": [],
+         "properties": {
+            "workspaceId": "[variables('workspaceId')]",
+            "logs": [
+               {
+                  "category": "Checkpoint",
+                  "enabled": true
+               },
+               {
+                  "category": "Error",
+                  "enabled": true
+               },
+               {
+                  "category": "Management",
+                  "enabled": true
+               },
+               {
+                  "category": "Feed",
+                  "enabled": true
+               }
+            ]
+         }
+      }
+   ]
+}
