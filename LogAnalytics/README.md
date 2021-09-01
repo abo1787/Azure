@@ -9,6 +9,9 @@ The 'Deploy to Azure' buttons shown below can be used to create these resources
 #### Insights Counters for AVD
 Creates the Azure Monitor Agent configuration required for AVD Insights
 
+#### Diagnostics for AVD
+Creates the Diagnostics configuration required for AVD Insights
+
 ## Deploy to Azure buttons
 
 Name | Description   | Auto-deploy   |
