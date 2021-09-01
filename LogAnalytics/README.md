@@ -17,4 +17,4 @@ Creates the Diagnostics configuration required for AVD Insights
 Name | Description   | Auto-deploy   |
 -----| ------------- |--------------- | 
 | Insights Counters for AVD | Creates the Azure Monitor Agent configuration required for AVD Insights | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FLogAnalytics%2FAVD%2FavdInsightsCounters.json)
-| Diagostics for AVD | Creates the Diagnostics configuration required for AVD Insights | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FLogAnalytics%2FAVD%2FavdDiagnostics.json)
+| Diagnostics for AVD | Creates the Diagnostics configuration required for AVD Insights | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FLogAnalytics%2FAVD%2FavdDiagnostics.json)
