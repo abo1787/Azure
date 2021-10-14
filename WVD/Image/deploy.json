@@ -57,9 +57,6 @@
         "LocalAdminPassword": {
             "type": "securestring"
         },
-        "VirtualNetworkSubscriptionId": {
-            "type": "string"
-        },
         "VirtualNetworkResourceGroup": {
             "type": "string"
         },
@@ -169,9 +166,6 @@
                     },
                     "LocalAdminPassword": {
                         "value": "[parameters('LocalAdminPassword')]"
-                    },
-                    "VirtualNetworkSubscriptionId": {
-                        "value": "[parameters('VirtualNetworkSubscriptionId')]"
                     },
                     "VirtualNetworkResourceGroup": {
                         "value": "[parameters('VirtualNetworkResourceGroup')]"
