@@ -48,6 +48,9 @@
         "LocalAdminPassword": {
             "type": "securestring"
         },
+        "VirtualNetworkSubscriptionId": {
+            "type": "string"
+        },
         "VirtualNetworkResourceGroup": {
             "type": "string"
         },
@@ -76,7 +79,7 @@
                         "name": "ipconfig1",
                         "properties": {
                             "subnet": {
-                                "id": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]"
+                                "id": "[concat('/subscriptions/', parameters('VirtualNetworkSubscriptionId'), '/resourceGroups/', parameters('virtualNetworkResourceGroup'), '/providers/Microsoft.Network/virtualNetworks/', parameters('virtualNetworkName'), '/subnets/', parameters('subnetName'))]"
                             },
                             "privateIPAllocationMethod": "Dynamic"
                         }
