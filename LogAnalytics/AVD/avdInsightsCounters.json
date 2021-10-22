@@ -26,13 +26,13 @@
    "resources": [
       {
          "properties": {},
-         "apiVersion": "2020-10-01",
+         "apiVersion": "2020-08-01",
          "type": "Microsoft.OperationalInsights/workspaces",
          "name": "[parameters('workspaceName')]",
          "location": "[variables('location')]",
          "resources": [
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "sampleWindowsEvent1",
                "dependsOn": [
@@ -52,7 +52,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "sampleWindowsEvent2",
                "dependsOn": [
@@ -72,7 +72,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "sampleWindowsEvent3",
                "dependsOn": [
@@ -95,7 +95,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "sampleWindowsEvent4",
                "dependsOn": [
@@ -118,7 +118,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "sampleWindowsEvent5",
                "dependsOn": [
@@ -141,7 +141,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "sampleWindowsEvent6",
                "dependsOn": [
@@ -164,7 +164,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter1",
                "dependsOn": [
@@ -179,7 +179,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter2",
                "dependsOn": [
@@ -194,7 +194,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter3",
                "dependsOn": [
@@ -209,7 +209,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter4",
                "dependsOn": [
@@ -224,7 +224,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter5",
                "dependsOn": [
@@ -239,7 +239,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter6",
                "dependsOn": [
@@ -254,7 +254,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter7",
                "dependsOn": [
@@ -269,7 +269,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter8",
                "dependsOn": [
@@ -284,7 +284,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter9",
                "dependsOn": [
@@ -299,7 +299,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter10",
                "dependsOn": [
@@ -314,7 +314,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter11",
                "dependsOn": [
@@ -329,7 +329,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter12",
                "dependsOn": [
@@ -344,7 +344,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter18",
                "dependsOn": [
@@ -359,7 +359,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter19",
                "dependsOn": [
@@ -374,7 +374,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter20",
                "dependsOn": [
@@ -389,7 +389,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter21",
                "dependsOn": [
@@ -404,7 +404,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter22",
                "dependsOn": [
@@ -419,7 +419,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter23",
                "dependsOn": [
@@ -434,7 +434,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter24",
                "dependsOn": [
@@ -449,7 +449,7 @@
                }
             },
             {
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter25",
                "dependsOn": [
@@ -465,7 +465,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter26",
                "dependsOn": [
@@ -481,7 +481,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter27",
                "dependsOn": [
@@ -497,7 +497,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter28",
                "dependsOn": [
@@ -513,7 +513,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter29",
                "dependsOn": [
@@ -529,7 +529,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter30",
                "dependsOn": [
@@ -545,7 +545,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter31",
                "dependsOn": [
@@ -561,7 +561,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter32",
                "dependsOn": [
@@ -577,7 +577,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter33",
                "dependsOn": [
@@ -593,7 +593,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter34",
                "dependsOn": [
@@ -609,7 +609,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter35",
                "dependsOn": [
@@ -625,7 +625,7 @@
             },
             {
                "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-               "apiVersion": "2020-10-01",
+               "apiVersion": "2020-08-01",
                "type": "datasources",
                "name": "perfcounter36",
                "dependsOn": [
@@ -649,19 +649,19 @@
       },
       "provisioningState": {
          "type": "string",
-         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-10-01').provisioningState]"
+         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-08-01').provisioningState]"
       },
       "source": {
          "type": "string",
-         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-10-01').source]"
+         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-08-01').source]"
       },
       "customerId": {
          "type": "string",
-         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-10-01').customerId]"
+         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-08-01').customerId]"
       },
       "sku": {
          "type": "string",
-         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-10-01').sku.name]"
+         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-08-01').sku.name]"
       }
    }
 }
