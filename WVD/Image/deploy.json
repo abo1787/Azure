@@ -1,360 +1,362 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "vmName": {
-            "type": "string",
-            "metadata": {
-                "description": "The name for the VM"
+   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "parameters": {
+      "vmName": {
+         "type": "string",
+         "metadata": {
+            "description": "The name for the VM"
+         }
+      },
+      "vmSize": {
+         "type": "string",
+         "metadata": {
+            "description": "The machine size e.g. Standard_NV12s_v3"
+         }
+      },
+      "osVersion": {
+         "type": "string",
+         "allowedValues": [
+            "win11-21h2-avd",
+            "win11-21h2-ent",
+            "21h1-evd-g2",
+            "21h1-evd",
+            "20h2-evd-g2",
+            "20h2-evd",
+            "20h1-evd-g2",
+            "20h1-evd",
+            "19h2-evd-g2",
+            "19h2-evd",
+            "21h1-ent-g2",
+            "21h1-ent",
+            "20h2-ent-g2",
+            "20h2-ent",
+            "20h1-ent-g2",
+            "20h1-ent",
+            "19h2-ent-g2",
+            "19h2-ent"
+         ],
+         "defaultValue": "21h1-evd-g2",
+         "metadata": {
+            "description": "The OS type for the VM. For Windows 10, EVD is Multi-Session. For Windows 11 AVD is Multi-Session. ENT is Enterprise (Single Session)"
+         }
+      },
+      "osDiskType": {
+         "type": "string",
+         "allowedValues": [
+            "Standard_LRS",
+            "StandardSSD_LRS",
+            "Premium_LRS"
+         ],
+         "defaultValue": "Premium_LRS",
+         "metadata": {
+            "description": "The disk type for the OS disk"
+         }
+      },
+      "LocalAdminUsername": {
+         "type": "string"
+      },
+      "LocalAdminPassword": {
+         "type": "securestring"
+      },
+      "VirtualNetworkResourceGroup": {
+         "type": "string"
+      },
+      "VirtualNetworkName": {
+         "type": "string"
+      },
+      "subnetName": {
+         "type": "string"
+      },
+      "install365Apps": {
+         "type": "string",
+         "allowedValues": [
+            "None",
+            "All",
+            "No_Access",
+            "No_Access_OneNote",
+            "No_Access_Publisher",
+            "No_Access_OneNote_Publisher",
+            "No_OneNote",
+            "No_OneNote_Publisher",
+            "No_Publisher"
+         ],
+         "defaultValue": "None"
+      },
+      "installFSLogix": {
+         "type": "string",
+         "allowedValues": [
+            "Yes",
+            "No"
+         ],
+         "defaultValue": "Yes"
+      },
+      "installOneDrive": {
+         "type": "string",
+         "allowedValues": [
+            "Yes",
+            "No"
+         ],
+         "defaultValue": "Yes"
+      },
+      "installTeams": {
+         "type": "string",
+         "allowedValues": [
+            "Yes",
+            "No"
+         ],
+         "defaultValue": "Yes"
+      },
+      "downloadUKLanguage": {
+         "type": "string",
+         "allowedValues": [
+            "Yes",
+            "No"
+         ],
+         "defaultValue": "Yes"
+      },
+      "gpuType": {
+         "type": "string",
+         "allowedValues": [
+            "None",
+            "AMD",
+            "NVidia"
+         ],
+         "defaultValue": "None",
+         "metadata": {
+            "description": "If using a GPU enabled machine, specify the GPU vendor"
+         }
+      }
+   },
+   "variables": {
+      "location": "[resourceGroup().location]",
+      "imageVMTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/imageVM.json",
+      "custom365AppsTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installCustom365Apps.json",
+      "OneDriveTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installOneDrive.json",
+      "TeamsTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installTeams.json",
+      "FSLogixTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installFSLogix.json",
+      "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json",
+      "GPUNVidiaTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installNvidiaVmExtension.json",
+      "GPUAMDTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installAMDVmExtension.json"
+   },
+   "resources": [
+      {
+         "name": "[concat(parameters('vmName'), '-ImageVM')]",
+         "type": "Microsoft.Resources/deployments",
+         "apiVersion": "2016-09-01",
+         "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+               "uri": "[variables('imageVMTemplateUri')]",
+               "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+               "vmName": {
+                  "value": "[parameters('vmName')]"
+               },
+               "vmSize": {
+                  "value": "[parameters('vmSize')]"
+               },
+               "osVersion": {
+                  "value": "[parameters('osVersion')]"
+               },
+               "osDiskType": {
+                  "value": "[parameters('osDiskType')]"
+               },
+               "LocalAdminUsername": {
+                  "value": "[parameters('LocalAdminUsername')]"
+               },
+               "LocalAdminPassword": {
+                  "value": "[parameters('LocalAdminPassword')]"
+               },
+               "VirtualNetworkResourceGroup": {
+                  "value": "[parameters('VirtualNetworkResourceGroup')]"
+               },
+               "VirtualNetworkName": {
+                  "value": "[parameters('VirtualNetworkName')]"
+               },
+               "subnetName": {
+                  "value": "[parameters('subnetName')]"
+               },
+               "location": {
+                  "value": "[variables('location')]"
+               }
             }
-        },
-        "vmSize": {
-            "type": "string",
-            "metadata": {
-                "description": "The machine size e.g. Standard_NV12s_v3"
+         }
+      },
+      {
+         "condition": "[not(equals(parameters('install365Apps'), 'None'))]",
+         "name": "[concat(parameters('vmName'), '-Custom365Apps')]",
+         "type": "Microsoft.Resources/deployments",
+         "apiVersion": "2015-01-01",
+         "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-ImageVM')]"
+         ],
+         "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+               "uri": "[variables('custom365AppsTemplateUri')]",
+               "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+               "vmName": {
+                  "value": "[parameters('vmName')]"
+               },
+               "location": {
+                  "value": "[variables('location')]"
+               },
+               "install365Apps": {
+                  "value": "[parameters('install365Apps')]"
+               }
             }
-        },
-        "osVersion": {
-            "type": "string",
-            "allowedValues": [
-                "21h1-evd-g2",
-                "21h1-evd",
-                "20h2-evd-g2",
-                "20h2-evd",
-                "20h1-evd-g2",
-                "20h1-evd",
-                "19h2-evd-g2",
-                "19h2-evd",
-                "21h1-ent-g2",
-                "21h1-ent",
-                "20h2-ent-g2",
-                "20h2-ent",
-                "20h1-ent-g2",
-                "20h1-ent",
-                "19h2-ent-g2",
-                "19h2-ent"
-            ],
-            "defaultValue": "21h1-evd-g2",
-            "metadata": {
-                "description": "The OS type for the VM. EVD is Multi-Session, ENT is Enterprise (Single Session)"
+         }
+      },
+      {
+         "condition": "[not(equals(parameters('installOneDrive'), 'No'))]",
+         "name": "[concat(parameters('vmName'), '-OneDrive')]",
+         "type": "Microsoft.Resources/deployments",
+         "apiVersion": "2016-09-01",
+         "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-Custom365Apps')]"
+         ],
+         "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+               "uri": "[variables('OneDriveTemplateUri')]",
+               "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+               "vmName": {
+                  "value": "[parameters('vmName')]"
+               },
+               "location": {
+                  "value": "[variables('location')]"
+               }
             }
-        },
-        "osDiskType": {
-            "type": "string",
-            "allowedValues": [
-                "Standard_LRS",
-                "StandardSSD_LRS",
-                "Premium_LRS"
-            ],
-            "defaultValue": "Premium_LRS",
-            "metadata": {
-                "description": "The disk type for the OS disk"
+         }
+      },
+      {
+         "condition": "[not(equals(parameters('installTeams'), 'No'))]",
+         "name": "[concat(parameters('vmName'), '-Teams')]",
+         "type": "Microsoft.Resources/deployments",
+         "apiVersion": "2016-09-01",
+         "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-OneDrive')]"
+         ],
+         "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+               "uri": "[variables('TeamsTemplateUri')]",
+               "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+               "vmName": {
+                  "value": "[parameters('vmName')]"
+               },
+               "location": {
+                  "value": "[variables('location')]"
+               }
             }
-        },
-        "LocalAdminUsername": {
-            "type": "string"
-        },
-        "LocalAdminPassword": {
-            "type": "securestring"
-        },
-        "VirtualNetworkResourceGroup": {
-            "type": "string"
-        },
-        "VirtualNetworkName": {
-            "type": "string"
-        },
-        "subnetName": {
-            "type": "string"
-        },
-        "install365Apps": {
-            "type": "string",
-            "allowedValues": [
-                "None",
-                "All",
-                "No_Access",
-                "No_Access_OneNote",
-                "No_Access_Publisher",
-                "No_Access_OneNote_Publisher",
-                "No_OneNote",
-                "No_OneNote_Publisher",
-                "No_Publisher"
-            ],
-            "defaultValue": "None"
-        },
-        "installFSLogix": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "Yes"
-        },
-        "installOneDrive": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "Yes"
-        },
-        "installTeams": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "Yes"
-        },
-        "downloadUKLanguage": {
-            "type": "string",
-            "allowedValues": [
-                "Yes",
-                "No"
-            ],
-            "defaultValue": "Yes"
-        },
-        "gpuType": {
-            "type": "string",
-            "allowedValues": [
-                "None",
-                "AMD",
-                "NVidia"
-            ],
-            "defaultValue": "None",
-            "metadata": {
-                "description": "If using a GPU enabled machine, specify the GPU vendor"
+         }
+      },
+      {
+         "condition": "[not(equals(parameters('installFSLogix'), 'No'))]",
+         "name": "[concat(parameters('vmName'), '-FSLogix')]",
+         "type": "Microsoft.Resources/deployments",
+         "apiVersion": "2016-09-01",
+         "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-Teams')]"
+         ],
+         "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+               "uri": "[variables('FSLogixTemplateUri')]",
+               "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+               "vmName": {
+                  "value": "[parameters('vmName')]"
+               },
+               "location": {
+                  "value": "[variables('location')]"
+               }
             }
-        }
-    },
-    "variables": {
-        "location": "[resourceGroup().location]",
-        "imageVMTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/imageVM.json",
-        "custom365AppsTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installCustom365Apps.json",
-        "OneDriveTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installOneDrive.json",
-        "TeamsTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installTeams.json",
-        "FSLogixTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installFSLogix.json",
-        "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json",
-        "GPUNVidiaTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installNvidiaVmExtension.json",
-        "GPUAMDTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installAMDVmExtension.json"
-    },
-    "resources": [
-        {
-            "name": "[concat(parameters('vmName'), '-ImageVM')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2016-09-01",
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('imageVMTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('vmName')]"
-                    },
-                    "vmSize": {
-                        "value": "[parameters('vmSize')]"
-                    },
-                    "osVersion": {
-                        "value": "[parameters('osVersion')]"
-                    },
-                    "osDiskType": {
-                        "value": "[parameters('osDiskType')]"
-                    },
-                    "LocalAdminUsername": {
-                        "value": "[parameters('LocalAdminUsername')]"
-                    },
-                    "LocalAdminPassword": {
-                        "value": "[parameters('LocalAdminPassword')]"
-                    },
-                    "VirtualNetworkResourceGroup": {
-                        "value": "[parameters('VirtualNetworkResourceGroup')]"
-                    },
-                    "VirtualNetworkName": {
-                        "value": "[parameters('VirtualNetworkName')]"
-                    },
-                    "subnetName": {
-                        "value": "[parameters('subnetName')]"
-                    },
-                    "location": {
-                        "value": "[variables('location')]"
-                    }
-                }
+         }
+      },
+      {
+         "condition": "[not(equals(parameters('downloadUKLanguage'), 'No'))]",
+         "name": "[concat(parameters('vmName'), '-LanguageUk')]",
+         "type": "Microsoft.Resources/deployments",
+         "apiVersion": "2016-09-01",
+         "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-FSLogix')]"
+         ],
+         "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+               "uri": "[variables('LanguageUkTemplateUri')]",
+               "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+               "vmName": {
+                  "value": "[parameters('vmName')]"
+               },
+               "osVersion": {
+                  "value": "[parameters('osVersion')]"
+               },
+               "location": {
+                  "value": "[variables('location')]"
+               }
             }
-        },
-        {
-            "condition": "[not(equals(parameters('install365Apps'), 'None'))]",
-            "name": "[concat(parameters('vmName'), '-Custom365Apps')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2015-01-01",
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-ImageVM')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('custom365AppsTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('vmName')]"
-                    },
-                    "location": {
-                        "value": "[variables('location')]"
-                    },
-                    "install365Apps": {
-                        "value": "[parameters('install365Apps')]"
-                    }
-                }
+         }
+      },
+      {
+         "condition": "[equals(parameters('gpuType'), 'NVidia')]",
+         "name": "[concat(parameters('vmName'), '-GPU-NVidia-Extension')]",
+         "type": "Microsoft.Resources/deployments",
+         "apiVersion": "2016-09-01",
+         "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-LanguageUk')]"
+         ],
+         "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+               "uri": "[variables('GPUNVidiaTemplateUri')]",
+               "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+               "vmName": {
+                  "value": "[parameters('vmName')]"
+               },
+               "location": {
+                  "value": "[variables('location')]"
+               }
             }
-        },
-        {
-            "condition": "[not(equals(parameters('installOneDrive'), 'No'))]",
-            "name": "[concat(parameters('vmName'), '-OneDrive')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2016-09-01",
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-Custom365Apps')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('OneDriveTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('vmName')]"
-                    },
-                    "location": {
-                        "value": "[variables('location')]"
-                    }
-                }
+         }
+      },
+      {
+         "condition": "[equals(parameters('gpuType'), 'AMD')]",
+         "name": "[concat(parameters('vmName'), '-GPU-AMD-Extension')]",
+         "type": "Microsoft.Resources/deployments",
+         "apiVersion": "2016-09-01",
+         "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-GPU-NVidia-Extension')]"
+         ],
+         "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+               "uri": "[variables('GPUAMDTemplateUri')]",
+               "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+               "vmName": {
+                  "value": "[parameters('vmName')]"
+               },
+               "location": {
+                  "value": "[variables('location')]"
+               }
             }
-        },
-        {
-            "condition": "[not(equals(parameters('installTeams'), 'No'))]",
-            "name": "[concat(parameters('vmName'), '-Teams')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2016-09-01",
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-OneDrive')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('TeamsTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('vmName')]"
-                    },
-                    "location": {
-                        "value": "[variables('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[not(equals(parameters('installFSLogix'), 'No'))]",
-            "name": "[concat(parameters('vmName'), '-FSLogix')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2016-09-01",
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-Teams')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('FSLogixTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('vmName')]"
-                    },
-                    "location": {
-                        "value": "[variables('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[not(equals(parameters('downloadUKLanguage'), 'No'))]",
-            "name": "[concat(parameters('vmName'), '-LanguageUk')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2016-09-01",
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-FSLogix')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('LanguageUkTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('vmName')]"
-                    },
-                    "osVersion": {
-                        "value": "[parameters('osVersion')]"
-                    },
-                    "location": {
-                        "value": "[variables('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('gpuType'), 'NVidia')]",
-            "name": "[concat(parameters('vmName'), '-GPU-NVidia-Extension')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2016-09-01",
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-LanguageUk')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('GPUNVidiaTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('vmName')]"
-                    },
-                    "location": {
-                        "value": "[variables('location')]"
-                    }
-                }
-            }
-        },
-        {
-            "condition": "[equals(parameters('gpuType'), 'AMD')]",
-            "name": "[concat(parameters('vmName'), '-GPU-AMD-Extension')]",
-            "type": "Microsoft.Resources/deployments",
-            "apiVersion": "2016-09-01",
-            "dependsOn": [
-                "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-GPU-NVidia-Extension')]"
-            ],
-            "properties": {
-                "mode": "Incremental",
-                "templateLink": {
-                    "uri": "[variables('GPUAMDTemplateUri')]",
-                    "contentVersion": "1.0.0.0"
-                },
-                "parameters": {
-                    "vmName": {
-                        "value": "[parameters('vmName')]"
-                    },
-                    "location": {
-                        "value": "[variables('location')]"
-                    }
-                }
-            }
-        }
-    ]
+         }
+      }
+   ]
 }
