@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.0.2
+### Latest Release - v5.0.3
+#### v5.0.3
+##### Other
+###### * Added logging line to display host pool friendly name to make finding logs easier when using multiple host pools
+---
 #### v5.0.2
 ##### Fixes
 ###### * Changed Tag value collection to support host VMs having additional tags
