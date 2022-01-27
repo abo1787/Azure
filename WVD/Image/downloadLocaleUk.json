@@ -13,6 +13,8 @@
          "allowedValues": [
             "win11-21h2-avd",
             "win11-21h2-ent",
+            "win10-21h2-avd-g2",
+            "win10-21h2-avd",
             "21h1-evd-g2",
             "21h1-evd",
             "20h2-evd-g2",
@@ -21,6 +23,8 @@
             "20h1-evd",
             "19h2-evd-g2",
             "19h2-evd",
+            "win10-21h2-ent",
+            "win10-21h2-ent-g2",
             "21h1-ent-g2",
             "21h1-ent",
             "20h2-ent-g2",
@@ -30,9 +34,9 @@
             "19h2-ent-g2",
             "19h2-ent"
          ],
-         "defaultValue": "21h1-evd-g2",
+         "defaultValue": "win10-21h2-avd-g2",
          "metadata": {
-            "description": "The OS type for the VM. For Windows 10, EVD is Multi-Session. For Windows 11 AVD is Multi-Session. ENT is Enterprise (Single Session)"
+            "description": "The OS type for the VM. EVD or AVD is Multi-Session. ENT is Enterprise (Single Session)"
          }
       }
    },
