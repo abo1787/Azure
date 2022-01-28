@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.0.3
+    Version : 5.1.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -795,6 +795,25 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
             $vmName = $activeHostName.Split(".")[0]
             $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $vmName }
             $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
+
+            # If using StartVMOnConnect then check boot time to allow grace period
+            if ($hostpoolInfo.StartVMOnConnect -eq $True) {
+
+               # Get the Activity Log of the VM
+               $vmLog = Get-AzLog -ResourceId $vmInfo.Id -WarningAction Ignore `
+               | Where-Object { $_.OperationName.LocalizedValue -Like 'Start Virtual Machine' } `
+               | Sort-Object EventTimestamp -Descending `
+               | Select-Object -First 1
+               $bootTime = $vmLog.EventTimestamp
+
+               # Allow 20minute grace period between boot to ensure StartVMOnConnect isn't interrupted by script
+               $bootTimeGrace = $currentDateTime.AddMinutes(-15)
+
+               if ($bootTime -gt $bootTimeGrace) { 
+                  Write-Output "Start VM On Connect is enabled on the host pool and empty host '$vmName' has been running for less than 15 minutes. This machine will be left running so as not to interfere with this process" 
+                  break
+               }
+            }
 
             Write-Output "Identified free host '$vmName' with $($activeHost.Session) sessions that can be shut down to save resource"
 
