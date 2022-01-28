@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.0.3
+### Latest Release - v5.1.0
+#### v5.1.0
+##### Fixes
+###### * Added grace period for host boot time when using 'Start VM on Connect' to stop script shutting down recently started hosts and interferring with this process
+---
 #### v5.0.3
 ##### Other
 ###### * Added logging line to display host pool friendly name to make finding logs easier when using multiple host pools
