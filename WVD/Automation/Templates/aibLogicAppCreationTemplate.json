@@ -1,0 +1,164 @@
+{
+   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "parameters": {
+      "logicAppName": {
+         "type": "string",
+         "metadata": {
+            "description": "The name of the logic app to create."
+         }
+      },
+      "logicAppLocation": {
+         "type": "string",
+         "metadata": {
+            "description": "The location of the logic app resource group."
+         }
+      },
+      "frequency": {
+         "type": "int",
+         "metadata": {
+            "description": "Specifies the recurrence interval of the job in weeks"
+         }
+      },
+      "weekDay": {
+         "type": "string",
+         "metadata": {
+            "description": "Specify the day of the week for the build"
+         }
+      },
+      "convertedPath": {
+         "type": "string",
+         "metadata": {
+            "description": "Connection path to the AIB image template"
+         }
+      },
+      "identity": {
+         "type": "string",
+         "metadata": {
+            "description": "Identity for the Managed Service"
+         }
+      }
+   },
+   "variables": {
+      "armConnectionName": "[concat('arm_AIB_', parameters('logicAppName'))]",
+      "armConnectionDisplayName": "[concat('ARM_Connection_', parameters('logicAppName'))]"
+   },
+   "resources": [
+      {
+         "type": "Microsoft.Web/connections",
+         "apiVersion": "2016-06-01",
+         "name": "[variables('armConnectionName')]",
+         "location": "[parameters('logicAppLocation')]",
+         "kind": "V1",
+         "properties": {
+            "api": {
+               "name": "[variables('armConnectionName')]",
+               "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', variables('armConnectionName'))]",
+               "type": "Microsoft.Web/locations/managedApis"
+            },
+            "displayName": "[variables('armConnectionDisplayName')]"
+         }
+      },
+      {
+         "type": "Microsoft.Logic/workflows",
+         "apiVersion": "2017-07-01",
+         "name": "[parameters('logicAppName')]",
+         "location": "[parameters('logicAppLocation')]",
+         "identity": {
+            "type": "UserAssigned",
+            "userAssignedIdentities": {
+               "[parameters('identity')]": {}
+            }
+         },
+         "properties": {
+            "state": "Disabled",
+            "definition": {
+               "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+               "contentVersion": "1.0.0.0",
+               "parameters": {
+                  "$connections": {
+                     "defaultValue": {},
+                     "type": "Object"
+                  }
+               },
+               "triggers": {
+                  "Recurrence": {
+                     "recurrence": {
+                        "frequency": "Week",
+                        "interval": "[parameters('frequency')]",
+                        "schedule": {
+                           "hours": [
+                              "0"
+                           ],
+                           "minutes": [
+                              0
+                           ],
+                           "weekDays": [
+                              "[parameters('weekDay')]"
+                           ]
+                        },
+                        "timeZone": "GMT Standard Time"
+                     },
+                     "evaluatedRecurrence": {
+                        "frequency": "Week",
+                        "interval": "[parameters('frequency')]",
+                        "schedule": {
+                           "hours": [
+                              "0"
+                           ],
+                           "minutes": [
+                              0
+                           ],
+                           "weekDays": [
+                              "[parameters('weekDay')]"
+                           ]
+                        },
+                        "timeZone": "GMT Standard Time"
+                     },
+                     "type": "Recurrence"
+                  }
+               },
+               "actions": {
+                  "Invoke_resource_operation": {
+                     "runAfter": {},
+                     "type": "ApiConnection",
+                     "inputs": {
+                        "host": {
+                           "connection": {
+                              "name": "@parameters('$connections')['arm']['connectionId']"
+                           }
+                        },
+                        "method": "post",
+                        "path": "[parameters('convertedPath')]",
+                        "queries": {
+                           "x-ms-api-version": "2020-02-14"
+                        }
+                     }
+                  }
+               },
+               "outputs": {}
+            },
+            "parameters": {
+               "$connections": {
+                  "value": {
+                     "arm": {
+                        "connectionId": "[resourceId('Microsoft.Web/connections', variables('armConnectionName'))]",
+                        "connectionName": "[variables('armConnectionName')]",
+                        "connectionProperties": {
+                           "authentication": {
+                              "identity": "[parameters('identity')]",
+                              "type": "ManagedServiceIdentity"
+                           }
+                        },
+                        "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/arm')]"
+                     }
+                  }
+               }
+            }
+         },
+         "tags": {
+            "displayName": "[parameters('logicAppName')]"
+         }
+      }
+   ]
+}
