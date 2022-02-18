@@ -40,7 +40,7 @@
       }
    },
    "variables": {
-      "armConnectionName": "[concat('arm_AIB_', parameters('logicAppName'))]",
+      "armConnectionName": "arm_AzureImageBuilder",
       "armConnectionDisplayName": "[concat('ARM_Connection_', parameters('logicAppName'))]"
    },
    "resources": [
