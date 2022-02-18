@@ -1,0 +1,39 @@
+{
+   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "parameters": {
+      "logicAppLocation": {
+         "type": "string",
+         "metadata": {
+            "description": "The location of the logic app resource group."
+         }
+      }
+   },
+   "variables": {
+      "armConnectionName": "arm_AzureImageBuilder",
+      "armConnectionDisplayName": "ARM_Connection_azureImageBuilder"
+   },
+   "resources": [
+      {
+         "type": "Microsoft.Web/connections",
+         "apiVersion": "2016-06-01",
+         "name": "[variables('armConnectionName')]",
+         "location": "uksouth",
+         "kind": "V1",
+         "properties": {
+            "displayName": "[variables('armConnectionDisplayName')]",
+            "customParameterValues": {},
+            "api": {
+               "name": "arm",
+               "displayName": "Azure Resource Manager",
+               "description": "Azure Resource Manager exposes the APIs to manage all of your Azure resources.",
+               "iconUri": "https://connectoricons-prod.azureedge.net/laborbol/fixes/path-traversal/1.0.1552.2695/arm/icon.png",
+               "brandColor": "#003056",
+               "id": "[concat('/subscriptions/', subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/arm')]",
+               "type": "Microsoft.Web/locations/managedApis"
+            },
+            "testLinks": []
+         }
+      }
+   ]
+}
