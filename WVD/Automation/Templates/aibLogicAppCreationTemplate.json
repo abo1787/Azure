@@ -56,9 +56,11 @@
                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/arm')]",
                "type": "Microsoft.Web/locations/managedApis"
             },
+            "customParameterValues": {},
             "displayName": "[variables('armConnectionDisplayName')]",
-            "parameterValues": {
-               "authentication": "ManagedServiceIdentity"
+            "parameterValueSet": {
+               "name": "managedIdentityAuth",
+               "values": {}
             }
          }
       },
