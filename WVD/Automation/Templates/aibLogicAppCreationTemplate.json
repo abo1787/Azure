@@ -57,7 +57,7 @@
                "type": "Microsoft.Web/locations/managedApis"
             },
             "displayName": "[variables('armConnectionDisplayName')]",
-            "connectionAlternativeParameters": {
+            "parameterValues": {
                "authentication": "ManagedServiceIdentity"
             }
          }
