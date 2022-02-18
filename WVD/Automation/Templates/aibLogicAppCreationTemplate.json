@@ -41,7 +41,7 @@
    },
    "variables": {
       "armConnectionName": "arm_AzureImageBuilder",
-      "armConnectionDisplayName": "[concat('ARM_Connection_', parameters('logicAppName'))]"
+      "armConnectionDisplayName": "ARM_Connection_azureImageBuilder"
    },
    "resources": [
       {
