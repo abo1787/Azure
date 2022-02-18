@@ -53,7 +53,7 @@
          "properties": {
             "api": {
                "name": "[variables('armConnectionName')]",
-               "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', variables('armConnectionName'))]",
+               "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/arm')]",
                "type": "Microsoft.Web/locations/managedApis"
             },
             "displayName": "[variables('armConnectionDisplayName')]"
@@ -64,7 +64,7 @@
          "apiVersion": "2017-07-01",
          "name": "[parameters('logicAppName')]",
          "location": "[parameters('logicAppLocation')]",
-         "dependsOn": ["[resourceId('Microsoft.Web/connections', variables('armConnectionName'))]"],
+         "dependsOn": [ "[resourceId('Microsoft.Web/connections', variables('armConnectionName'))]" ],
          "identity": {
             "type": "UserAssigned",
             "userAssignedIdentities": {
