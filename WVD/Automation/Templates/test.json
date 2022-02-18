@@ -29,7 +29,7 @@
                "description": "Azure Resource Manager exposes the APIs to manage all of your Azure resources.",
                "iconUri": "https://connectoricons-prod.azureedge.net/laborbol/fixes/path-traversal/1.0.1552.2695/arm/icon.png",
                "brandColor": "#003056",
-               "id": "[concat('/subscriptions/', subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/arm')]",
+               "id": "/subscriptions/85b1de79-2c2e-4bf3-92ef-ed08a2d0ad43/providers/Microsoft.Web/locations/uksouth/managedApis/arm",
                "type": "Microsoft.Web/locations/managedApis"
             },
             "testLinks": []
