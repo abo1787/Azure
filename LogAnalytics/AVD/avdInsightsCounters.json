@@ -650,18 +650,6 @@
       "provisioningState": {
          "type": "string",
          "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-08-01').provisioningState]"
-      },
-      "source": {
-         "type": "string",
-         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-08-01').source]"
-      },
-      "customerId": {
-         "type": "string",
-         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-08-01').customerId]"
-      },
-      "sku": {
-         "type": "string",
-         "value": "[reference(resourceId('Microsoft.OperationalInsights/workspaces', parameters('workspaceName')), '2020-08-01').sku.name]"
       }
    }
 }
