@@ -55,6 +55,14 @@
                {
                   "category": "AgentHealthStatus",
                   "enabled": true
+               },
+               {
+                  "category": "NetworkData",
+                  "enabled": true
+               },
+               {
+                  "category": "SessionHostManagement",
+                  "enabled": true
                }
             ]
          }
