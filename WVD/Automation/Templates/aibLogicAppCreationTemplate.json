@@ -46,22 +46,26 @@
    "resources": [
       {
          "type": "Microsoft.Web/connections",
-         "apiVersion": "2016-06-01",
+         "apiVersion": "2018-07-01-preview",
          "name": "[variables('armConnectionName')]",
          "location": "[parameters('logicAppLocation')]",
          "kind": "V1",
          "properties": {
+            "displayName": "[variables('armConnectionDisplayName')]",
+            "customParameterValues": {},
+            "alternativeParameterValues": {},
+            "parameterValueType": "Alternative",
             "api": {
-               "name": "[variables('armConnectionName')]",
+               "name": "arm",
+               "displayName": "Azure Resource Manager",
+               "description": "Azure Resource Manager exposes the APIs to manage all of your Azure resources.",
+               "iconUri": "https://connectoricons-prod.azureedge.net/laborbol/fixes/path-traversal/1.0.1552.2695/arm/icon.png",
+               "brandColor": "#003056",
+               "category": "Standard",
                "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/arm')]",
                "type": "Microsoft.Web/locations/managedApis"
             },
-            "customParameterValues": {},
-            "displayName": "[variables('armConnectionDisplayName')]",
-            "parameterValueSet": {
-               "name": "managedIdentityAuth",
-               "values": {}
-            }
+            "testLinks": []
          }
       },
       {
