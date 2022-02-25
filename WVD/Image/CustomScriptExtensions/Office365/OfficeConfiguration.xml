@@ -1,6 +1,6 @@
 <Configuration ID="2ab18b64-d3d1-48ec-9d84-20f029f7f32d">
   <Add OfficeClientEdition="64" Channel="MonthlyEnterprise">
-    <Product ID="O365ProPlusRetail">
+    <Product ID="O365BusinessRetail">
       <Language ID="MatchOS" />
       <ExcludeApp ID="Access" /> 
       <ExcludeApp ID="Excel" />
