@@ -25,11 +25,10 @@
 #region Parameters
 Param(
    [Parameter(mandatory)]
-   [string]$resourceGroupNames,
+   [string[]]$resourceGroupNames,
 
    [int]$versionsToKeep = 2
 )
-$resourceGroupNames = $resourceGroupNames -split ","
 #endregion
 
 #region Pre-Reqs
