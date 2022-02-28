@@ -32,14 +32,13 @@ Param(
    [string]$updateType = "Test",
 
    [Parameter(mandatory)]
-   [string]$resourceGroupNames,
+   [string[]]$resourceGroupNames,
 
    [Parameter(mandatory)]
    [string]$keyVaultName,
 
    [int]$secondsToForceLogOffUser = 300
 )
-$resourceGroupNames = $resourceGroupNames -split ","
 #endregion
 
 #region Pre-Reqs
