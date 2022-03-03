@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.0.0
+    Version : 1.1.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -69,11 +69,11 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    # Calculate vmInitialNumber
    $hostpool = Get-AzWvdHostPool -ResourceGroupName $resourceGroupName
    $sessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name | Sort-Object Name -Descending
-   $vmInitialNumber = $sessionHosts | Select-Object -First 1
-   $vmInitialNumber = $vmInitialNumber.Name
-   $vmInitialNumber = $vmInitialNumber.Split(".")[0]
-   $vmInitialNumber = $vmInitialNumber.Split("-")[-1]
-   [int]$vmInitialNumber = [int]$vmInitialNumber + 1
+   $vmInitialNumberObj = $sessionHosts | Select-Object -First 1
+   $vmInitialNumberObj = $vmInitialNumberObj.Name
+   $vmInitialNumberObj = $vmInitialNumberObj.Split(".")[0]
+   $vmInitialNumberObj = $vmInitialNumberObj.Split("-")[-1]
+   [int]$vmInitialNumber = [int]$vmInitialNumberObj + 1
 
    # Get the agent version of current hosts
    $agentVersion = $sessionHosts | Sort-Object LastUpdateTime | Select-Object -First 1 | Select-Object -ExpandProperty AgentVersion
