@@ -1,7 +1,11 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v2.1.1
+### Latest Release - v2.1.2
+#### v2.1.2
+##### Fixes
+###### * Fixed issue with disk pricing after MSFT released SSD with ZRS option
+---
 #### v2.1.1
 ##### Fixes
 ###### * Fixed issue with looking up disk tiers for days with no cost
