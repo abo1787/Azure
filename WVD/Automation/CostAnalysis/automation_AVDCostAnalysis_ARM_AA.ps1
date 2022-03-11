@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.1.2
+    Version : 2.1.3
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -115,6 +115,17 @@ if (!$azContext) {
 else {
    Write-Output "Set the Azure Context to the subscription named '$($azContext.Subscription.Name)' with Id '$($azContext.Subscription.Id)'"
 }
+#endregion
+
+#region Retrieve Host Pool name within resource group for output
+# Check given hostpool name exists
+$hostpoolInfo = Get-AzWvdHostPool -ResourceGroupName $resourceGroupName -Name $hostpoolName
+if (!$hostpoolInfo) {
+   Write-Error "Hostpoolname '$hostpoolName' does not exist. Ensure that you have entered the correct values"
+   exit
+}	
+# Output friendly name of host pool to make log reading easier
+Write-Output "-------------------- Starting cost analysis for '$($hostpoolInfo.FriendlyName)' --------------------"
 #endregion
 
 #region Retrieve Meters
@@ -427,7 +438,7 @@ if (!$skipBillingDay) {
       foreach ($reservation in $reservations) {
 
          $reservationOrderId = $reservation.AppliedReservationOrderId
-         $reservationOrderId = $reservationOrderId.Split("/")[4]
+         $reservationOrderId = $reservationOrderId -replace "/providers/Microsoft.Capacity/reservationorders/"
          $reservationOrderIds += $reservationOrderId
 
       }
