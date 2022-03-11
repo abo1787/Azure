@@ -1,7 +1,13 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v2.1.2
+### Latest Release - v2.1.3
+#### v2.1.3
+##### New Features
+###### * Added output to show hostpool in Job output
+##### Fixes
+###### * Fixed issue with reservation utilization % when multiple reservations were applied to the same reservation order Id
+---
 #### v2.1.2
 ##### Fixes
 ###### * Fixed issue with disk pricing after MSFT released SSD with ZRS option
