@@ -61,7 +61,7 @@
     },
     {
         "AppxPackage": "Microsoft.Office.OneNote",
-        "VDIState": "Disabled",
+        "VDIState": "<OneNote>",
         "URL": "https://www.microsoft.com/en-us/p/onenote/9wzdncrfhvjl",
         "Description": "OneNote UWP app"
     },
