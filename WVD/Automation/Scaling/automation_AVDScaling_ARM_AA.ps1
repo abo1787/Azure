@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.1.0
+    Version : 5.1.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -796,6 +796,12 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
             $vmInfo = Get-AzVM | Where-Object { $_.Name -eq $vmName }
             $vmDisk = Get-AzDisk | Where-Object { $_.Name -eq $vmInfo.StorageProfile.OsDisk.Name }
 
+            # Final check for any sessions on host - If multiple hosts have been shut down in this run there may have been additional sessions connect during this period
+            $finalSessionCheck = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName -Name $activeHostName | Select-Object Session -ExpandProperty Session
+            if ($finalSessionCheck -ne 0) {
+               continue
+            }
+
             # If using StartVMOnConnect then check boot time to allow grace period
             if ($hostpoolInfo.StartVMOnConnect -eq $True) {
 
@@ -806,12 +812,12 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
                | Select-Object -First 1
                $bootTime = $vmLog.EventTimestamp
 
-               # Allow 20minute grace period between boot to ensure StartVMOnConnect isn't interrupted by script
+               # Allow 15minute grace period between boot to ensure StartVMOnConnect isn't interrupted by script
                $bootTimeGrace = $currentDateTime.AddMinutes(-15)
 
                if ($bootTime -gt $bootTimeGrace) { 
                   Write-Output "Start VM On Connect is enabled on the host pool and empty host '$vmName' has been running for less than 15 minutes. This machine will be left running so as not to interfere with this process" 
-                  break
+                  continue
                }
             }
 
@@ -819,10 +825,10 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
 
             # Ensure the running Azure VM is set into drain mode
             try {
-               Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
+               Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $activeHostName -AllowNewSession:$False -ErrorAction SilentlyContinue | Out-Null
             }
             catch {
-               Write-Error "Unable to set 'Allow New Sessions' to False on host '$VMName' with error: $($_.exception.message)"
+               Write-Error "Unable to set 'Allow New Sessions' to False on host '$vmName' with error: $($_.exception.message)"
                exit
             }
             try {
@@ -830,14 +836,14 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
                Stop-AzVM -Name $vmName -ResourceGroupName $vmInfo.ResourceGroupName -Force | Out-Null
             }
             catch {
-               Write-Error "Failed to stop host '$VMName' with error: $($_.exception.message)"
+               Write-Error "Failed to stop host '$vmName' with error: $($_.exception.message)"
                exit
             }
             # Check if the session host server is healthy before enable allowing new connections
             if ($activeHost.UpdateState -eq "Succeeded") {
                # Ensure Azure VMs that are stopped have the allowing new connections state True
                try {
-                  Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
+                  Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $activeHostName -AllowNewSession:$True -ErrorAction SilentlyContinue | Out-Null
                }
                catch {
                   Write-Output "Unable to set 'Allow New Sessions' to True on host '$VMName' with error: $($_.exception.message)"
@@ -849,7 +855,7 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
             $IsShutdownHostUnavailable = $false
             while (!$IsShutdownHostUnavailable) {
 
-               $shutdownHost = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $ActiveHostName
+               $shutdownHost = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName -Name $activeHostName
 
                if ($shutdownHost.Status -eq "Unavailable") {
                   $IsShutdownHostUnavailable = $true
