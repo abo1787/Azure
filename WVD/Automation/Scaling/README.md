@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.1.0
+### Latest Release - v5.1.1
+#### v5.1.1
+##### Fixes
+###### * Added additional session checks between shutting down hosts in case of connections made during loop
+---
 #### v5.1.0
 ##### Fixes
 ###### * Added grace period for host boot time when using 'Start VM on Connect' to stop script shutting down recently started hosts and interferring with this process
