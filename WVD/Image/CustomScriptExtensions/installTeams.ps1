@@ -101,7 +101,7 @@ Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension
 
 $Uri = "https://teams.microsoft.com/downloads/desktopurl?env=production&plat=windows&arch=x64&managedInstaller=true&download=true"
 $Uri2 = "https://aka.ms/vs/16/release/vc_redist.x64.exe"
-$Uri3 = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4AQBt"
+$Uri3 = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RWQ1UW"
 
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
 Invoke-WebRequest -Uri $Uri2 -OutFile "$($PSScriptRoot)\vc_redist.x64.exe"
