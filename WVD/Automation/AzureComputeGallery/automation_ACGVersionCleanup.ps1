@@ -27,7 +27,7 @@ Param(
    [Parameter(mandatory)]
    [string[]]$resourceGroupNames,
 
-   [int]$versionsToKeep = 2
+   [int]$versionsToKeep = 4
 )
 #endregion
 
