@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.2.1
+    Version : 1.2.2
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -168,18 +168,81 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    Write-Output "Deploying new session hosts..."
    # Deploy hostpool updates
    $deploymentName = 'UpdateHostpool-' + $deploymentId
+   $poolDeploymentSuccessful = $false
    $updateHostpoolDeployment = New-AzResourceGroupDeployment `
       -Name $deploymentName `
       -ResourceGroupName $resourceGroupName `
       -TemplateUri $updateHostpoolTemplateUri `
       -TemplateParameterFile $updateHostpoolParametersFilePath `
       -administratorAccountPassword $domainJoinPassword.SecretValue `
-      -vmAdministratorAccountPassword $domainJoinPassword.SecretValue
+      -vmAdministratorAccountPassword $domainJoinPassword.SecretValue `
+      -ErrorAction SilentlyContinue
 
    if ($updateHostpoolDeployment.ProvisioningState -eq "Succeeded") {
+      $poolDeploymentSuccessful = $true
       Write-Output "Successfully added $vmNumberofInstances session host(s) to host pool '$($hostpool.Name)'"
    }
 
+   #region Roll-Back on deployment failure
+   if ($poolDeploymentSuccessful -eq $false) {
+      Write-Error "One or more new session hosts failed to deploy correctly. The host pool upgrade process will now be rolled back" -ErrorAction SilentlyContinue
+      # Get reqs for domain removal
+      $domainPass = ConvertTo-SecureString -String $domainJoinPlain -AsPlainText -Force
+
+      # Remove failed session hosts from host pool & domain
+      Write-Output "Starting removal of all newly deployed session hosts..."
+      foreach ($newSessionHost in $newSessionHosts) {
+         $newVMName = $newSessionHost.Split(".")[0]
+  
+         # Remove session host from domain
+         Write-Output "Removing host '$newVMName' from domain..."
+         $deploymentName = ($newVMName + '-RemoveFromDomain-' + (Get-Date -Format FileDateTimeUniversal))
+         New-AzResourceGroupDeployment `
+            -Name $deploymentName `
+            -ResourceGroupName $resourceGroupName `
+            -TemplateUri https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Hostpool/removeVMsFromDomain.json `
+            -VMName $newVMName `
+            -Location $originalHostpoolDeployment.Parameters.vmLocation.Value `
+            -DomainUser $originalHostpoolDeployment.Parameters.administratorAccountUsername.Value `
+            -DomainPass $domainPass `
+            -AsJob | Out-Null
+      }
+ 
+      Write-Output "Waiting for all domain removal jobs to complete..."
+      Get-Job | Wait-Job | Out-Null
+      Write-Output "All newly deployed hosts have been successfully removed from the domain"
+ 
+      Write-Output "Removing newly deployed hosts from Azure..."
+      foreach ($newSessionHost in $newSessionHosts) {
+         $newVMName = $newSessionHost.Split(".")[0]
+ 
+         # Remove session host
+         Remove-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -Force | Out-Null
+ 
+         # Get the VM
+         $vm = Get-AzVM -Name $newVMName -ResourceGroupName $resourceGroupName
+ 
+         # Delete the VM
+         Remove-AzVM -ResourceGroupName $resourceGroupName -Name $newVMName -Force | Out-Null
+         
+         # Delete VM NIC
+         Get-AzNetworkInterface -ResourceId $vm.NetworkProfile.NetworkInterfaces.Id | Remove-AzNetworkInterface -Force | Out-Null
+ 
+         # Delete VM OS Disk
+         Remove-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vm.StorageProfile.OsDisk.Name -Force | Out-Null
+ 
+         Write-Output "Host '$newVMName' has successfully been removed from Azure"
+      }
+      Write-Output "All newly deployed hosts have been successfully removed from Azure"
+      Write-Output "Host pool '$($hostpool.Name)' rollback has been completed successfully"
+      Write-Error "Update failed for host pool '$($hostpool.Name)' and the deployment was rolled back" -ErrorAction SilentlyContinue
+ 
+      # Remove template parameter file
+      Remove-Item $updateHostpoolParametersFilePath
+      break
+   }
+   #endregion
+   
    # Build object containing all new session hosts
    $vmEndNumber = ($vmInitialNumber + $vmNumberOfInstances) - 1
    $newSessionHostNumbers = $vmInitialNumber..$vmEndNumber
@@ -321,7 +384,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    }
    #endregion
 
-   #region Roll-Back on failure
+   #region Roll-Back on upgrade failure
    if ($poolUpgradeSuccessful -eq $false) {
       Write-Warning "One or more session hosts failed to upgrade before the timeout period expired. The host pool upgrade process will now be rolled back" -ErrorAction SilentlyContinue
 
