@@ -21,6 +21,9 @@ Installs the Teams Machine-Wide Installer and Web-RTC AV redirection on an exist
 #### Install FSLogix Standalone
 Installs FSLogix on an existing VM
 
+#### Install Multimedia Redirection Standalone
+Installs Multimedia Redirection on an existing VM
+
 #### Install UK Language Pack Standalone
 Downloads the UK Language Packs and associated scripts to an existing VM. Run the 'setLocaleUk' script on the desktop to complete the setup.
 
