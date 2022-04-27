@@ -111,6 +111,14 @@
          ],
          "defaultValue": "Yes"
       },
+      "installMultimediaRedirection": {
+         "type": "string",
+         "allowedValues": [
+            "Yes",
+            "No"
+         ],
+         "defaultValue": "Yes"
+      },
       "downloadUKLanguage": {
          "type": "string",
          "allowedValues": [
@@ -141,7 +149,8 @@
       "FSLogixTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installFSLogix.json",
       "LanguageUkTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/downloadLocaleUk.json",
       "GPUNVidiaTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installNvidiaVmExtension.json",
-      "GPUAMDTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installAMDVmExtension.json"
+      "GPUAMDTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installAMDVmExtension.json",
+      "MultiRedirectionTemplateUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/installMultiRedirection.json"
    },
    "resources": [
       {
@@ -275,6 +284,30 @@
             "mode": "Incremental",
             "templateLink": {
                "uri": "[variables('FSLogixTemplateUri')]",
+               "contentVersion": "1.0.0.0"
+            },
+            "parameters": {
+               "vmName": {
+                  "value": "[parameters('vmName')]"
+               },
+               "location": {
+                  "value": "[variables('location')]"
+               }
+            }
+         }
+      },
+      {
+         "condition": "[not(equals(parameters('installMultimediaRedirection'), 'No'))]",
+         "name": "[concat(parameters('vmName'), '-MultimediaRedirection')]",
+         "type": "Microsoft.Resources/deployments",
+         "apiVersion": "2016-09-01",
+         "dependsOn": [
+            "[concat('Microsoft.Resources/deployments/', parameters('vmName'), '-FSLogix')]"
+         ],
+         "properties": {
+            "mode": "Incremental",
+            "templateLink": {
+               "uri": "[variables('MultiRedirectionTemplateUri')]",
                "contentVersion": "1.0.0.0"
             },
             "parameters": {
