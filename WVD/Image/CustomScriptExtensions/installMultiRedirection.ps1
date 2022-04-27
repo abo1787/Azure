@@ -102,17 +102,18 @@ Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension
 # Download installer
 $Uri = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4QWrF"
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
+$MSIPath = "$($PSScriptRoot)\$ExecutableName"
 
 # Set Reg key to enable
+Set-Location HKLM:
 LogInfo("Setting Multimedia Redirection registry key")
-if ((Test-Path "HKLM\Software\Microsoft\MSRDC\Policies") -eq $false) {
-   New-Item -Path "HKLM\Software\Microsoft\MSRDC\Policies" -Force
+if ((Test-Path "Software\Microsoft\MSRDC\Policies") -eq $false) {
+   New-Item -Path "Software\Microsoft\MSRDC\Policies" -Force
 }
-New-ItemProperty "HKLM\Software\Microsoft\MSRDC\Policies" -Name "ReleaseRing" -Value "insider" -PropertyType String -Force
+New-ItemProperty "Software\Microsoft\MSRDC\Policies" -Name "ReleaseRing" -Value "insider" -PropertyType String -Force
 LogInfo("Set ReleaseRing Reg Key to value 'insider' successfully")
 
 # Install
-$MSIPath = "$($PSScriptRoot)\$ExecutableName"
 LogInfo("Installing Multimedia Redirection from path $MSIPath")
 LogInfo("Invoking command with the following scriptblock: $scriptBlock")
 $scriptBlock = { msiexec /i $MSIPath /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\MultimediaRedirection\InstallLog.txt" }
