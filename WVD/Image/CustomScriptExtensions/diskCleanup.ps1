@@ -61,7 +61,7 @@ foreach ($keyName in $sections) {
 Write-Output 'Cleaning...'
 Get-Item -Path "C:\Windows\Temp\*" -Exclude "packer*", "script*", "mat*", "*.ses", "CreativeCloud*", "pdf24*" | Remove-Item -Recurse -Force
 Start-Process -FilePath CleanMgr.exe -ArgumentList '/sagerun:1' -WindowStyle Hidden
-Start-Sleep -Seconds 120
+Start-Sleep -Seconds 180
 
 $diskCleanupRunning = Get-Process | Where-Object { $_.MainWindowTitle -eq 'Disk Clean-up' }
 while ($diskCleanupRunning) {
