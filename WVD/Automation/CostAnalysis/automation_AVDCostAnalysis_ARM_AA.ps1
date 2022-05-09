@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.1.3
+    Version : 2.1.4
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -244,6 +244,7 @@ $retailHourlyPriceUSD = $azurePrices.Items | Where-Object { $_.productName -NotL
 # Set billing day to day before yesterday
 $yesterday = (Get-Date).AddDays(-2)
 $billingDay = Get-Date $yesterday -Format yyyy-MM-dd
+$filteredBillingDay = $billingDay + 'T00:00:00Z'
 
 # Check data for Billing Day doesn't already exist in case of multiple script runs
 $logAnalyticsQuery = Invoke-AzOperationalInsightsQuery -WorkspaceId $logAnalyticsWorkspaceId -Query "$logName | where TimeGenerated > ago(7d) and hostPoolName_s == '$hostpoolName' and billingDay_s == '$billingDay' | project billingDay_s" -ErrorAction SilentlyContinue
@@ -281,11 +282,11 @@ if (!$skipBillingDay) {
    }
 
    $vmCosts = @()
-   $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+   $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredBillingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
    $diskCosts = @()
-   $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+   $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredBillingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
    $bandwidthCosts = @()
-   $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+   $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredBillingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
 
    while ($billingInfo.nextLink) {
       $nextLink = $billingInfo.nextLink
@@ -296,16 +297,16 @@ if (!$skipBillingDay) {
       catch {
          Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API for the next page so the script was terminated"
       }
-      $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
-      $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
-      $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+      $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredBillingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+      $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredBillingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+      $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredBillingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
    }
 
    if (!$diskCosts) {
       Write-Warning "No disk costs were found for S$diskSize, E$diskSize and P$diskSize disks on $billingDay. Checking to see if the disks have changed tier since..."
 
       # Check for any disk costs in the resource group
-      $diskSize = $billingInfo.value.properties | Where-Object { $_.serviceFamily -Like 'Storage' -and $_.resourceGroup -eq $resourceGroupName -and $_.unitOfMeasure -eq '1/Month' } | Select-Object -First 1
+      $diskSize = $billingInfo.value.properties | Where-Object { $_.serviceFamily -Like 'Storage' -and $_.resourceGroup -eq $resourceGroupName -and $_.unitOfMeasure -eq '1/Month' -and $_.date -eq $filteredBillingDay } | Select-Object -First 1
       if ($diskSize) {
          Write-Output "Found disk costs for a different tier. Updating disk costs now..."
          $diskSize = $diskSize.meterName -replace "[^0-9]"
@@ -375,7 +376,7 @@ if (!$skipBillingDay) {
          }
 
          $diskCosts = @()
-         $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+         $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredBillingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
       
          while ($billingInfo.nextLink) {
             $nextLink = $billingInfo.nextLink
@@ -386,7 +387,7 @@ if (!$skipBillingDay) {
             catch {
                Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API for the next page so the script was terminated"
             }
-            $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+            $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredBillingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
          }
       }
    }
@@ -883,6 +884,7 @@ if ($logAnalyticsQuery) {
       foreach ($missingDay in $missingDays) {
 
          Write-Warning "Found no cost analysis data for date $missingDay. Retrieving billing data..."
+         $filteredMissingDay = $missingDay + 'T00:00:00Z'
 
          # Get token for API call
          $azContext = Get-AzContext
@@ -910,11 +912,11 @@ if ($logAnalyticsQuery) {
          }
 
          $vmCosts = @()
-         $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+         $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredMissingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
          $diskCosts = @()
-         $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+         $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredMissingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
          $bandwidthCosts = @()
-         $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+         $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredMissingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
 
          while ($billingInfo.nextLink) {
             $nextLink = $billingInfo.nextLink
@@ -925,16 +927,16 @@ if ($logAnalyticsQuery) {
             catch {
                Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API for the next page so the script was terminated"
             }
-            $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
-            $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
-            $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+            $vmCosts += $billingInfo.value.properties | Where-Object { $_.meterId -Like $meterId -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredMissingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+            $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredMissingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+            $bandwidthCosts += $billingInfo.value.properties | Where-Object { $_.meterCategory -eq 'Bandwidth' -and $_.consumedService -eq 'Microsoft.Compute' -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredMissingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
          }
 
          if (!$diskCosts) {
             Write-Warning "No disk costs were found for S$diskSize, E$diskSize and P$diskSize disks on $missingDay. Checking to see if the disks were a different tier on that date..."
         
             # Check for any disk costs in the resource group
-            $diskSize = $billingInfo.value.properties | Where-Object { $_.serviceFamily -Like 'Storage' -and $_.resourceGroup -eq $resourceGroupName -and $_.unitOfMeasure -eq '1/Month' } | Select-Object -First 1
+            $diskSize = $billingInfo.value.properties | Where-Object { $_.serviceFamily -Like 'Storage' -and $_.resourceGroup -eq $resourceGroupName -and $_.unitOfMeasure -eq '1/Month' -and $_.date -eq $filteredMissingDay } | Select-Object -First 1
             if ($diskSize) {
                Write-Output "Found disk costs for a different tier. Updating disk costs now..."
                $diskSize = $diskSize.meterName -replace "[^0-9]"
@@ -1004,7 +1006,7 @@ if ($logAnalyticsQuery) {
                }
         
                $diskCosts = @()
-               $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+               $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredMissingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
               
                while ($billingInfo.nextLink) {
                   $nextLink = $billingInfo.nextLink
@@ -1015,7 +1017,7 @@ if ($logAnalyticsQuery) {
                   catch {
                      Write-Error "An error was received from the endpoint whilst querying the Microsoft Consumption API for the next page so the script was terminated"
                   }
-                  $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
+                  $diskCosts += $billingInfo.value.properties | Where-Object { ($_.meterId -Like $standardHDDMeterId -or $_.meterId -Like $standardSSDMeterId -or $_.meterId -Like $premiumSSDMeterId) -and $_.resourceGroup -eq $resourceGroupName -and $_.date -eq $filteredMissingDay } | Select-Object date, instanceName, resourceGroupName, meterId, meterName, unitPrice, quantity, paygCostInUSD, paygCostInBillingCurrency, exchangeRate, reservationId, reservationName, term
                }
             }
             else {
