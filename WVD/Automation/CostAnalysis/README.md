@@ -1,7 +1,11 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v2.1.3
+### Latest Release - v2.1.4
+#### v2.1.4
+##### Fixes
+###### * Fixed issue with date filtering when using Legacy/PAYG subscriptions
+---
 #### v2.1.3
 ##### New Features
 ###### * Added output to show hostpool in Job output
