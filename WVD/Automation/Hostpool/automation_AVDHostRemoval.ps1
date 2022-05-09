@@ -8,7 +8,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.0.0
+    Version : 1.1.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -74,6 +74,10 @@ foreach ($vm in $allVMs) {
       Write-Output "The host '$($vm.Name)' has it's removal date listed as today. This host will be removed"
       $hostsToRemove += $vm
    }
+}
+if (!$hostsToRemove) {
+   Write-Output "There are no eligible hosts to be removed"
+   exit
 }
 #endregion
 
