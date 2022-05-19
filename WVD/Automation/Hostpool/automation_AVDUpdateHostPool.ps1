@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.2.4
+    Version : 1.2.5
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -301,6 +301,8 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    Write-Output "All new hosts have successfully been connected to the Log Analytics Workspace"
 
    # Check if machines require GPU extension
+   $gpuNVidia = $false
+   $gpuAMD = $false
    $nvidiaVms = @()
    $amdVms = @()
    $allVmSizes = Get-AzVMSize -Location $originalHostpoolDeployment.Parameters.vmLocation.Value
