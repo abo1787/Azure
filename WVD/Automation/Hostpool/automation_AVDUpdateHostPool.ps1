@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.2.2
+    Version : 1.2.4
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -91,8 +91,12 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    $vmInitialNumberObj = $vmInitialNumberObj.Split("-")[-1]
    [int]$vmInitialNumber = [int]$vmInitialNumberObj + 1
 
+   # Get VmSize - use current vm size in case size changed since initial hostpool deployment
+   $vmSize = $sessionHosts | Select-Object -First 1
+   $vmSize = (Get-AzVm | Where-Object { $_.VmId -eq $vmSize.VirtualMachineId }).HardwareProfile.VmSize
+
    # Get the agent version of current hosts
-   $agentVersion = $sessionHosts | Sort-Object LastUpdateTime | Select-Object -First 1 | Select-Object -ExpandProperty AgentVersion
+   $agentVersion = $sessionHosts | Sort-Object LastUpdateTime -Descending | Select-Object -First 1 | Select-Object -ExpandProperty AgentVersion
 
    # Calculate number of hosts to deploy
    [int]$vmNumberOfInstances = $sessionHosts.Count
@@ -149,7 +153,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<availabilitySetName>', $availabilitySetName) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vmResourceGroup>', $originalHostpoolDeployment.Parameters.vmResourceGroup.Value) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vmLocation>', $originalHostpoolDeployment.Parameters.vmLocation.Value) | Set-Content -Path $updateHostpoolParametersFilePath
-   ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vmSize>', $hostpoolTemplate.vmSize.id) | Set-Content -Path $updateHostpoolParametersFilePath
+   ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vmSize>', $vmSize ) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vmInitialNumber>', $vmInitialNumber) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vmNumberOfInstances>', $vmNumberOfInstances) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vmNamePrefix>', $hostpoolTemplate.namePrefix) | Set-Content -Path $updateHostpoolParametersFilePath
@@ -300,20 +304,17 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    $nvidiaVms = @()
    $amdVms = @()
    $allVmSizes = Get-AzVMSize -Location $originalHostpoolDeployment.Parameters.vmLocation.Value
-   foreach ($vmSize in $allVmSizes) {
-      if ($vmSize.Name -match 'Standard_NV[0-9]{0,2}[a-z]{0,2}_v3$') { $nvidiaVms += $vmSize }
-      elseif ($vmSize.Name -match 'Standard_NV[0-9]{0,2}$') { $nvidiaVms += $vmSize }
-      elseif ($vmSize.Name -match 'Standard_NV[0-9]{0,2}_Promo$') { $nvidiaVms += $vmSize }
-      elseif ($vmSize.Name -match 'Standard_NC[0-9]{0,2}$') { $nvidiaVms += $vmSize }
-      elseif ($vmSize.Name -match 'Standard_NC[0-9]{0,2}_Promo$') { $nvidiaVms += $vmSize }
-      elseif ($vmSize.Name -match 'Standard_NC[0-9]{0,2}r$') { $nvidiaVms += $vmSize }
-      elseif ($vmSize.Name -match 'Standard_NC[0-9]{0,2}[a-z]{0,2}_v3$') { $nvidiaVms += $vmSize }
-      elseif ($vmSize.Name -match 'Standard_NC[0-9]{0,2}[a-z]{0,2}_T4_v[0-9]$') { $nvidiaVms += $vmSize }
-      elseif ($vmSize.Name -match 'Standard_NV[0-9]{0,2}[a-z]{0,2}_v4$') { $amdVms += $vmSize }
+   foreach ($size in $allVmSizes) {
+      if ($size.Name -match 'Standard_NV[0-9]{0,2}[a-z]{0,2}_v3$') { $nvidiaVms += $size }
+      elseif ($size.Name -match 'Standard_NV[0-9]{0,2}$') { $nvidiaVms += $size }
+      elseif ($size.Name -match 'Standard_NV[0-9]{0,2}_Promo$') { $nvidiaVms += $size }
+      elseif ($size.Name -match 'Standard_NC[0-9]{0,2}$') { $nvidiaVms += $size }
+      elseif ($size.Name -match 'Standard_NC[0-9]{0,2}_Promo$') { $nvidiaVms += $size }
+      elseif ($size.Name -match 'Standard_NC[0-9]{0,2}r$') { $nvidiaVms += $size }
+      elseif ($size.Name -match 'Standard_NC[0-9]{0,2}[a-z]{0,2}_v3$') { $nvidiaVms += $size }
+      elseif ($size.Name -match 'Standard_NC[0-9]{0,2}[a-z]{0,2}_T4_v[0-9]$') { $nvidiaVms += $size }
+      elseif ($size.Name -match 'Standard_NV[0-9]{0,2}[a-z]{0,2}_v4$') { $amdVms += $size }
    }
-
-   # Set VM size
-   $vmSize = $hostpoolTemplate.vmSize.id
 
    # Set GPU extension requirement
    if ($nvidiaVms.Name -contains $vmSize) {
@@ -355,7 +356,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    $poolUpgradeSuccessful = $false
    [int]$upgradedHosts = 0
    $upgradeStartTime = Get-Date
-   $upgradeTimeoutTime = $upgradeStartTime.AddHours(1)
+   $upgradeTimeoutTime = $upgradeStartTime.AddMinutes(30)
    foreach ($newSessionHost in $newSessionHosts) {
       $hasUpgraded = $false
       while ($(Get-Date) -le $upgradeTimeoutTime -and $hasUpgraded -eq $false) {
@@ -374,6 +375,40 @@ foreach ($resourceGroupName in $resourceGroupNames) {
          }
       }
    }
+
+   # If all hosts haven't upgraded then reboot hosts that haven't upgraded to try again
+   if ($upgradedHosts -lt $vmNumberOfInstances) {
+      $failedUpgradeHosts = $newSessionHosts | Where-Object { $_.AgentVersion -ne $agentVersion }
+      foreach ($failedUpgradeHost in $failedUpgradeHosts) {
+         $failedVMName = $failedUpgradeHost.Split(".")[0]
+         $vm = Get-AzVM | Where-Object { $_.Name -eq $failedVMName }
+         Restart-AzVM -VM $vm -ResourceGroupName $vm.ResourceGroupName -NoWait | Out-Null
+         Write-Output "Host '$failedUpgradeHost' has been rebooted to re-attempt upgrade"
+      }
+
+      # Wait for all failed upgrade session hosts to upgrade
+      $2ndUpgradeStartTime = Get-Date
+      $2ndUpgradeTimeoutTime = $2ndUpgradeStartTime.AddMinutes(30)
+      foreach ($failedUpgradeHost in $failedUpgradeHosts) {
+         $hasUpgraded = $false
+         while ($(Get-Date) -le $2ndUpgradeTimeoutTime -and $hasUpgraded -eq $false) {
+            $failedVMName = $failedUpgradeHost.Split(".")[0]
+            $failedVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $failedUpgradeHost
+            if ($failedVMStatus.Status -eq "Available" -and $failedVMStatus.AgentVersion -eq $agentVersion) {
+               Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $failedUpgradeHost -AllowNewSession:$true -ErrorAction SilentlyContinue | Out-Null
+               $vm = Get-AzVM | Where-Object { $_.Name -eq $failedVMName }
+               $vmTags = @{}
+               $vmTags += $vm.Tags
+               $vmTags | ForEach-Object { $_.VMMaintenance = "False"; $_ } | Out-Null
+               Update-AzVM -VM $vm -ResourceGroupName $vm.ResourceGroupName -Tag $vmTags | Out-Null
+               Write-Output "Host '$failedUpgradeHost' has now upgraded"
+               $hasUpgraded = $true
+               $upgradedHosts = $upgradedHosts + 1
+            }
+         }
+      }
+   }
+
    # Check to see if all hosts upgraded successfully, if not call rollback
    if ($upgradedHosts -eq $vmNumberOfInstances) {
       $poolUpgradeSuccessful = $true
