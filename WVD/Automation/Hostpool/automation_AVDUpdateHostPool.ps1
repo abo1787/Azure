@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.2.5
+    Version : 1.2.6
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -69,11 +69,8 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    Write-Output "Removing previous resource group deployments..."
    $deploymentsToDelete = Get-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName | Where-Object { $_.DeploymentName -notlike "HostPool*" }
    foreach ($deployment in $deploymentsToDelete) {
-
-      Write-Output "Removing previous resource group deployment '$($deployment.DeploymentName)'"
       try {
          Remove-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $deployment.DeploymentName | Out-Null
-         Write-Output "Removal successful"
       }
       catch { 
          Write-Error "Error deleting resource group deployment '$($deployment.DeploymentName)'" 
@@ -661,8 +658,6 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       Write-Output "All original hosts have been successfully removed from Azure"
       Write-Output "Host pool '$($hostpool.Name)' has been updated successfully"
    }
-   Write-Output "Finished update for resource group '$resourceGroupName'"
    #endregion
 }
-Write-Output "All hostpools have successfully been updated"
 #endregion
