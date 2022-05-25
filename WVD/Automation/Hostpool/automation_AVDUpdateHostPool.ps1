@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.2.6
+    Version : 1.3.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -163,6 +163,18 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<deploymentId>', $deploymentId) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<ouPath>', $originalHostpoolDeployment.Parameters.ouPath.Value) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<domain>', $originalHostpoolDeployment.Parameters.domain.Value) | Set-Content -Path $updateHostpoolParametersFilePath
+
+   # Build object containing all new session hosts
+   $vmEndNumber = ($vmInitialNumber + $vmNumberOfInstances) - 1
+   $newSessionHostNumbers = $vmInitialNumber..$vmEndNumber
+   $newSessionHosts = @()
+   $newSessionHostsPreDomain = @()
+   foreach ($newSessionHostNumber in $newSessionHostNumbers) {
+      $newSessionHost = $hostpoolTemplate.namePrefix + '-' + $newSessionHostNumber + '.' + $originalHostpoolDeployment.Parameters.domain.Value
+      $newSessionHosts += $newSessionHost
+      $newSessionHostPreDomain = $hostpoolTemplate.namePrefix + '-' + $newSessionHostNumber
+      $newSessionHostsPreDomain += $newSessionHostPreDomain
+   }
    #endregion
 
    #region New Hosts
@@ -184,9 +196,12 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       Write-Output "Successfully added $vmNumberofInstances session host(s) to host pool '$($hostpool.Name)'"
    }
 
+   if ($updateHostpoolDeployment.ProvisioningState -eq "Failed") {
+      Write-Error "One or more new session hosts failed to deploy correctly. The host pool upgrade process will now be rolled back" -ErrorAction SilentlyContinue
+   }
+
    #region Roll-Back on deployment failure
    if ($poolDeploymentSuccessful -eq $false) {
-      Write-Error "One or more new session hosts failed to deploy correctly. The host pool upgrade process will now be rolled back" -ErrorAction SilentlyContinue
       # Get reqs for domain removal
       $domainPass = ConvertTo-SecureString -String $domainJoinPlain -AsPlainText -Force
 
@@ -240,22 +255,10 @@ foreach ($resourceGroupName in $resourceGroupNames) {
  
       # Remove template parameter file
       Remove-Item $updateHostpoolParametersFilePath
-      break
+      continue
    }
    #endregion
    
-   # Build object containing all new session hosts
-   $vmEndNumber = ($vmInitialNumber + $vmNumberOfInstances) - 1
-   $newSessionHostNumbers = $vmInitialNumber..$vmEndNumber
-   $newSessionHosts = @()
-   $newSessionHostsPreDomain = @()
-   foreach ($newSessionHostNumber in $newSessionHostNumbers) {
-      $newSessionHost = $hostpoolTemplate.namePrefix + '-' + $newSessionHostNumber + '.' + $originalHostpoolDeployment.Parameters.domain.Value
-      $newSessionHosts += $newSessionHost
-      $newSessionHostPreDomain = $hostpoolTemplate.namePrefix + '-' + $newSessionHostNumber
-      $newSessionHostsPreDomain += $newSessionHostPreDomain
-   }
-
    # Put all new session hosts in drain mode
    foreach ($newSessionHostPreDomain in $newSessionHostsPreDomain) {
       Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHostPreDomain -AllowNewSession:$false -ErrorAction SilentlyContinue | Out-Null
@@ -475,7 +478,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
 
       # Remove template parameter file
       Remove-Item $updateHostpoolParametersFilePath
-      break
+      continue
    }
    #endregion
 
