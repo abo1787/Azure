@@ -30,11 +30,6 @@
    },
    "defaultValue": [
     {
-     "principalId": "fa82b6b7-a83c-4486-9fb2-0d76a57080b0",
-     "roleDefinitionId": "18d7d88d-d35e-4fb5-a5c3-7773c20a72d9",
-     "principalIdDisplayName": "Tier 3 - User Access Administrator"
-    },
-    {
      "principalId": "bd66236b-c63a-48ec-be2e-2e21681512b0",
      "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
      "principalIdDisplayName": "Tier 1 - Reader"
