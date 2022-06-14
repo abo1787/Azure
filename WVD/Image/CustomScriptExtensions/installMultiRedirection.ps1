@@ -116,7 +116,7 @@ LogInfo("Set ReleaseRing Reg Key to value 'insider' successfully")
 # Install
 LogInfo("Installing Multimedia Redirection from path $MSIPath")
 LogInfo("Invoking command with the following scriptblock: $scriptBlock")
-$scriptBlock = { msiexec /i $MSIPath /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\MultimediaRedirection\InstallLog.txt" }
+$scriptBlock = { msiexec /i $MSIPath /qn /l*v "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\MultimediaRedirection\InstallLog.txt" }
 LogInfo("Invoking command with the following scriptblock: $scriptBlock")
 LogInfo("Install logs can be found in the InstallLog.txt file in this folder.")
 Invoke-Command $scriptBlock -Verbose
