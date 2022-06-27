@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.3.0
+    Version : 1.3.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -229,10 +229,15 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       Write-Output "All newly deployed hosts have been successfully removed from the domain"
  
       Write-Output "Removing newly deployed hosts from Azure..."
+      foreach ($newSessionHostPreDomain in $newSessionHostsPreDomain) {
+
+         # Remove session host from host pool (in case domain join failed)
+         Remove-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHostPreDomain -Force | Out-Null
+      }
       foreach ($newSessionHost in $newSessionHosts) {
          $newVMName = $newSessionHost.Split(".")[0]
  
-         # Remove session host
+         # Remove session host from host pool
          Remove-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -Force | Out-Null
  
          # Get the VM
