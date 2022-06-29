@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.3.1
+    Version : 1.4.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -90,7 +90,19 @@ foreach ($resourceGroupName in $resourceGroupNames) {
 
    # Get VmSize - use current vm size in case size changed since initial hostpool deployment
    $vmSize = $sessionHosts | Select-Object -First 1
+   $vmLocation = (Get-AzVm | Where-Object { $_.VmId -eq $vmSize.VirtualMachineId }).Location
    $vmSize = (Get-AzVm | Where-Object { $_.VmId -eq $vmSize.VirtualMachineId }).HardwareProfile.VmSize
+
+   # Get supported capabilites of VM
+   $sku = Get-AzComputeResourceSku -Location $vmLocation | Where-Object { $_.Name -eq $vmSize }
+   $skuCapabilities = $sku.Capabilities
+   $acceleratedNetworkingCapable = $skuCapabilities | Where-Object { $_.Name -eq 'AcceleratedNetworkingEnabled' } | Select-Object Value -ExpandProperty Value
+   if ($acceleratedNetworkingCapable -eq 'True') { 
+      $acceleratedNetworkingCapable = $true 
+   }
+   else { 
+      $acceleratedNetworkingCapable = $false 
+   }
 
    # Get the agent version of current hosts
    $agentVersion = $sessionHosts | Sort-Object LastUpdateTime -Descending | Select-Object -First 1 | Select-Object -ExpandProperty AgentVersion
@@ -420,6 +432,34 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    if ($upgradedHosts -eq $vmNumberOfInstances) {
       $poolUpgradeSuccessful = $true
       Write-Output "All new hosts have now upgraded"
+   }
+
+   # Enable Accelerated Networking if SKU supports it
+   if ($acceleratedNetworkingCapable -eq $true) {
+      foreach ($newSessionHost in $newSessionHosts) {
+         $newVMName = $newSessionHost.Split(".")[0]
+         Stop-AzVM -Name $newVMName -ResourceGroupName $resourceGroupName -Force -NoWait -AsJob | Out-Null
+      }
+      Write-Output "Shutting down hosts to enable accelerated networking..."
+      Get-Job | Wait-Job | Out-Null
+      Write-Output "All new hosts have successfully been shut down"
+      Write-Output "Enabling accelerated networking and restarting hosts..."
+
+      foreach ($newSessionHost in $newSessionHosts) {
+         $newVMName = $newSessionHost.Split(".")[0]
+         $vm = Get-AzVM | Where-Object { $_.Name -eq $newVMName }
+         $nic = Get-AzNetworkInterface -ResourceId $vm.NetworkProfile.NetworkInterfaces.Id
+         $nic.EnableAcceleratedNetworking = $true
+         $nic | Set-AzNetworkInterface | Out-Null
+         Start-AzVM -Name $newVMName -ResourceGroupName $resourceGroupName -NoWait -AsJob | Out-Null
+      }
+      Get-Job | Wait-Job | Out-Null
+      Write-Output "All new hosts have accelerated networking enabled"
+   }
+
+   # Check to see if all hosts upgraded successfully, if not call rollback
+   if ($upgradedHosts -eq $vmNumberOfInstances) {
+      $poolUpgradeSuccessful = $true
       Write-Output "Allowing sessions to connect to new hosts"
       # Remove template parameter file
       Remove-Item $updateHostpoolParametersFilePath
