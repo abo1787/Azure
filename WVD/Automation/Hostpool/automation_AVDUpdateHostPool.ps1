@@ -37,6 +37,12 @@ Param(
    [Parameter(mandatory)]
    [string]$keyVaultName,
 
+   [Parameter(mandatory)]
+   [string]$logAnalyticsWorkspaceId,
+
+   [Parameter(mandatory)]
+   [string]$logAnalyticsPrimaryKey,
+
    [int]$secondsToForceLogOffUser = 300
 )
 #endregion
@@ -44,11 +50,46 @@ Param(
 #region Pre-Reqs
 Set-ExecutionPolicy -ExecutionPolicy Undefined -Scope Process -Force -Confirm:$false
 Set-ExecutionPolicy -ExecutionPolicy Unrestricted -Scope LocalMachine -Force -Confirm:$false
+$rollbackTriggered = $false
+
+# Set Log Analytics log name
+$logName = 'AVDUpdateHostPool_CL'
 
 # Setting ErrorActionPreference to stop script execution when error occurs
 $ErrorActionPreference = "Stop"
 
 [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12
+#endregion
+
+#region Functions
+# Function to add logs to Log Analytics Workspace
+function Add-LogEntry {
+   param(
+      [Object]$logMessageObj,
+      [string]$logAnalyticsWorkspaceId,
+      [string]$logAnalyticsPrimaryKey,
+      [string]$logType
+   )
+
+   foreach ($key in $logMessage.Keys) {
+      switch ($key.substring($key.Length - 2)) {
+         '_s' { $sep = '"'; $trim = $key.Length - 2 }
+         '_t' { $sep = '"'; $trim = $key.Length - 2 }
+         '_b' { $sep = ''; $trim = $key.Length - 2 }
+         '_d' { $sep = ''; $trim = $key.Length - 2 }
+         '_g' { $sep = '"'; $trim = $key.Length - 2 }
+         default { $sep = '"'; $trim = $key.Length }
+      }
+      $logData = $logData + '"' + $key.substring(0, $trim) + '":' + $sep + $logMessageObj.Item($key) + $sep + ','
+   }
+
+   $json = "{$($logData)}"
+   $postResult = Send-OMSAPIIngestionFile -CustomerId $logAnalyticsWorkspaceId -SharedKey $logAnalyticsPrimaryKey -Body "$json" -LogType $logType
+    
+   if ($postResult -ne "Accepted") {
+      Write-Error "Error when posting data to Log Analytics - $postResult"
+   }
+}
 #endregion
 
 #region Authenticate
@@ -210,6 +251,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
 
    if ($updateHostpoolDeployment.ProvisioningState -eq "Failed") {
       Write-Error "One or more new session hosts failed to deploy correctly. The host pool upgrade process will now be rolled back" -ErrorAction SilentlyContinue
+      $rollbackTriggered = $true
    }
 
    #region Roll-Back on deployment failure
@@ -219,6 +261,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
 
       # Remove failed session hosts from host pool & domain
       Write-Output "Starting removal of all newly deployed session hosts..."
+      $domainRemovalSuccess = $false
       foreach ($newSessionHost in $newSessionHosts) {
          $newVMName = $newSessionHost.Split(".")[0]
   
@@ -239,8 +282,10 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       Write-Output "Waiting for all domain removal jobs to complete..."
       Get-Job | Wait-Job | Out-Null
       Write-Output "All newly deployed hosts have been successfully removed from the domain"
+      $domainRemovalSuccess = $true
  
       Write-Output "Removing newly deployed hosts from Azure..."
+      $azureRemovalSuccess = $false
       foreach ($newSessionHostPreDomain in $newSessionHostsPreDomain) {
 
          # Remove session host from host pool (in case domain join failed)
@@ -267,6 +312,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
          Write-Output "Host '$newVMName' has successfully been removed from Azure"
       }
       Write-Output "All newly deployed hosts have been successfully removed from Azure"
+      $azureRemovalSuccess = $true
       Write-Output "Host pool '$($hostpool.Name)' rollback has been completed successfully"
       Write-Error "Update failed for host pool '$($hostpool.Name)' and the deployment was rolled back" -ErrorAction SilentlyContinue
  
@@ -435,6 +481,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    }
 
    # Enable Accelerated Networking if SKU supports it
+   $acceleratedNetworkingEnabled = $false
    if ($acceleratedNetworkingCapable -eq $true) {
       foreach ($newSessionHost in $newSessionHosts) {
          $newVMName = $newSessionHost.Split(".")[0]
@@ -455,6 +502,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       }
       Get-Job | Wait-Job | Out-Null
       Write-Output "All new hosts have accelerated networking enabled"
+      $acceleratedNetworkingEnabled = $true
    }
 
    # Check to see if all hosts upgraded successfully, if not call rollback
@@ -469,12 +517,14 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    #region Roll-Back on upgrade failure
    if ($poolUpgradeSuccessful -eq $false) {
       Write-Warning "One or more session hosts failed to upgrade before the timeout period expired. The host pool upgrade process will now be rolled back" -ErrorAction SilentlyContinue
+      $rollbackTriggered = $true
 
       # Get reqs for domain removal
       $domainPass = ConvertTo-SecureString -String $domainJoinPlain -AsPlainText -Force
 
       # Remove failed session hosts from host pool & domain
       Write-Output "Starting removal of all newly deployed session hosts..."
+      $domainRemovalSuccess = $false
       foreach ($newSessionHost in $newSessionHosts) {
          $newVMName = $newSessionHost.Split(".")[0]
  
@@ -495,8 +545,10 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       Write-Output "Waiting for all domain removal jobs to complete..."
       Get-Job | Wait-Job | Out-Null
       Write-Output "All newly deployed hosts have been successfully removed from the domain"
+      $domainRemovalSuccess = $true
 
       Write-Output "Removing newly deployed hosts from Azure..."
+      $azureRemovalSuccess = $false
       foreach ($newSessionHost in $newSessionHosts) {
          $newVMName = $newSessionHost.Split(".")[0]
 
@@ -518,6 +570,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
          Write-Output "Host '$newVMName' has successfully been removed from Azure"
       }
       Write-Output "All newly deployed hosts have been successfully removed from Azure"
+      $azureRemovalSuccess = $true
       Write-Output "Host pool '$($hostpool.Name)' rollback has been completed successfully"
       Write-Error "Update failed for host pool '$($hostpool.Name)' and the deployment was rolled back" -ErrorAction SilentlyContinue
 
@@ -661,6 +714,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
 
       # Remove original session hosts from host pool & domain
       Write-Output "Starting removal of all original session hosts..."
+      $domainRemovalSuccess = $false
       foreach ($originalHost in $originalSessionHosts) {
          $vmName = $originalHost.Split(".")[0]
 
@@ -681,8 +735,10 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       Write-Output "Waiting for all domain removal jobs to complete..."
       Get-Job | Wait-Job | Out-Null
       Write-Output "All original hosts have been successfully removed from the domain"
+      $domainRemovalSuccess = $true
 
       Write-Output "Removing original hosts from Azure..."
+      $azureRemovalSuccess = $false
       foreach ($originalHost in $originalSessionHosts) {
          $vmName = $originalHost.Split(".")[0]
 
@@ -704,8 +760,30 @@ foreach ($resourceGroupName in $resourceGroupNames) {
          Write-Output "Host '$vmName' has successfully been removed from Azure"
       }
       Write-Output "All original hosts have been successfully removed from Azure"
+      $azureRemovalSuccess = $true
       Write-Output "Host pool '$($hostpool.Name)' has been updated successfully"
    }
    #endregion
+
+   #region Output results
+   # Post data to Log Analytics
+   Write-Output "Posting data to Log Analytics"
+
+   $logMessage = @{ 
+      hostPoolName_s                 = $hostpool.Name;
+      resourceGroupName_s            = $resourceGroupName;
+      updateType_s                   = $updateType;  
+      hostsDeployedSuccess_b         = $poolDeploymentSuccessful;
+      hostsUpgradedSuccess_b         = $poolUpgradeSuccessful;
+      gpuNVidiaDeployed_b            = $gpuNVidia;
+      gpuAMDDeployed_b               = $gpuAmD;
+      acceleratedNetworkingEnabled_b = $acceleratedNetworkingEnabled;
+      domainRemovalSuccess_b         = $domainRemovalSuccess;
+      azureRemovalSuccess_b          = $azureRemovalSuccess;
+      rollbackTriggered_b            = $rollbackTriggered;
+   }
+   Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
+   #endregion
+   Write-Output "Completed update for Resource Group '$resourceGroupName'"
 }
 #endregion
