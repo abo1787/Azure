@@ -771,7 +771,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    $poolDeploymentSuccessful = $poolDeploymentSuccessful | ConvertTo-Json
    $poolUpgradeSuccessful = $poolUpgradeSuccessful | ConvertTo-Json
    $gpuNVidia = $gpuNVidia | ConvertTo-Json
-   $gpuAmD = $gpuAmD | ConvertTo-Json
+   $gpuAMD = $gpuAMD | ConvertTo-Json
    $acceleratedNetworkingEnabled = $acceleratedNetworkingEnabled | ConvertTo-Json
    $domainRemovalSuccess = $domainRemovalSuccess | ConvertTo-Json
    $azureRemovalSuccess = $azureRemovalSuccess | ConvertTo-Json
