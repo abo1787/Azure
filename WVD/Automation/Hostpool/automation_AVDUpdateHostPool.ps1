@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.4.0
+    Version : 1.4.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -105,7 +105,7 @@ else {
 
 #region Update Hostpools
 foreach ($resourceGroupName in $resourceGroupNames) {
-   Write-Output "Starting update for Resource Group '$resourceGroupName'..."
+   Write-Output "Starting update for resource group '$resourceGroupName'..."
    #region Cleanup old Resource Group Deployments
    Write-Output "Removing previous resource group deployments..."
    $deploymentsToDelete = Get-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName | Where-Object { $_.DeploymentName -notlike "HostPool*" }
@@ -249,13 +249,11 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       Write-Output "Successfully added $vmNumberofInstances session host(s) to host pool '$($hostpool.Name)'"
    }
 
-   if ($updateHostpoolDeployment.ProvisioningState -eq "Failed") {
-      Write-Error "One or more new session hosts failed to deploy correctly. The host pool upgrade process will now be rolled back" -ErrorAction SilentlyContinue
-      $rollbackTriggered = $true
-   }
-
    #region Roll-Back on deployment failure
    if ($poolDeploymentSuccessful -eq $false) {
+      Write-Error "One or more new session hosts failed to deploy correctly. The host pool upgrade process will now be rolled back" -ErrorAction SilentlyContinue
+      $rollbackTriggered = $true
+
       # Get reqs for domain removal
       $domainPass = ConvertTo-SecureString -String $domainJoinPlain -AsPlainText -Force
 
@@ -289,13 +287,13 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       foreach ($newSessionHostPreDomain in $newSessionHostsPreDomain) {
 
          # Remove session host from host pool (in case domain join failed)
-         Remove-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHostPreDomain -Force | Out-Null
+         Remove-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHostPreDomain -Force -ErrorAction SilentlyContinue | Out-Null
       }
       foreach ($newSessionHost in $newSessionHosts) {
          $newVMName = $newSessionHost.Split(".")[0]
  
          # Remove session host from host pool
-         Remove-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -Force | Out-Null
+         Remove-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -Force -ErrorAction SilentlyContinue | Out-Null
  
          # Get the VM
          $vm = Get-AzVM -Name $newVMName -ResourceGroupName $resourceGroupName
@@ -501,6 +499,9 @@ foreach ($resourceGroupName in $resourceGroupNames) {
          Start-AzVM -Name $newVMName -ResourceGroupName $resourceGroupName -NoWait -AsJob | Out-Null
       }
       Get-Job | Wait-Job | Out-Null
+
+      # Wait 2 minutes for machines to go available in AVD
+      Start-Sleep -Seconds 120
       Write-Output "All new hosts have accelerated networking enabled"
       $acceleratedNetworkingEnabled = $true
    }
@@ -766,6 +767,16 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    #endregion
 
    #region Output results
+   # Convert boolean values to json
+   $poolDeploymentSuccessful = $poolDeploymentSuccessful | ConvertTo-Json
+   $poolUpgradeSuccessful = $poolUpgradeSuccessful | ConvertTo-Json
+   $gpuNVidia = $gpuNVidia | ConvertTo-Json
+   $gpuAmD = $gpuAmD | ConvertTo-Json
+   $acceleratedNetworkingEnabled = $acceleratedNetworkingEnabled | ConvertTo-Json
+   $domainRemovalSuccess = $domainRemovalSuccess | ConvertTo-Json
+   $azureRemovalSuccess = $azureRemovalSuccess | ConvertTo-Json
+   $rollbackTriggered = $rollbackTriggered | ConvertTo-Json
+
    # Post data to Log Analytics
    Write-Output "Posting data to Log Analytics"
 
@@ -776,11 +787,11 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       hostsDeployedSuccess_b         = $poolDeploymentSuccessful;
       hostsUpgradedSuccess_b         = $poolUpgradeSuccessful;
       gpuNVidiaDeployed_b            = $gpuNVidia;
-      gpuAMDDeployed_b               = $gpuAmD;
+      gpuAMDDeployed_b               = $gpuAMD;
       acceleratedNetworkingEnabled_b = $acceleratedNetworkingEnabled;
       domainRemovalSuccess_b         = $domainRemovalSuccess;
       azureRemovalSuccess_b          = $azureRemovalSuccess;
-      rollbackTriggered_b            = $rollbackTriggered;
+      rollbackTriggered_b            = $rollbackTriggered
    }
    Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
    #endregion
