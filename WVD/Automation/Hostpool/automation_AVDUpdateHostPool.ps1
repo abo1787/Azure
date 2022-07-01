@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.4.1
+    Version : 1.4.2
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -123,10 +123,17 @@ foreach ($resourceGroupName in $resourceGroupNames) {
    # Calculate vmInitialNumber
    $hostpool = Get-AzWvdHostPool -ResourceGroupName $resourceGroupName
    $sessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name | Sort-Object Name -Descending
-   $vmInitialNumberObj = $sessionHosts | Select-Object -First 1
-   $vmInitialNumberObj = $vmInitialNumberObj.Name
-   $vmInitialNumberObj = $vmInitialNumberObj.Split(".")[0]
-   $vmInitialNumberObj = $vmInitialNumberObj.Split("-")[-1]
+   $sanitizedNumberTable = @()
+   foreach ($sessionHost in $sessionHosts) {
+      $vmNumberObj = $sessionHost.Name
+      $vmNumberObj = $vmNumberObj.Split(".")[0]
+      $vmNumberObj = $vmNumberObj.Split("-")[-1]
+      if ($vmNumberObj.Length -eq 1) {
+         $vmNumberObj = "0" + $vmNumberObj
+      }
+      $sanitizedNumberTable += $vmNumberObj
+   }
+   $vmInitialNumberObj = $sanitizedNumberTable | Sort-Object -Descending | Select-Object -First 1
    [int]$vmInitialNumber = [int]$vmInitialNumberObj + 1
 
    # Get VmSize - use current vm size in case size changed since initial hostpool deployment
