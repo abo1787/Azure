@@ -1,10 +1,11 @@
 {
-    "Name": "Start VM on Connect",
+    "Name": "Azure Virtual Desktop Start VM on Connect",
     "IsCustom": true,
-    "Description": "Gives Start VM on Connect access to start Virtual Machines when requested",
+    "Description": "Turns on session host VMs when users request to connect to them",
     "Actions": [
         "Microsoft.Compute/virtualMachines/start/action",
-        "Microsoft.Compute/virtualMachines/read"
+        "Microsoft.Compute/virtualMachines/read",
+        "Microsoft.Compute/virtualMachines/instanceView/read"
     ],
     "NotActions": [],
     "AssignableScopes": [
