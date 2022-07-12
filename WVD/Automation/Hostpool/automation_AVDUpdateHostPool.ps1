@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.4.2
+    Version : 1.5.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -42,6 +42,9 @@ Param(
 
    [Parameter(mandatory)]
    [string]$logAnalyticsPrimaryKey,
+
+   [Parameter(mandatory)]
+   [string]$bistechGUID,
 
    [int]$secondsToForceLogOffUser = 300
 )
@@ -798,7 +801,8 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       acceleratedNetworkingEnabled_b = $acceleratedNetworkingEnabled;
       domainRemovalSuccess_b         = $domainRemovalSuccess;
       azureRemovalSuccess_b          = $azureRemovalSuccess;
-      rollbackTriggered_b            = $rollbackTriggered
+      rollbackTriggered_b            = $rollbackTriggered;
+      bistechGUID_s                  = $bistechGUID
    }
    Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
    #endregion
