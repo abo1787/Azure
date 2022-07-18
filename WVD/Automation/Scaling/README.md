@@ -2,6 +2,12 @@
 
 
 ### Latest Release - v5.1.1
+#### v5.2.1
+##### New Features
+###### * Session hosts unable to start due to resource issues in data centre will be deallocated automatically to allow attempted start on next run
+##### Other
+###### * Added customer GUID to logs to enable future enhanced alerting
+---
 #### v5.1.1
 ##### Fixes
 ###### * Added additional session checks between shutting down hosts in case of connections made during loop
