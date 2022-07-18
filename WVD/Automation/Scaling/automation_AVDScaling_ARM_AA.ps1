@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.1.1
+    Version : 5.2.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -90,6 +90,7 @@ $vmDiskType = $Input.VMDiskType
 $observeUKBankHolidays = $Input.ObserveUKBankHolidays
 $customHolidays = $Input.CustomHolidays
 $enhancedLogging = $Input.EnhancedLogging
+$bistechGUID = $Input.CustomerGUID
 
 # Set Log Analytics log name
 $logName = 'AVDScaling_CL'
@@ -347,6 +348,24 @@ foreach ($sessionHost in $allSessionHosts) {
 }
 if ($enhancedLogging -eq $True) {
    Write-Output "*** REGION *** Exited the 'Check Maintenance modes' region"
+}
+#endregion
+
+#region Check for failed hosts and deallocate if failed due to capacity
+$failedVms = Get-AzVM -ResourceGroupName $resourceGroupName -Status | Where-Object { $_.ProvisioningState -eq 'Failed' }
+foreach ($failedVm in $failedVms) {
+   $vmStatus = Get-AzVM -ResourceGroupName $resourceGroupName -Name $failedVm.Name -Status
+   if ($vmStatus.Statuses.Message -like "Allocation failed. We do not have sufficient capacity*") {
+      Write-Output "Host '$($vmStatus.Name)' is in a failed state due to Microsoft capacity issues. This host will be deallocated now so that future attempts to start may be successful"
+      try {
+         Write-Output "Stopping host '$($failedVm.Name)'..."
+         Stop-AzVM -Name $failedVm.Name -ResourceGroupName $failedVm.ResourceGroupName -Force | Out-Null
+      }
+      catch {
+         Write-Error "Failed to stop host '$($failedVm.Name)' with error: $($_.exception.message)"
+         exit
+      }
+   }
 }
 #endregion
 
@@ -951,7 +970,8 @@ $logMessage = @{
    offpeakMinimumNumberOfRDSH_d    = $offpeakMinimumNumberOfRDSH;
    limitSecondsToForceLogOffUser_d = $limitSecondsToForceLogOffUser;
    activeUserCount_d               = $activeUserCount;
-   disconnectedUserCount_d         = $disconnectedUserCount
+   disconnectedUserCount_d         = $disconnectedUserCount;
+   bistechGUID_g                   = $bistechGUID
 }
 Add-LogEntry -LogMessageObj $logMessage -LogAnalyticsWorkspaceId $logAnalyticsWorkspaceId -LogAnalyticsPrimaryKey $logAnalyticsPrimaryKey -LogType $logName
 
