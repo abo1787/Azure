@@ -1,7 +1,7 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.1.1
+### Latest Release - v5.2.1
 #### v5.2.1
 ##### New Features
 ###### * Session hosts unable to start due to resource issues in data centre will be deallocated automatically to allow attempted start on next run
