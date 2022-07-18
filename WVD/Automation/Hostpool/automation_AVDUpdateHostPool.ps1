@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.5.0
+    Version : 1.5.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -455,7 +455,7 @@ foreach ($resourceGroupName in $resourceGroupNames) {
       foreach ($failedUpgradeHost in $failedUpgradeHosts) {
          $failedVMName = $failedUpgradeHost.Split(".")[0]
          $vm = Get-AzVM | Where-Object { $_.Name -eq $failedVMName }
-         Restart-AzVM -VM $vm -ResourceGroupName $vm.ResourceGroupName -NoWait | Out-Null
+         Restart-AzVM -Name $failedVMName -ResourceGroupName $vm.ResourceGroupName -NoWait | Out-Null
          Write-Output "Host '$failedUpgradeHost' has been rebooted to re-attempt upgrade"
       }
 
