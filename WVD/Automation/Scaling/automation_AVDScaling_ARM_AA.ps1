@@ -90,7 +90,7 @@ $vmDiskType = $Input.VMDiskType
 $observeUKBankHolidays = $Input.ObserveUKBankHolidays
 $customHolidays = $Input.CustomHolidays
 $enhancedLogging = $Input.EnhancedLogging
-$bistechGUID = $Input.CustomerGUID
+$bistechGUID = $Input.bistechGUID
 
 # Set Log Analytics log name
 $logName = 'AVDScaling_CL'
