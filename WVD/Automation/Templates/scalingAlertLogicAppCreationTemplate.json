@@ -50,7 +50,7 @@
       "azureAutomationConnectionDisplayName": "AzureAutomation_Connection_AVDAutomationAccount",
       "azureLogsConnectionName": "azureLogs_AutoScaling",
       "azureLogsConnectionDisplayName": "[concat('AzureLogs_Connection_', parameters('laQueryWorkspaceName'))]",
-      "automationAccountEncodeUri": "[concat('/subscriptions/@{encodeURIComponent(''', parameters('laQuerySubscription'), ''')}/resourceGroups/@{encodeURIComponent(''', parameters('automationAccountResourceGroup'), ''')}/providers/Microsoft.Automation/automationAccounts/@{encodeURIComponent(''AVDAutomationAccount'')}''')]"
+      "automationAccountEncodeUri": "[concat('/subscriptions/@{encodeURIComponent(''', parameters('laQuerySubscription'), ''')}/resourceGroups/@{encodeURIComponent(''', parameters('automationAccountResourceGroup'), ''')}/providers/Microsoft.Automation/automationAccounts/@{encodeURIComponent(''AVDAutomationAccount'')}')]"
 
    },
    "resources": [
