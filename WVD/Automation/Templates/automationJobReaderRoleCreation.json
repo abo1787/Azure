@@ -1,0 +1,14 @@
+{
+   "Name": "AVD Automation Job Reader",
+   "IsCustom": true,
+   "Description": "Read runbook job output",
+   "Actions": [
+      "Microsoft.Automation/automationAccounts/jobs/read",
+      "Microsoft.Automation/automationAccounts/jobs/output/read",
+      "Microsoft.Automation/automationAccounts/jobs/streams/read"
+   ],
+   "NotActions": [],
+   "AssignableScopes": [
+      "/subscriptions/<subscriptionID>/resourceGroups/<rgName>"
+   ]
+}
