@@ -345,8 +345,8 @@
                      },
                      "azuremonitorlogs": {
                         "connectionId": "[resourceId('Microsoft.Web/connections', variables('azureLogsConnectionName'))]",
-                        "connectionName": "azuremonitorlogs",
-                        "id": "/subscriptions/d98acae0-a5a4-4497-92e8-ef62af8c2b8f/providers/Microsoft.Web/locations/uksouth/managedApis/azuremonitorlogs"
+                        "connectionName": "[variables('azureLogsConnectionName')]",
+                        "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'azuremonitorlogs')]"
                      }
                   }
                }
