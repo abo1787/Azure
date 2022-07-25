@@ -46,9 +46,9 @@
       }
    },
    "variables": {
-      "azureAutomationConnectionName": "azureAutomation_AutoScaling",
+      "azureAutomationConnectionName": "azureAutomation_Automation",
       "azureAutomationConnectionDisplayName": "AzureAutomation_Connection_AVDAutomationAccount",
-      "azureLogsConnectionName": "azureLogs_AutoScaling",
+      "azureLogsConnectionName": "azureLogs_Automation",
       "azureLogsConnectionDisplayName": "[concat('AzureLogs_Connection_', parameters('laQueryWorkspaceName'))]",
       "automationAccountEncodeUri": "[concat('/subscriptions/@{encodeURIComponent(''', parameters('laQuerySubscription'), ''')}/resourceGroups/@{encodeURIComponent(''', parameters('automationAccountResourceGroup'), ''')}/providers/Microsoft.Automation/automationAccounts/@{encodeURIComponent(''AVDAutomationAccount'')}')]"
 
@@ -86,9 +86,6 @@
          "name": "[parameters('logicAppname')]",
          "location": "[parameters('logicAppLocation')]",
          "dependsOn": [ "[resourceId('Microsoft.Web/connections', variables('azureLogsConnectionName'))]" ],
-         "identity": {
-            "type": "SystemAssigned"
-         },
          "properties": {
             "state": "Disabled",
             "definition": {
