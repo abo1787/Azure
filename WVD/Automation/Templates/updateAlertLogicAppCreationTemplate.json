@@ -76,7 +76,9 @@
          "apiVersion": "2017-07-01",
          "name": "[parameters('logicAppname')]",
          "location": "[parameters('logicAppLocation')]",
-         "dependsOn": [ "[resourceId('Microsoft.Web/connections', variables('azureARMConnectionName'))]" ],
+         "dependsOn": [
+            "[variables('azureARMConnectionName')]"
+         ],
          "properties": {
             "state": "Disabled",
             "definition": {
