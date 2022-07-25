@@ -47,7 +47,7 @@
       "updateFailureAlertUri": {
          "type": "securestring",
          "metadata": {
-            "description": "Uri of the Bistech Logic App to trigger."
+            "description": "Uri of the Bistech Failure Logic App to trigger."
          }
       }
    },
