@@ -5,7 +5,8 @@
    "Actions": [
       "Microsoft.Automation/automationAccounts/jobs/read",
       "Microsoft.Automation/automationAccounts/jobs/output/read",
-      "Microsoft.Automation/automationAccounts/jobs/streams/read"
+      "Microsoft.Automation/automationAccounts/jobs/streams/read",
+      "Microsoft.Resources/tags/read"
    ],
    "NotActions": [],
    "AssignableScopes": [
