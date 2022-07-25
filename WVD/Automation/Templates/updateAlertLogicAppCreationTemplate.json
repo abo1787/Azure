@@ -1,0 +1,365 @@
+{
+   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "parameters": {
+      "logicAppname": {
+         "type": "String",
+         "metadata": {
+            "description": "The name of the logic app to create."
+         }
+      },
+      "logicAppLocation": {
+         "type": "string",
+         "metadata": {
+            "description": "The location of the logic app resource group."
+         }
+      },
+      "automationAccountResourceGroup": {
+         "type": "string",
+         "metadata": {
+            "description": "The resource group containing the AVDAutomationAccount."
+         }
+      },
+      "laQueryResourceGroupName": {
+         "type": "string",
+         "metadata": {
+            "description": "Log Analytics resource group name."
+         }
+      },
+      "laQueryWorkspaceName": {
+         "type": "string",
+         "metadata": {
+            "description": "Log Analytics workspace name."
+         }
+      },
+      "laQuerySubscription": {
+         "type": "string",
+         "metadata": {
+            "description": "Log Analytics subscription."
+         }
+      },
+      "updateAlertUri": {
+         "type": "securestring",
+         "metadata": {
+            "description": "Uri of the Bistech Logic App to trigger."
+         }
+      },
+      "updateFailureAlertUri": {
+         "type": "securestring",
+         "metadata": {
+            "description": "Uri of the Bistech Logic App to trigger."
+         }
+      }
+   },
+   "variables": {
+      "azureLogsConnectionName": "azureLogs_Automation",
+      "azureARMConnectionName": "azureARM_Automation",
+      "azureARMConnectionDisplayName": "AzureARM_Connection_AVDAutomationAccount",
+      "automationAccountEncodeUri": "[concat('/subscriptions/@{encodeURIComponent(''', parameters('laQuerySubscription'), ''')}/resourceGroups/@{encodeURIComponent(''', parameters('automationAccountResourceGroup'), ''')}/providers/Microsoft.Automation/automationAccounts/@{encodeURIComponent(''AVDAutomationAccount'')}')]"
+   },
+   "resources": [
+      {
+         "type": "Microsoft.Web/connections",
+         "apiVersion": "2016-06-01",
+         "name": "[variables('azureARMConnectionName')]",
+         "location": "[parameters('logicAppLocation')]",
+         "kind": "V1",
+         "properties": {
+            "api": {
+               "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'arm')]"
+            },
+            "displayName": "[variables('azureARMConnectionDisplayName')]"
+         }
+      },
+      {
+         "type": "Microsoft.Logic/workflows",
+         "apiVersion": "2017-07-01",
+         "name": "[parameters('logicAppname')]",
+         "location": "[parameters('logicAppLocation')]",
+         "dependsOn": [ "[resourceId('Microsoft.Web/connections', variables('azureARMConnectionName'))]" ],
+         "properties": {
+            "state": "Disabled",
+            "definition": {
+               "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+               "contentVersion": "1.0.0.0",
+               "parameters": {
+                  "$connections": {
+                     "defaultValue": {},
+                     "type": "Object"
+                  }
+               },
+               "triggers": {
+                  "Recurrence": {
+                     "recurrence": {
+                        "frequency": "Minute",
+                        "interval": 15
+                     },
+                     "evaluatedRecurrence": {
+                        "frequency": "Minute",
+                        "interval": 15
+                     },
+                     "type": "Recurrence"
+                  }
+               },
+               "actions": {
+                  "Check_for_runbook_failures": {
+                     "runAfter": {
+                        "Condition": [
+                           "Succeeded"
+                        ]
+                     },
+                     "type": "ApiConnection",
+                     "inputs": {
+                        "body": "AzureDiagnostics \n| where TimeGenerated > ago(16m)\n| where RunbookName_s == 'automation_AVDUpdateHostPool_Runbook'\n| where ResultType == 'Failed'",
+                        "host": {
+                           "connection": {
+                              "name": "@parameters('$connections')['azuremonitorlogs']['connectionId']"
+                           }
+                        },
+                        "method": "post",
+                        "path": "/queryData",
+                        "queries": {
+                           "resourcegroups": "[parameters('laQueryResourceGroupName')]",
+                           "resourcename": "[parameters('laQueryWorkspaceName')]",
+                           "resourcetype": "Log Analytics Workspace",
+                           "subscriptions": "[parameters('laQuerySubscription')]",
+                           "timerange": "Set in query"
+                        }
+                     }
+                  },
+                  "Condition": {
+                     "actions": {},
+                     "runAfter": {
+                        "Initialize_variable_'conditionTriggered'": [
+                           "Succeeded"
+                        ]
+                     },
+                     "else": {
+                        "actions": {
+                           "HTTP": {
+                              "runAfter": {
+                                 "Set_variable_'conditionTriggered'": [
+                                    "Succeeded"
+                                 ]
+                              },
+                              "type": "Http",
+                              "inputs": {
+                                 "body": "@body('Run_query_and_list_results')",
+                                 "method": "POST",
+                                 "uri": "[parameters('updateAlertUri')]"
+                              }
+                           },
+                           "Set_variable_'conditionTriggered'": {
+                              "runAfter": {},
+                              "type": "SetVariable",
+                              "inputs": {
+                                 "name": "conditionTriggered",
+                                 "value": true
+                              }
+                           }
+                        }
+                     },
+                     "expression": {
+                        "and": [
+                           {
+                              "equals": [
+                                 "@variables('results')",
+                                 "[[]"
+                              ]
+                           }
+                        ]
+                     },
+                     "type": "If"
+                  },
+                  "Condition_2": {
+                     "actions": {},
+                     "runAfter": {
+                        "Set_variable_'results'": [
+                           "Succeeded"
+                        ]
+                     },
+                     "else": {
+                        "actions": {
+                           "Read_a_resource": {
+                              "runAfter": {
+                                 "Set_variable_'conditionTriggered'_2": [
+                                    "Succeeded"
+                                 ]
+                              },
+                              "type": "ApiConnection",
+                              "inputs": {
+                                 "host": {
+                                    "connection": {
+                                       "name": "@parameters('$connections')['arm']['connectionId']"
+                                    }
+                                 },
+                                 "method": "get",
+                                 "path": "[variables('automationAccountEncodeUri')]",
+                                 "queries": {
+                                    "x-ms-api-version": "2021-06-22"
+                                 }
+                              }
+                           },
+                           "Set_variable_'conditionTriggered'_2": {
+                              "runAfter": {},
+                              "type": "SetVariable",
+                              "inputs": {
+                                 "name": "conditionTriggered",
+                                 "value": true
+                              }
+                           },
+                           "Trigger_Bistech_Update_Runbook_Failure_Alert": {
+                              "runAfter": {
+                                 "Read_a_resource": [
+                                    "Succeeded"
+                                 ]
+                              },
+                              "type": "Http",
+                              "inputs": {
+                                 "body": "@outputs('Read_a_resource')",
+                                 "method": "POST",
+                                 "uri": "[parameters('updateFailureAlertUri')]"
+                              }
+                           }
+                        }
+                     },
+                     "expression": {
+                        "and": [
+                           {
+                              "equals": [
+                                 "@variables('results')",
+                                 "[[]"
+                              ]
+                           }
+                        ]
+                     },
+                     "type": "If"
+                  },
+                  "Condition_3": {
+                     "actions": {
+                        "Terminate": {
+                           "runAfter": {},
+                           "type": "Terminate",
+                           "inputs": {
+                              "runStatus": "Succeeded"
+                           }
+                        }
+                     },
+                     "runAfter": {
+                        "Condition_2": [
+                           "Succeeded"
+                        ]
+                     },
+                     "else": {
+                        "actions": {
+                           "Terminate_2": {
+                              "runAfter": {},
+                              "type": "Terminate",
+                              "inputs": {
+                                 "runStatus": "Cancelled"
+                              }
+                           }
+                        }
+                     },
+                     "expression": {
+                        "and": [
+                           {
+                              "equals": [
+                                 "@variables('conditionTriggered')",
+                                 true
+                              ]
+                           }
+                        ]
+                     },
+                     "type": "If"
+                  },
+                  "Initialize_variable_'conditionTriggered'": {
+                     "runAfter": {
+                        "Initialize_variable_'results'": [
+                           "Succeeded"
+                        ]
+                     },
+                     "type": "InitializeVariable",
+                     "inputs": {
+                        "variables": [
+                           {
+                              "name": "conditionTriggered",
+                              "type": "boolean",
+                              "value": false
+                           }
+                        ]
+                     }
+                  },
+                  "Initialize_variable_'results'": {
+                     "runAfter": {
+                        "Run_query_and_list_results": [
+                           "Succeeded"
+                        ]
+                     },
+                     "type": "InitializeVariable",
+                     "inputs": {
+                        "variables": [
+                           {
+                              "name": "results",
+                              "type": "string",
+                              "value": "@{body('Run_query_and_list_results')?['value']}"
+                           }
+                        ]
+                     }
+                  },
+                  "Run_query_and_list_results": {
+                     "runAfter": {},
+                     "type": "ApiConnection",
+                     "inputs": {
+                        "body": "AVDUpdateHostPool_CL\n| where TimeGenerated > ago(16m)",
+                        "host": {
+                           "connection": {
+                              "name": "@parameters('$connections')['azuremonitorlogs']['connectionId']"
+                           }
+                        },
+                        "method": "post",
+                        "path": "/queryData",
+                        "queries": {
+                           "resourcegroups": "[parameters('laQueryResourceGroupName')]",
+                           "resourcename": "[parameters('laQueryWorkspaceName')]",
+                           "resourcetype": "Log Analytics Workspace",
+                           "subscriptions": "[parameters('laQuerySubscription')]",
+                           "timerange": "Set in query"
+                        }
+                     }
+                  },
+                  "Set_variable_'results'": {
+                     "runAfter": {
+                        "Check_for_runbook_failures": [
+                           "Succeeded"
+                        ]
+                     },
+                     "type": "SetVariable",
+                     "inputs": {
+                        "name": "results",
+                        "value": "@{body('Check_for_runbook_failures')?['value']}"
+                     }
+                  }
+               },
+               "outputs": {}
+            },
+            "parameters": {
+               "$connections": {
+                  "value": {
+                     "arm": {
+                        "connectionId": "[resourceId('Microsoft.Web/connections', variables('azureARMConnectionName'))]",
+                        "connectionName": "[variables('azureARMConnectionName')]",
+                        "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'arm')]"
+                     },
+                     "azuremonitorlogs": {
+                        "connectionId": "[resourceId('Microsoft.Web/connections', variables('azureLogsConnectionName'))]",
+                        "connectionName": "[variables('azureLogsConnectionName')]",
+                        "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'azuremonitorlogs')]"
+                     }
+                  }
+               }
+            }
+         }
+      }
+   ]
+}
