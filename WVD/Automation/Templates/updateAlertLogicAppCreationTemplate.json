@@ -55,7 +55,7 @@
       "azureLogsConnectionName": "azureLogs_Automation",
       "azureARMConnectionName": "azureARM_Automation",
       "azureARMConnectionDisplayName": "AzureARM_Connection_AVDAutomationAccount",
-      "automationAccountEncodeUri": "[concat('/subscriptions/@{encodeURIComponent(''', parameters('laQuerySubscription'), ''')}/resourceGroups/@{encodeURIComponent(''', parameters('automationAccountResourceGroup'), ''')}/providers/Microsoft.Automation/automationAccounts/@{encodeURIComponent(''AVDAutomationAccount'')}')]"
+      "automationAccountEncodeUri": "[concat('/subscriptions/@{encodeURIComponent(''', parameters('laQuerySubscription'), ''')}/resourceGroups/@{encodeURIComponent(''', parameters('automationAccountResourceGroup'), ''')}/providers/@{encodeURIComponent(''Microsoft.Automation'')}/@{encodeURIComponent(''automationAccounts/AVDAutomationAccount'')}')]"
    },
    "resources": [
       {
