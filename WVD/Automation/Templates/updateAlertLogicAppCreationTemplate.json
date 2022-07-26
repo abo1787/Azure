@@ -49,6 +49,12 @@
          "metadata": {
             "description": "Uri of the Bistech Failure Logic App to trigger."
          }
+      },
+      "identity": {
+         "type": "string",
+         "metadata": {
+            "description": "Identity for the Managed Service"
+         }
       }
    },
    "variables": {
@@ -362,7 +368,13 @@
                      "arm": {
                         "connectionId": "[resourceId('Microsoft.Web/connections', variables('azureARMConnectionName'))]",
                         "connectionName": "[variables('azureARMConnectionName')]",
-                        "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'arm')]"
+                        "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'arm')]",
+                        "connectionProperties": {
+                           "authentication": {
+                              "identity": "[parameters('identity')]",
+                              "type": "ManagedServiceIdentity"
+                           }
+                        }
                      },
                      "azuremonitorlogs": {
                         "connectionId": "[resourceId('Microsoft.Web/connections', variables('azureLogsConnectionName'))]",
