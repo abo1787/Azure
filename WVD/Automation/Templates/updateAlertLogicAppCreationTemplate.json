@@ -49,12 +49,6 @@
          "metadata": {
             "description": "Uri of the Bistech Failure Logic App to trigger."
          }
-      },
-      "identity": {
-         "type": "string",
-         "metadata": {
-            "description": "Identity for the Managed Service"
-         }
       }
    },
    "variables": {
@@ -66,26 +60,15 @@
    "resources": [
       {
          "type": "Microsoft.Web/connections",
-         "apiVersion": "2018-07-01-preview",
+         "apiVersion": "2016-06-01",
          "name": "[variables('azureARMConnectionName')]",
          "location": "[parameters('logicAppLocation')]",
          "kind": "V1",
          "properties": {
-            "displayName": "[variables('azureARMConnectionDisplayName')]",
-            "customParameterValues": {},
-            "alternativeParameterValues": {},
-            "parameterValueType": "Alternative",
             "api": {
-               "name": "arm",
-               "displayName": "Azure Resource Manager",
-               "description": "Azure Resource Manager exposes the APIs to manage all of your Azure resources.",
-               "iconUri": "https://connectoricons-prod.azureedge.net/laborbol/fixes/path-traversal/1.0.1552.2695/arm/icon.png",
-               "brandColor": "#003056",
-               "category": "Standard",
-               "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'arm')]",
-               "type": "Microsoft.Web/locations/managedApis"
+               "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'arm')]"
             },
-            "testLinks": []
+            "displayName": "[variables('azureARMConnectionDisplayName')]"
          }
       },
       {
@@ -96,12 +79,6 @@
          "dependsOn": [
             "[variables('azureARMConnectionName')]"
          ],
-         "identity": {
-            "type": "UserAssigned",
-            "userAssignedIdentities": {
-               "[parameters('identity')]": {}
-            }
-         },
          "properties": {
             "state": "Disabled",
             "definition": {
@@ -374,13 +351,7 @@
                      "arm": {
                         "connectionId": "[resourceId('Microsoft.Web/connections', variables('azureARMConnectionName'))]",
                         "connectionName": "[variables('azureARMConnectionName')]",
-                        "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'arm')]",
-                        "connectionProperties": {
-                           "authentication": {
-                              "identity": "[parameters('identity')]",
-                              "type": "ManagedServiceIdentity"
-                           }
-                        }
+                        "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'arm')]"
                      },
                      "azuremonitorlogs": {
                         "connectionId": "[resourceId('Microsoft.Web/connections', variables('azureLogsConnectionName'))]",
