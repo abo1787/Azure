@@ -96,6 +96,12 @@
          "dependsOn": [
             "[variables('azureARMConnectionName')]"
          ],
+         "identity": {
+            "type": "UserAssigned",
+            "userAssignedIdentities": {
+               "[parameters('identity')]": {}
+            }
+         },
          "properties": {
             "state": "Disabled",
             "definition": {
