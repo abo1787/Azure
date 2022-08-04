@@ -11,4 +11,4 @@ The templates shown below can be used to onboard customer resources into Bistech
 
 Name | Description   | Auto-deploy   |
 -----| ------------- |--------------- | 
-| Lighthouse - Subscription Management | onboard a *subscription* | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FBistech%2FAzure%2Fmaster%2FLighthouse%2Fdelegated-resource-management%2FdelegatedResourceManagement.json)
+| Microsoft Azure Subscription IT Support | Service Offer for customers that have IT support on their CSP Subscription | [![Deploy to Azure](https://aka.ms/deploytoazurebutton)](https://portal.azure.com/#create/Microsoft.Template/uri/https://raw.githubusercontent.com/Bistech/Azure/master/Lighthouse/Service%20Offers/Bistech%20-%20Microsoft%20Azure%20Subscription%20IT%20Support.json)
