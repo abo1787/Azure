@@ -25,22 +25,22 @@
    {
     "principalId": "bd66236b-c63a-48ec-be2e-2e21681512b0",
     "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
-    "principalIdDisplayName": "IT Support Tier 1"
+    "principalIdDisplayName": "IT Support Tier 1 - Reader"
    },
    {
     "principalId": "a7b519ff-44f7-4c82-8ddf-d6153fa6d7be",
     "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
-    "principalIdDisplayName": "IT Support Tier 2"
+    "principalIdDisplayName": "IT Support Tier 2 - Reader"
    },
    {
     "principalId": "fa82b6b7-a83c-4486-9fb2-0d76a57080b0",
     "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
-    "principalIdDisplayName": "IT Support Tier 3"
+    "principalIdDisplayName": "IT Support Tier 3 - Reader"
    },
    {
     "principalId": "16b78f97-7b0d-44ff-b346-5ad1bc351e92",
     "roleDefinitionId": "acdd72a7-3385-48ef-bd42-f606fba81ae7",
-    "principalIdDisplayName": "Automation"
+    "principalIdDisplayName": "Automation - Reader"
    }
   ]
  },
