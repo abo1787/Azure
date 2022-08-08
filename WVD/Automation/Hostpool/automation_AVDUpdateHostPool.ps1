@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.6.0
+    Version : 1.6.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -122,14 +122,12 @@ Write-Output "Removing previous resource group deployments..."
 $deploymentsToDelete = Get-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName | Where-Object { $_.DeploymentName -notlike "HostPool*" }
 foreach ($deployment in $deploymentsToDelete) {
    try {
-      Start-Job -ScriptBlock { Remove-AzResourceGroupDeployment -ResourceGroupName $args[0] -Name $args[1] } -ArgumentList @($resourceGroupName, $deployment.DeploymentName) | Out-Null
+      Remove-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $deployment.DeploymentName | Out-Null
    }
    catch { 
       Write-Error "Error deleting resource group deployment '$($deployment.DeploymentName)'" 
    }
 }
-Write-Output "Waiting for all remove previous resource group deployment jobs to complete..."
-Get-Job | Wait-Job
 #endregion
 
 #region Get Values for Deployment
