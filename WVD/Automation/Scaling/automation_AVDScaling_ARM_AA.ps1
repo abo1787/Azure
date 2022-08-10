@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.2.1
+    Version : 5.3.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -91,6 +91,7 @@ $observeUKBankHolidays = $Input.ObserveUKBankHolidays
 $customHolidays = $Input.CustomHolidays
 $enhancedLogging = $Input.EnhancedLogging
 $bistechGUID = $Input.bistechGUID
+$diskBursting = $Input.DiskBursting
 
 # Set Log Analytics log name
 $logName = 'AVDScaling_CL'
@@ -642,6 +643,19 @@ if ($availableRunningSessionHost -lt $minimumNumberOfRDSH) {
             }
          }
 
+         # Enable disk bursting if required
+         if (($diskBursting -eq $True) -and ($vmDiskType -eq 'Premium_LRS') -and ($vmDisk.DiskSizeGB -gt 512)) {
+            try {
+               $enableBurst = New-AzDiskUpdateConfig -BurstingEnabled $True
+               Write-Output "Enabling disk bursting on host '$vmName'..."
+               Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $enableBurst | Out-Null
+            }
+            catch {
+               Write-Error "Failed to enable disk bursting on '$($vmDisk.Name)' with error: $($_.exception.message)"
+               exit
+            }
+         }
+
          # Start the Azure VM in Fast-Scale Mode for parallel processing
          try {
             Write-Output "Starting host '$vmName'..."
@@ -724,6 +738,19 @@ if ($global:spareCapacity -ne $True -and $doNotStartHost -ne $True) {
          }
          catch {
             Write-Error "Failed to change disk '$($vmDisk.Name)' tier to '$vmDiskType' with error: $($_.exception.message)"
+            exit
+         }
+      }
+
+      # Enable disk bursting if required
+      if (($diskBursting -eq $True) -and ($vmDiskType -eq 'Premium_LRS') -and ($vmDisk.DiskSizeGB -gt 512)) {
+         try {
+            $enableBurst = New-AzDiskUpdateConfig -BurstingEnabled $True
+            Write-Output "Enabling disk bursting on host '$vmName'..."
+            Update-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vmDisk.Name -DiskUpdate $enableBurst | Out-Null
+         }
+         catch {
+            Write-Error "Failed to enable disk bursting on '$($vmDisk.Name)' with error: $($_.exception.message)"
             exit
          }
       }
