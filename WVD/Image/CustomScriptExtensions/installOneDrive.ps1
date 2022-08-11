@@ -101,7 +101,7 @@ function Set-Logger {
 
 Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\OneDrive" # inside "executionCustomScriptExtension_$scriptName_$date.log"
 
-$Uri = "https://go.microsoft.com/fwlink/p/?LinkID=844652&clcid=0x809&culture=en-gb&country=GB"
+$Uri = "https://go.microsoft.com/fwlink/p/?LinkID=2182910&clcid=0x809&culture=en-gb&country=GB"
 Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
 
 $MSIPath = "$($PSScriptRoot)\$ExecutableName"
