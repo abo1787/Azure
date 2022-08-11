@@ -337,10 +337,10 @@ if (!$skipBillingDay) {
          $standardHDDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard HDD Managed Disks' } | Select-Object -ExpandProperty unitPrice
          $monthlyStandardHDDCostUSD = $standardHDDCostUSD / 30
          $hourlyStandardHDDCostUSD = $monthlyStandardHDDCostUSD / 24
-         $standardSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' } | Select-Object -ExpandProperty unitPrice
+         $standardSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' -and $_.skuName -like '*LRS' } | Select-Object -ExpandProperty unitPrice
          $monthlyStandardSSDCostUSD = $standardSSDCostUSD / 30
          $hourlyStandardSSDCostUSD = $monthlyStandardSSDCostUSD / 24
-         $premiumSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' } | Select-Object -ExpandProperty unitPrice
+         $premiumSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' -and $_.type -eq 'Consumption' } | Select-Object -ExpandProperty unitPrice
          $monthlyPremiumSSDCostUSD = $premiumSSDCostUSD / 30
          $hourlyPremiumSSDCostUSD = $monthlyPremiumSSDCostUSD / 24
 
@@ -967,10 +967,10 @@ if ($logAnalyticsQuery) {
                $standardHDDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard HDD Managed Disks' } | Select-Object -ExpandProperty unitPrice
                $monthlyStandardHDDCostUSD = $standardHDDCostUSD / 30
                $hourlyStandardHDDCostUSD = $monthlyStandardHDDCostUSD / 24
-               $standardSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' } | Select-Object -ExpandProperty unitPrice
+               $standardSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' -and $_.skuName -like '*LRS' } | Select-Object -ExpandProperty unitPrice
                $monthlyStandardSSDCostUSD = $standardSSDCostUSD / 30
                $hourlyStandardSSDCostUSD = $monthlyStandardSSDCostUSD / 24
-               $premiumSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' } | Select-Object -ExpandProperty unitPrice
+               $premiumSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' -and $_.type -eq 'Consumption' } | Select-Object -ExpandProperty unitPrice
                $monthlyPremiumSSDCostUSD = $premiumSSDCostUSD / 30
                $hourlyPremiumSSDCostUSD = $monthlyPremiumSSDCostUSD / 24
         
