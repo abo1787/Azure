@@ -14,7 +14,7 @@
 ##### Other
 ###### * Added customer GUID to logs to enable future enhanced alerting
 ##### Breaking Changes
-###### * Parameters file now requires BistechGUID (string)
+###### * Parameters file now requires BistechGUID (guid)
 ---
 #### v5.1.1
 ##### Fixes
