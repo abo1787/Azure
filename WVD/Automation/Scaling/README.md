@@ -7,6 +7,7 @@
 ###### * On-Demand disk bursting can now be enabled on supported disks
 ##### Breaking Changes
 ###### * Parameters file now requires DiskBursting (boolean)
+---
 #### v5.2.1
 ##### New Features
 ###### * Session hosts unable to start due to resource issues in data centre will be deallocated automatically to allow attempted start on next run
