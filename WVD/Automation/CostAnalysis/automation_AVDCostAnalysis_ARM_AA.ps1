@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.1.4
+    Version : 2.1.5
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -172,7 +172,7 @@ $originalDiskSize = $diskSize
 Write-Output "Retrieving retail prices for S$diskSize, E$diskSize and P$diskSize disks..."
 foreach ($diskTier in $diskTiers) {
    try {
-      $azureDiskSku = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=serviceFamily eq 'Storage' and armRegionName eq '$vmLocation' and meterName eq '$diskTier'" -UseBasicParsing
+      $azureDiskSku = Invoke-WebRequest -Uri "http://prices.azure.com/api/retail/prices?`$filter=serviceFamily eq 'Storage' and armRegionName eq '$vmLocation' and meterName eq '$diskTier'" -UseBasicParsing
       $azureDiskSku = $azureDiskSku | ConvertFrom-Json
       $retailDiskPrices += $azureDiskSku.items
    }
@@ -192,7 +192,7 @@ $hourlyStandardHDDCostUSD = $monthlyStandardHDDCostUSD / 24
 $standardSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' -and $_.skuName -like '*LRS' } | Select-Object -ExpandProperty unitPrice
 $monthlyStandardSSDCostUSD = $standardSSDCostUSD / 30
 $hourlyStandardSSDCostUSD = $monthlyStandardSSDCostUSD / 24
-$premiumSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' } | Select-Object -ExpandProperty unitPrice
+$premiumSSDCostUSD = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' -and $_.type -eq 'Consumption' } | Select-Object -ExpandProperty unitPrice
 $monthlyPremiumSSDCostUSD = $premiumSSDCostUSD / 30
 $hourlyPremiumSSDCostUSD = $monthlyPremiumSSDCostUSD / 24
 
@@ -204,7 +204,7 @@ $premiumSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Prem
 # Get Azure price list for all reserved VM instance SKUs matching VM size
 Write-Output "Retrieving reserved instance prices for machine type '$vmSize'..."
 try {
-   $reservedAzurePriceSkus = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Reservation' and skuName eq '$skuName'" -UseBasicParsing
+   $reservedAzurePriceSkus = Invoke-WebRequest -Uri "http://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Reservation' and skuName eq '$skuName'" -UseBasicParsing
    $reservedAzurePriceSkus = $reservedAzurePriceSkus | ConvertFrom-Json
 }
 catch {
@@ -224,7 +224,7 @@ $hourlyReservedCostUSD3YearTerm = $reservedVMCostUSD3YearTerm / 26280
 # Get Azure price list for PAYG VM instances matching VM size
 Write-Output "Retrieving PAYG prices for machine type '$vmSize'..."
 try {
-   $azurePrices = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Consumption' and skuName eq '$skuName'" -UseBasicParsing
+   $azurePrices = Invoke-WebRequest -Uri "http://prices.azure.com/api/retail/prices?`$filter=armSkuName eq '$vmSize' and armRegionName eq '$vmLocation' and priceType eq 'Consumption' and skuName eq '$skuName'" -UseBasicParsing
    $azurePrices = $azurePrices | ConvertFrom-Json
 }
 catch {
@@ -320,7 +320,7 @@ if (!$skipBillingDay) {
          Write-Output "Retrieving retail prices for S$diskSize, E$diskSize and P$diskSize disks..."
          foreach ($diskTier in $diskTiers) {
             try {
-               $azureDiskSku = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=serviceFamily eq 'Storage' and armRegionName eq '$vmLocation' and meterName eq '$diskTier'" -UseBasicParsing
+               $azureDiskSku = Invoke-WebRequest -Uri "http://prices.azure.com/api/retail/prices?`$filter=serviceFamily eq 'Storage' and armRegionName eq '$vmLocation' and meterName eq '$diskTier'" -UseBasicParsing
                $azureDiskSku = $azureDiskSku | ConvertFrom-Json
                $retailDiskPrices += $azureDiskSku.items
             }
@@ -950,7 +950,7 @@ if ($logAnalyticsQuery) {
                Write-Output "Retrieving retail prices for S$diskSize, E$diskSize and P$diskSize disks..."
                foreach ($diskTier in $diskTiers) {
                   try {
-                     $azureDiskSku = Invoke-WebRequest -Uri "https://prices.azure.com/api/retail/prices?`$filter=serviceFamily eq 'Storage' and armRegionName eq '$vmLocation' and meterName eq '$diskTier'" -UseBasicParsing
+                     $azureDiskSku = Invoke-WebRequest -Uri "http://prices.azure.com/api/retail/prices?`$filter=serviceFamily eq 'Storage' and armRegionName eq '$vmLocation' and meterName eq '$diskTier'" -UseBasicParsing
                      $azureDiskSku = $azureDiskSku | ConvertFrom-Json
                      $retailDiskPrices += $azureDiskSku.items
                   }
