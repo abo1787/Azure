@@ -13,6 +13,8 @@
 ###### * Session hosts unable to start due to resource issues in data centre will be deallocated automatically to allow attempted start on next run
 ##### Other
 ###### * Added customer GUID to logs to enable future enhanced alerting
+##### Breaking Changes
+###### * Parameters file now requires BistechGUID (string)
 ---
 #### v5.1.1
 ##### Fixes
