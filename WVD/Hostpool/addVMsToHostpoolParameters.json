@@ -65,6 +65,12 @@
         "vmSize": {
             "value": "<vmSize>"
         },
+        "vmDiskSizeGB": {
+            "value": 0
+        },
+        "vmHibernate": {
+            "value": false
+        },
         "vmInitialNumber": {
             "value": <vmInitialNumber>
         },
@@ -86,6 +92,12 @@
         "vmGalleryImageSKU": {
             "value": ""
         },
+        "vmGalleryImageVersion": {
+            "value": ""
+        },
+        "vmGalleryImageHasPlan": {
+            "value": false
+        },
         "vmImageVhdUri": {
             "value": ""
         },
@@ -94,12 +106,6 @@
         },
         "vmDiskType": {
             "value": "<vmDiskType>"
-        },
-        "vmUseManagedDisks": {
-            "value": true
-        },
-        "storageAccountResourceGroupName": {
-            "value": ""
         },
         "existingVnetName": {
             "value": "<existingVnetName>"
@@ -141,7 +147,7 @@
             "value": "<deploymentId>"
         },
         "apiVersion": {
-            "value": "2019-12-10-preview"
+            "value": "2021-09-03-preview"
         },
         "ouPath": {
             "value": "<ouPath>"
@@ -154,6 +160,36 @@
         },
         "intune": {
             "value": false
+        },
+        "bootDiagnostics": {
+            "value": {
+                "enabled": false
+            }
+        },
+        "userAssignedIdentity": {
+            "value": ""
+        },
+        "customConfigurationTemplateUrl": {
+            "value": ""
+        },
+        "customConfigurationParameterUrl": {
+            "value": ""
+        },
+        "systemData": {
+            "value": {
+                "hostpoolUpdateFeature": false,
+                "aadJoinPreview": false,
+                "sessionHostConfigurationVersion": ""
+            }
+        },
+        "securityType": {
+            "value": "<securityType>"
+        },
+        "secureBoot": {
+            "value": <secureBoot>
+        },
+        "vTPM": {
+            "value": <vTPM>
         }
     }
 }
