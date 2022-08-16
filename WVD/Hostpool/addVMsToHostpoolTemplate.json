@@ -10,7 +10,6 @@
             }
         },
         "artifactsLocation": {
-            "defaultValue": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_06-15-2022.zip",
             "type": "String",
             "metadata": {
                 "description": "The base URI where artifacts required by this template are located."
@@ -181,6 +180,20 @@
                 "description": "The size of the session host VMs."
             }
         },
+        "vmDiskSizeGB": {
+            "defaultValue": 0,
+            "type": "Int",
+            "metadata": {
+                "description": "The size of the session host VMs in GB. If the value of this parameter is 0, the disk will be created with the default size set in the image."
+            }
+        },
+        "vmHibernate": {
+            "defaultValue": false,
+            "type": "Bool",
+            "metadata": {
+                "description": "Whether the VMs created will be hibernate enabled"
+            }
+        },
         "vmInitialNumber": {
             "type": "Int",
             "metadata": {
@@ -233,6 +246,20 @@
                 "description": "(Required when vmImageType = Gallery) Gallery image SKU."
             }
         },
+        "vmGalleryImageVersion": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "description": "(Required when vmImageType = Gallery) Gallery image version."
+            }
+        },
+        "vmGalleryImageHasPlan": {
+            "defaultValue": false,
+            "type": "Bool",
+            "metadata": {
+                "description": "Whether the VM has plan or not"
+            }
+        },
         "vmImageVhdUri": {
             "defaultValue": "",
             "type": "String",
@@ -257,19 +284,6 @@
             "type": "String",
             "metadata": {
                 "description": "The VM disk type for the VM: HDD or SSD."
-            }
-        },
-        "vmUseManagedDisks": {
-            "type": "Bool",
-            "metadata": {
-                "description": "True indicating you would like to use managed disks or false indicating you would like to use unmanaged disks."
-            }
-        },
-        "storageAccountResourceGroupName": {
-            "defaultValue": "",
-            "type": "String",
-            "metadata": {
-                "description": "(Required when vmUseManagedDisks = False) The resource group containing the storage account of the image vhd file."
             }
         },
         "existingVnetName": {
@@ -378,7 +392,7 @@
             "defaultValue": false,
             "type": "Bool",
             "metadata": {
-                "description": "IMPORTANT: Please don't use this parameter as AAD Join is not supported yet. True if AAD Join, false if AD join"
+                "description": "IMPORTANT: You can use this parameter for the test purpose only as AAD Join is public preview. True if AAD Join, false if AD join"
             }
         },
         "intune": {
@@ -387,15 +401,71 @@
             "metadata": {
                 "description": "IMPORTANT: Please don't use this parameter as intune enrollment is not supported yet. True if intune enrollment is selected.  False otherwise"
             }
+        },
+        "bootDiagnostics": {
+            "defaultValue": {
+                "enabled": false
+            },
+            "type": "Object",
+            "metadata": {
+                "description": "Boot diagnostics object taken as body of Diagnostics Profile in VM creation"
+            }
+        },
+        "userAssignedIdentity": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "description": "The name of user assigned identity that will assigned to the VMs. This is an optional parameter."
+            }
+        },
+        "customConfigurationTemplateUrl": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "description": "ARM template that contains custom configurations to be run after the virtual machines are created."
+            }
+        },
+        "customConfigurationParameterUrl": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "description": "Url to the ARM template parameter file for the customConfigurationTemplateUrl parameter. This input will be used when the template is ran after the VMs have been deployed."
+            }
+        },
+        "systemData": {
+            "defaultValue": {},
+            "type": "Object",
+            "metadata": {
+                "description": "System data is used for internal purposes, such as support preview features."
+            }
+        },
+        "securityType": {
+            "defaultValue": "",
+            "type": "String",
+            "metadata": {
+                "description": "Specifies the SecurityType of the virtual machine. It is set as TrustedLaunch to enable UefiSettings. Default: UefiSettings will not be enabled unless this property is set as TrustedLaunch."
+            }
+        },
+        "secureBoot": {
+            "defaultValue": false,
+            "type": "Bool",
+            "metadata": {
+                "description": "Specifies whether secure boot should be enabled on the virtual machine."
+            }
+        },
+        "vTPM": {
+            "defaultValue": false,
+            "type": "Bool",
+            "metadata": {
+                "description": "Specifies whether vTPM (Virtual Trusted Platform Module) should be enabled on the virtual machine."
+            }
         }
     },
     "variables": {
-        "rdshManagedDisks": "[if(equals(parameters('vmImageType'), 'CustomVHD'), parameters('vmUseManagedDisks'), bool('true'))]",
         "rdshPrefix": "[concat(parameters('vmNamePrefix'),'-')]",
-        "avSetSKU": "[if(variables('rdshManagedDisks'), 'Aligned', 'Classic')]",
         "vhds": "[concat('vhds','/', variables('rdshPrefix'))]",
         "subnet-id": "[resourceId(parameters('virtualNetworkResourceGroupName'),'Microsoft.Network/virtualNetworks/subnets',parameters('existingVnetName'), parameters('existingSubnetName'))]",
-        "vmTemplateName": "[concat( if(variables('rdshManagedDisks'), 'managedDisks', 'unmanagedDisks'), '-', toLower(replace(parameters('vmImageType'),' ', '')), 'vm')]",
+        "vmTemplateName": "[concat( 'managedDisks-', toLower(replace(parameters('vmImageType'),' ', '')), 'vm')]",
         "vmTemplateUri": "[concat(parameters('nestedTemplatesLocation'), variables('vmTemplateName'),'.json')]",
         "rdshVmNamesOutput": {
             "copy": [
@@ -457,7 +527,7 @@
                                 "platformFaultDomainCount": "[parameters('availabilitySetFaultDomainCount')]"
                             },
                             "sku": {
-                                "name": "[variables('avSetSKU')]"
+                                "name": "Aligned"
                             }
                         }
                     ]
@@ -495,17 +565,20 @@
                     "vmImageVhdUri": {
                         "value": "[parameters('vmImageVhdUri')]"
                     },
-                    "storageAccountResourceGroupName": {
-                        "value": "[parameters('storageAccountResourceGroupName')]"
-                    },
                     "vmGalleryImageOffer": {
                         "value": "[parameters('vmGalleryImageOffer')]"
                     },
                     "vmGalleryImagePublisher": {
                         "value": "[parameters('vmGalleryImagePublisher')]"
                     },
+                    "vmGalleryImageHasPlan": {
+                        "value": "[parameters('vmGalleryImageHasPlan')]"
+                    },
                     "vmGalleryImageSKU": {
                         "value": "[parameters('vmGalleryImageSKU')]"
+                    },
+                    "vmGalleryImageVersion": {
+                        "value": "[parameters('vmGalleryImageVersion')]"
                     },
                     "rdshPrefix": {
                         "value": "[variables('rdshPrefix')]"
@@ -518,6 +591,12 @@
                     },
                     "rdshVmSize": {
                         "value": "[parameters('vmSize')]"
+                    },
+                    "rdshVmDiskSizeGB": {
+                        "value": "[parameters('vmDiskSizeGB')]"
+                    },
+                    "rdshHibernate": {
+                        "value": "[parameters('vmHibernate')]"
                     },
                     "enableAcceleratedNetworking": {
                         "value": false
@@ -588,8 +667,35 @@
                     "intune": {
                         "value": "[parameters('intune')]"
                     },
+                    "bootDiagnostics": {
+                        "value": "[parameters('bootDiagnostics')]"
+                    },
                     "_guidValue": {
                         "value": "[parameters('deploymentId')]"
+                    },
+                    "userAssignedIdentity": {
+                        "value": "[parameters('userAssignedIdentity')]"
+                    },
+                    "customConfigurationTemplateUrl": {
+                        "value": "[parameters('customConfigurationTemplateUrl')]"
+                    },
+                    "customConfigurationParameterUrl": {
+                        "value": "[parameters('customConfigurationParameterUrl')]"
+                    },
+                    "SessionHostConfigurationVersion": {
+                        "value": "[if(contains(parameters('systemData'), 'hostpoolUpdate'), parameters('systemData').sessionHostConfigurationVersion, '')]"
+                    },
+                    "systemData": {
+                        "value": "[parameters('systemData')]"
+                    },
+                    "securityType": {
+                        "value": "[parameters('securityType')]"
+                    },
+                    "secureBoot": {
+                        "value": "[parameters('secureBoot')]"
+                    },
+                    "vTPM": {
+                        "value": "[parameters('vTPM')]"
                     }
                 }
             },
