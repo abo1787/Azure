@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.6.1
+    Version : 1.7.2
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -169,8 +169,8 @@ $agentVersion = $sessionHosts | Sort-Object LastUpdateTime -Descending | Select-
 # Calculate number of hosts to deploy
 [int]$vmNumberOfInstances = $sessionHosts.Count
 
-# Start back at VM-0 once machine numbers have reached 100
-if (($vmInitialNumber + $vmNumberOfInstances) -ge 100) {
+# Start back at VM-0 once machine numbers will breach 1000
+if (($vmInitialNumber + $vmNumberOfInstances) -ge 1000) {
    [int]$vmInitialNumber = 0
 }
 
@@ -236,17 +236,23 @@ Invoke-WebRequest -Uri $updateHostpoolParametersUri -OutFile $updateHostpoolPara
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<deploymentId>', $deploymentId) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<ouPath>', $originalHostpoolDeployment.Parameters.ouPath.Value) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<domain>', $originalHostpoolDeployment.Parameters.domain.Value) | Set-Content -Path $updateHostpoolParametersFilePath
+   ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<securityType>', $originalHostpoolDeployment.Parameters.securityType.Value) | Set-Content -Path $updateHostpoolParametersFilePath
+   ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<secureBoot>', $originalHostpoolDeployment.Parameters.secureBoot.Value) | Set-Content -Path $updateHostpoolParametersFilePath
+   ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vTPM>', $originalHostpoolDeployment.Parameters.vTPM.Value) | Set-Content -Path $updateHostpoolParametersFilePath
 
 # Build object containing all new session hosts
 $vmEndNumber = ($vmInitialNumber + $vmNumberOfInstances) - 1
 $newSessionHostNumbers = $vmInitialNumber..$vmEndNumber
 $newSessionHosts = @()
 $newSessionHostsPreDomain = @()
+$avdSessionHostNames = @()
 foreach ($newSessionHostNumber in $newSessionHostNumbers) {
    $newSessionHost = $hostpoolTemplate.namePrefix + '-' + $newSessionHostNumber + '.' + $originalHostpoolDeployment.Parameters.domain.Value
    $newSessionHosts += $newSessionHost
    $newSessionHostPreDomain = $hostpoolTemplate.namePrefix + '-' + $newSessionHostNumber
    $newSessionHostsPreDomain += $newSessionHostPreDomain
+   $avdSessionHostName = $hostpool.Name + '/' + $newSessionHost
+   $avdSessionHostNames += $avdSessionHostName
 }
 #endregion
 
@@ -350,18 +356,123 @@ foreach ($newSessionHost in $newSessionHosts) {
 
 # Wait for all new session hosts to become available
 Write-Output "Waiting for new hosts to become available..."
+$poolAvailable = $false
+[int]$availableHosts = 0
+$availableStartTime = Get-Date
+$availableTimeoutTime = $availableStartTime.AddMinutes(20)
 foreach ($newSessionHost in $newSessionHosts) {
    $isHostAvailable = $false
-   while ($isHostAvailable -eq $false) {
+   while ($(Get-Date) -le $availableTimeoutTime -and $isHostAvailable -eq $false) {
       $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -ErrorAction SilentlyContinue
       if ($newVMStatus.Status -eq "Available") {
          Write-Output "Host '$newSessionHost' is now available"
          $isHostAvailable = $true
+         $availableHosts = $availableHosts + 1
       }
    }
 }
-Write-Output "All new hosts are now available"
 
+# If all hosts still aren't available then reboot hosts that aren't to see if it fixes them
+if ($availableHosts -lt $vmNumberOfInstances) {
+   $avdNewSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name | Where-Object { $avdSessionHostNames -contains $_.Name }
+   $notAvailableHosts = $avdNewSessionHosts | Where-Object { $_.Status -ne 'Available' }
+   foreach ($notAvailableHost in $notAvailableHosts) {
+      $notAvailableHostVMName = $notAvailableHost.Name.Split("/")[1]
+      $notAvailableHostVMName = $notAvailableHostVMName.Split(".")[0]
+      $vm = Get-AzVM | Where-Object { $_.Name -eq $notAvailableHostVMName }
+      Restart-AzVM -Name $notAvailableHostVMName -ResourceGroupName $vm.ResourceGroupName -NoWait | Out-Null
+      Write-Output "Host '$notAvailableHostVMName' has been rebooted as it is still not showing as available"
+   }
+   # Wait for all previously unavailable session hosts to become available
+   $2ndAvailableStartTime = Get-Date
+   $2ndAvailableTimeoutTime = $2ndAvailableStartTime.AddMinutes(20)
+   foreach ($notAvailableHost in $notAvailableHosts) {
+      $notAvailableHostName = $notAvailableHost.Name.Split("/")[1]
+      $isHostAvailable = $false
+      while ($(Get-Date) -le $2ndAvailableTimeoutTime -and $isHostAvailable -eq $false) {
+         $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $notAvailableHostName -ErrorAction SilentlyContinue
+         if ($newVMStatus.Status -eq "Available") {
+            Write-Output "Host '$notAvailableHostName' is now available"
+            $isHostAvailable = $true
+            $availableHosts = $availableHosts + 1
+         }
+      }
+   }
+}
+
+# Check to see if all hosts are available, if not call rollback
+if ($availableHosts -eq $vmNumberOfInstances) {
+   $poolAvailable = $true
+   Write-Output "All new hosts are now available"
+}
+
+#region Roll-Back on available failure
+if ($poolAvailable -eq $false) {
+   Write-Warning "One or more session hosts failed to become available before the timeout period expired. The host pool upgrade process will now be rolled back" -ErrorAction SilentlyContinue
+   $rollbackTriggered = $true
+
+   # Get reqs for domain removal
+   $domainPass = ConvertTo-SecureString -String $domainJoinPlain -AsPlainText -Force
+
+   # Remove failed session hosts from host pool & domain
+   Write-Output "Starting removal of all newly deployed session hosts..."
+   $domainRemovalSuccess = $false
+   foreach ($newSessionHost in $newSessionHosts) {
+      $newVMName = $newSessionHost.Split(".")[0]
+ 
+      # Remove session host from domain
+      Write-Output "Removing host '$newVMName' from domain..."
+      $deploymentName = ($newVMName + '-RemoveFromDomain-' + (Get-Date -Format FileDateTimeUniversal))
+      New-AzResourceGroupDeployment `
+         -Name $deploymentName `
+         -ResourceGroupName $resourceGroupName `
+         -TemplateUri https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Hostpool/removeVMsFromDomain.json `
+         -VMName $newVMName `
+         -Location $originalHostpoolDeployment.Parameters.vmLocation.Value `
+         -DomainUser $originalHostpoolDeployment.Parameters.administratorAccountUsername.Value `
+         -DomainPass $domainPass `
+         -AsJob | Out-Null
+   }
+
+   Write-Output "Waiting for all domain removal jobs to complete..."
+   Get-Job | Wait-Job | Out-Null
+   Write-Output "All newly deployed hosts have been successfully removed from the domain"
+   $domainRemovalSuccess = $true
+
+   Write-Output "Removing newly deployed hosts from Azure..."
+   $azureRemovalSuccess = $false
+   foreach ($newSessionHost in $newSessionHosts) {
+      $newVMName = $newSessionHost.Split(".")[0]
+
+      # Remove session host
+      Remove-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -Force | Out-Null
+
+      # Get the VM
+      $vm = Get-AzVM -Name $newVMName -ResourceGroupName $resourceGroupName
+
+      # Delete the VM
+      Remove-AzVM -ResourceGroupName $resourceGroupName -Name $newVMName -Force | Out-Null
+        
+      # Delete VM NIC
+      Get-AzNetworkInterface -ResourceId $vm.NetworkProfile.NetworkInterfaces.Id | Remove-AzNetworkInterface -Force | Out-Null
+
+      # Delete VM OS Disk
+      Remove-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vm.StorageProfile.OsDisk.Name -Force | Out-Null
+
+      Write-Output "Host '$newVMName' has successfully been removed from Azure"
+   }
+   Write-Output "All newly deployed hosts have been successfully removed from Azure"
+   $azureRemovalSuccess = $true
+   Write-Output "Host pool '$($hostpool.Name)' rollback has been completed successfully"
+   Write-Error "Update failed for host pool '$($hostpool.Name)' and the deployment was rolled back" -ErrorAction SilentlyContinue
+
+   # Remove template parameter file
+   Remove-Item $updateHostpoolParametersFilePath
+   continue
+}
+#endregion
+
+#region Log Analytics
 # Connect all new session hosts to Log Analytics
 foreach ($newSessionHost in $newSessionHosts) {
    $newVMName = $newSessionHost.Split(".")[0]
@@ -380,7 +491,9 @@ foreach ($newSessionHost in $newSessionHosts) {
 Write-Output "Waiting for new hosts to be connected to the Log Analytics Workspace..."
 Get-Job | Wait-Job | Out-Null
 Write-Output "All new hosts have successfully been connected to the Log Analytics Workspace"
+#endregion
 
+#region GPU Extension
 # Check if machines require GPU extension
 $gpuNVidia = $false
 $gpuAMD = $false
@@ -433,7 +546,9 @@ if ($gpuNVidia -eq $true -or $gpuAMD -eq $true) {
    Get-Job | Wait-Job | Out-Null
    Write-Output "All new hosts have successfully had the GPU extension installed"
 }
+#endregion
 
+#region Upgrade
 # Wait for all new session hosts to upgrade
 Write-Output "Waiting for new hosts to upgrade..."
 $poolUpgradeSuccessful = $false
@@ -461,12 +576,14 @@ foreach ($newSessionHost in $newSessionHosts) {
 
 # If all hosts haven't upgraded then reboot hosts that haven't upgraded to try again
 if ($upgradedHosts -lt $vmNumberOfInstances) {
-   $failedUpgradeHosts = $newSessionHosts | Where-Object { $_.AgentVersion -ne $agentVersion }
+   $avdNewSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name | Where-Object { $avdSessionHostNames -contains $_.Name }
+   $failedUpgradeHosts = $avdNewSessionHosts | Where-Object { $_.AgentVersion -ne $agentVersion }
    foreach ($failedUpgradeHost in $failedUpgradeHosts) {
-      $failedVMName = $failedUpgradeHost.Split(".")[0]
+      $failedVMName = $failedUpgradeHost.Name.Split("/")[1]
+      $failedVMName = $failedVMName.Split(".")[0]
       $vm = Get-AzVM | Where-Object { $_.Name -eq $failedVMName }
       Restart-AzVM -Name $failedVMName -ResourceGroupName $vm.ResourceGroupName -NoWait | Out-Null
-      Write-Output "Host '$failedUpgradeHost' has been rebooted to re-attempt upgrade"
+      Write-Output "Host '$failedVMName' has been rebooted to re-attempt upgrade"
    }
 
    # Wait for all failed upgrade session hosts to upgrade
@@ -475,16 +592,17 @@ if ($upgradedHosts -lt $vmNumberOfInstances) {
    foreach ($failedUpgradeHost in $failedUpgradeHosts) {
       $hasUpgraded = $false
       while ($(Get-Date) -le $2ndUpgradeTimeoutTime -and $hasUpgraded -eq $false) {
-         $failedVMName = $failedUpgradeHost.Split(".")[0]
-         $failedVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $failedUpgradeHost
+         $failedVMName = $failedUpgradeHost.Name.Split("/")[1]
+         $failedVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $failedVMName
          if ($failedVMStatus.Status -eq "Available" -and $failedVMStatus.AgentVersion -eq $agentVersion) {
-            Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $failedUpgradeHost -AllowNewSession:$true -ErrorAction SilentlyContinue | Out-Null
-            $vm = Get-AzVM | Where-Object { $_.Name -eq $failedVMName }
+            Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $failedVMName -AllowNewSession:$true -ErrorAction SilentlyContinue | Out-Null
+            $vmName = $failedVMName.Split(".")[0]
+            $vm = Get-AzVM | Where-Object { $_.Name -eq $vmName }
             $vmTags = @{}
             $vmTags += $vm.Tags
             $vmTags | ForEach-Object { $_.VMMaintenance = "False"; $_ } | Out-Null
             Update-AzVM -VM $vm -ResourceGroupName $vm.ResourceGroupName -Tag $vmTags | Out-Null
-            Write-Output "Host '$failedUpgradeHost' has now upgraded"
+            Write-Output "Host '$failedVMName' has now upgraded"
             $hasUpgraded = $true
             $upgradedHosts = $upgradedHosts + 1
          }
@@ -497,7 +615,9 @@ if ($upgradedHosts -eq $vmNumberOfInstances) {
    $poolUpgradeSuccessful = $true
    Write-Output "All new hosts have now upgraded"
 }
+#endregion
 
+#region Accelerated Networking
 # Enable Accelerated Networking if SKU supports it
 $acceleratedNetworkingEnabled = $false
 if ($acceleratedNetworkingCapable -eq $true) {
@@ -525,6 +645,7 @@ if ($acceleratedNetworkingCapable -eq $true) {
    Write-Output "All new hosts have accelerated networking enabled"
    $acceleratedNetworkingEnabled = $true
 }
+#endregion
 
 # Check to see if all hosts upgraded successfully, if not call rollback
 if ($upgradedHosts -eq $vmNumberOfInstances) {
@@ -533,7 +654,6 @@ if ($upgradedHosts -eq $vmNumberOfInstances) {
    # Remove template parameter file
    Remove-Item $updateHostpoolParametersFilePath
 }
-#endregion
 
 #region Roll-Back on upgrade failure
 if ($poolUpgradeSuccessful -eq $false) {
