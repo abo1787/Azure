@@ -200,6 +200,8 @@ $laProtectedSettings = @{ "workspaceKey" = "$laWorkspaceKey" }
 # Get remaining values required for deployment
 $hostpoolTemplate = $hostpool.VMTemplate | ConvertFrom-Json
 $originalHostpoolDeployment = Get-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName | Where-Object { $_.DeploymentName -like "HostPool*" }
+$secureBoot = $originalHostpoolDeployment.Parameters.secureBoot.Value | ConvertTo-Json
+$vTPM = $originalHostpoolDeployment.Parameters.vTPM.Value | ConvertTo-Json
 $hostpoolToken = New-AzWvdRegistrationInfo -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -ExpirationTime $((get-date).ToUniversalTime().AddDays(1).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))
 $domainJoinPassword = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'avd-domain-join'
 $domainJoinPlain = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'avd-domain-join' -AsPlainText
@@ -237,8 +239,8 @@ Invoke-WebRequest -Uri $updateHostpoolParametersUri -OutFile $updateHostpoolPara
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<ouPath>', $originalHostpoolDeployment.Parameters.ouPath.Value) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<domain>', $originalHostpoolDeployment.Parameters.domain.Value) | Set-Content -Path $updateHostpoolParametersFilePath
    ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<securityType>', $originalHostpoolDeployment.Parameters.securityType.Value) | Set-Content -Path $updateHostpoolParametersFilePath
-   ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<secureBoot>', $originalHostpoolDeployment.Parameters.secureBoot.Value) | Set-Content -Path $updateHostpoolParametersFilePath
-   ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vTPM>', $originalHostpoolDeployment.Parameters.vTPM.Value) | Set-Content -Path $updateHostpoolParametersFilePath
+   ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<secureBoot>', $secureBoot) | Set-Content -Path $updateHostpoolParametersFilePath
+   ((Get-Content -path $updateHostpoolParametersFilePath -Raw) -replace '<vTPM>', $vTPM) | Set-Content -Path $updateHostpoolParametersFilePath
 
 # Build object containing all new session hosts
 $vmEndNumber = ($vmInitialNumber + $vmNumberOfInstances) - 1
