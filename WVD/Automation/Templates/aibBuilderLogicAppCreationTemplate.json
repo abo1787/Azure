@@ -32,7 +32,7 @@
             "description": "Log Analytics subscription."
          }
       },
-      "acgVersionUri": {
+      "aibBuilderUri": {
          "type": "securestring",
          "metadata": {
             "description": "Uri of the Bistech Logic App to trigger."
@@ -96,7 +96,7 @@
                               "inputs": {
                                  "body": "@body('Run_query_and_list_results')",
                                  "method": "POST",
-                                 "uri": "[parameters('acgVersionUri')]"
+                                 "uri": "[parameters('aibBuilderUri')]"
                               }
                            }
                         }
@@ -134,7 +134,7 @@
                      "runAfter": {},
                      "type": "ApiConnection",
                      "inputs": {
-                        "body": "AzureActivity\n| where OperationNameValue == 'MICROSOFT.COMPUTE/GALLERIES/IMAGES/VERSIONS/WRITE' and ActivityStatusValue  == 'Success' and Caller matches regex @\"^(\\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\\}{0,1})$\"\n| where TimeGenerated > ago(2h)\n| top 1 by TimeGenerated",
+                        "body": "AzureActivity \n| where CategoryValue == 'Administrative' and OperationNameValue == \"MICROSOFT.VIRTUALMACHINEIMAGES/IMAGETEMPLATES/RUN/ACTION\" and ActivityStatusValue == 'Failure'\n| where TimeGenerated > ago(2h)",
                         "host": {
                            "connection": {
                               "name": "@parameters('$connections')['azuremonitorlogs']['connectionId']"
