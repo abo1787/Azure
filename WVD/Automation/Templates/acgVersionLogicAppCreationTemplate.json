@@ -1,0 +1,171 @@
+{
+   "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+   "contentVersion": "1.0.0.0",
+   "parameters": {
+      "logicAppname": {
+         "type": "String",
+         "metadata": {
+            "description": "The name of the logic app to create."
+         }
+      },
+      "logicAppLocation": {
+         "type": "string",
+         "metadata": {
+            "description": "The location of the logic app resource group."
+         }
+      },
+      "laQueryResourceGroupName": {
+         "type": "string",
+         "metadata": {
+            "description": "Log Analytics resource group name."
+         }
+      },
+      "laQueryWorkspaceName": {
+         "type": "string",
+         "metadata": {
+            "description": "Log Analytics workspace name."
+         }
+      },
+      "laQuerySubscription": {
+         "type": "string",
+         "metadata": {
+            "description": "Log Analytics subscription."
+         }
+      },
+      "acgVersionUri": {
+         "type": "securestring",
+         "metadata": {
+            "description": "Uri of the Bistech Logic App to trigger."
+         }
+      }
+   },
+   "variables": {
+      "azureLogsConnectionName": "azureLogs_Automation"
+   },
+   "resources": [
+      {
+         "type": "Microsoft.Logic/workflows",
+         "apiVersion": "2017-07-01",
+         "name": "[parameters('logicAppname')]",
+         "location": "[parameters('logicAppLocation')]",
+         "properties": {
+            "state": "Disabled",
+            "definition": {
+               "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+               "contentVersion": "1.0.0.0",
+               "parameters": {
+                  "$connections": {
+                     "defaultValue": {},
+                     "type": "Object"
+                  }
+               },
+               "triggers": {
+                  "Recurrence": {
+                     "recurrence": {
+                        "frequency": "Hour",
+                        "interval": 2
+                     },
+                     "evaluatedRecurrence": {
+                        "frequency": "Hour",
+                        "interval": 2
+                     },
+                     "type": "Recurrence"
+                  }
+               },
+               "actions": {
+                  "Condition": {
+                     "actions": {
+                        "Terminate": {
+                           "runAfter": {},
+                           "type": "Terminate",
+                           "inputs": {
+                              "runStatus": "Cancelled"
+                           }
+                        }
+                     },
+                     "runAfter": {
+                        "Initialize_variable_'results'": [
+                           "Succeeded"
+                        ]
+                     },
+                     "else": {
+                        "actions": {
+                           "HTTP": {
+                              "runAfter": {},
+                              "type": "Http",
+                              "inputs": {
+                                 "body": "@body('Run_query_and_list_results')",
+                                 "method": "POST",
+                                 "uri": "[parameters('acgVersionUri')]"
+                              }
+                           }
+                        }
+                     },
+                     "expression": {
+                        "and": [
+                           {
+                              "equals": [
+                                 "@variables('results')",
+                                 "[[]"
+                              ]
+                           }
+                        ]
+                     },
+                     "type": "If"
+                  },
+                  "Initialize_variable_'results'": {
+                     "runAfter": {
+                        "Run_query_and_list_results": [
+                           "Succeeded"
+                        ]
+                     },
+                     "type": "InitializeVariable",
+                     "inputs": {
+                        "variables": [
+                           {
+                              "name": "results",
+                              "type": "string",
+                              "value": "@{body('Run_query_and_list_results')?['value']}"
+                           }
+                        ]
+                     }
+                  },
+                  "Run_query_and_list_results": {
+                     "runAfter": {},
+                     "type": "ApiConnection",
+                     "inputs": {
+                        "body": "AzureActivity\n| where OperationNameValue == 'MICROSOFT.COMPUTE/GALLERIES/IMAGES/VERSIONS/WRITE' and ActivityStatusValue  == 'Success' and Caller matches regex @\"^(\\{{0,1}([0-9a-fA-F]){8}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){4}-([0-9a-fA-F]){12}\\}{0,1})$\"\n| where TimeGenerated > ago(2h)\n| top 1 by TimeGenerated",
+                        "host": {
+                           "connection": {
+                              "name": "@parameters('$connections')['azuremonitorlogs']['connectionId']"
+                           }
+                        },
+                        "method": "post",
+                        "path": "/queryData",
+                        "queries": {
+                           "resourcegroups": "[parameters('laQueryResourceGroupName')]",
+                           "resourcename": "[parameters('laQueryWorkspaceName')]",
+                           "resourcetype": "Log Analytics Workspace",
+                           "subscriptions": "[parameters('laQuerySubscription')]",
+                           "timerange": "Set in query"
+                        }
+                     }
+                  }
+               },
+               "outputs": {}
+            },
+            "parameters": {
+               "$connections": {
+                  "value": {
+                     "azuremonitorlogs": {
+                        "connectionId": "[resourceId('Microsoft.Web/connections', variables('azureLogsConnectionName'))]",
+                        "connectionName": "[variables('azureLogsConnectionName')]",
+                        "id": "[concat(subscription().id, '/providers/Microsoft.Web/locations/', parameters('logicAppLocation'), '/managedApis/', 'azuremonitorlogs')]"
+                     }
+                  }
+               }
+            }
+         }
+      }
+   ]
+}
