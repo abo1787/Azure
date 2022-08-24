@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.3.0
+    Version : 5.3.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -91,7 +91,7 @@ $observeUKBankHolidays = $Input.ObserveUKBankHolidays
 $customHolidays = $Input.CustomHolidays
 $enhancedLogging = $Input.EnhancedLogging
 $bistechGUID = $Input.bistechGUID
-$diskBursting = $Input.DiskBursting
+$diskBursting = $Input.OnDemandDiskBursting
 
 # Set Log Analytics log name
 $logName = 'AVDScaling_CL'
