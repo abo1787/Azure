@@ -1,12 +1,12 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.3.0
-#### v5.3.0
+### Latest Release - v5.3.1
+#### v5.3.1
 ##### New Features
 ###### * On-Demand disk bursting can now be enabled on supported disks
 ##### Breaking Changes
-###### * Parameters file now requires DiskBursting (boolean)
+###### * Parameters file now requires OnDemandDiskBursting (boolean)
 ---
 #### v5.2.1
 ##### New Features
