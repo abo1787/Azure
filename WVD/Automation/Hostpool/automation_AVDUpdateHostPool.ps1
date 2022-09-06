@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.7.4
+    Version : 1.7.5
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -210,7 +210,7 @@ $domainJoinPassword = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'avd-d
 $domainJoinPlain = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'avd-domain-join' -AsPlainText
 $deploymentId = [guid]::NewGuid()
 $deploymentId = $deploymentId.Guid
-$imageVersions = Get-AzGalleryImageVersion -ResourceGroupName $imageResourceGroupName -GalleryName $imageACGName -GalleryImageDefinitionName $imageACGDefintionName | Select-Object Id
+$imageVersions = Get-AzGalleryImageVersion -ResourceGroupName $imageResourceGroupName -GalleryName $imageACGName -GalleryImageDefinitionName $imageACGDefintionName | Where-Object { $_.PublishingProfile.ExcludeFromLatest -eq $false } | Select-Object Id
 $imageVersion = $imageVersions | Sort-Object Id -Descending | Select-Object -First 1 -ExpandProperty Id
 
 # Download templates
