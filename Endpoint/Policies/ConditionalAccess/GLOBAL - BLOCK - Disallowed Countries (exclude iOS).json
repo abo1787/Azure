@@ -5,7 +5,7 @@
       "SignInFrequency": null,
       "ApplicationEnforcedRestrictions": null
    },
-   "DisplayName": "GLOBAL - BLOCK - Disallowed Countries - TEST",
+   "DisplayName": "GLOBAL - BLOCK - Disallowed Countries (exclude iOS)",
    "GrantControls": {
       "Operator": "OR",
       "BuiltInControls": [
