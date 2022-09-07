@@ -1,0 +1,77 @@
+{
+    "Conditions":  {
+                       "Applications":  {
+                                            "ExcludeApplications":  "",
+                                            "IncludeApplications":  "All",
+                                            "IncludeAuthenticationContextClassReferences":  "",
+                                            "IncludeUserActions":  ""
+                                        },
+                       "ClientAppTypes":  [
+                                              "all"
+                                          ],
+                       "Devices":  {
+                                       "DeviceFilter":  "Microsoft.Graph.PowerShell.Models.MicrosoftGraphConditionalAccessFilter"
+                                   },
+                       "Locations":  {
+                                         "ExcludeLocations":  "<excludeLocations>",
+                                         "IncludeLocations":  "All"
+                                     },
+                       "Platforms":  {
+                                         "ExcludePlatforms":  "",
+                                         "IncludePlatforms":  "all"
+                                     },
+                       "SignInRiskLevels":  [
+
+                                            ],
+                       "UserRiskLevels":  [
+
+                                          ],
+                       "Users":  {
+                                     "ExcludeGroups":  "<excludeGroups>",
+                                     "ExcludeRoles":  "d29b2b05-8046-44ba-8758-1e26182fcf32",
+                                     "ExcludeUsers":  "<excludeUsers>",
+                                     "IncludeGroups":  "",
+                                     "IncludeRoles":  "",
+                                     "IncludeUsers":  "All"
+                                 }
+                   },
+    "CreatedDateTime":  "\/Date(1652717652307)\/",
+    "Description":  null,
+    "DisplayName":  "GLOBAL - BLOCK - Disallowed Countries",
+    "GrantControls":  {
+                          "BuiltInControls":  [
+                                                  "block"
+                                              ],
+                          "CustomAuthenticationFactors":  [
+
+                                                          ],
+                          "Operator":  "OR",
+                          "TermsOfUse":  [
+
+                                         ]
+                      },
+    "Id":  "09fcbeb5-307f-4b5d-bc55-870249a304a3",
+    "ModifiedDateTime":  "\/Date(1662364187852)\/",
+    "SessionControls":  {
+                            "ApplicationEnforcedRestrictions":  {
+                                                                    "IsEnabled":  null
+                                                                },
+                            "CloudAppSecurity":  {
+                                                     "CloudAppSecurityType":  null,
+                                                     "IsEnabled":  null
+                                                 },
+                            "PersistentBrowser":  {
+                                                      "IsEnabled":  null,
+                                                      "Mode":  null
+                                                  },
+                            "SignInFrequency":  {
+                                                    "IsEnabled":  null,
+                                                    "Type":  null,
+                                                    "Value":  null
+                                                }
+                        },
+    "State":  "enabledForReportingButNotEnforced",
+    "AdditionalProperties":  {
+
+                             }
+}
