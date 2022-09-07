@@ -5,7 +5,7 @@
       "SignInFrequency": null,
       "ApplicationEnforcedRestrictions": null
    },
-   "DisplayName": "GLOBAL - BLOCK - Disallowed Countries - TEST",
+   "DisplayName": "GLOBAL - BLOCK - Disallowed Countries",
    "GrantControls": {
       "Operator": "OR",
       "BuiltInControls": [
@@ -20,25 +20,41 @@
       ],
       "SignInRiskLevels": [],
       "Applications": {
-         "ExcludeApplications": "",
-         "IncludeApplications": "All",
-         "IncludeUserActions": ""
+         "ExcludeApplications": [],
+         "IncludeApplications": [
+            "All"
+         ],
+         "IncludeUserActions": []
       },
       "Users": {
-         "IncludeGroups": "",
-         "ExcludeRoles": "d29b2b05-8046-44ba-8758-1e26182fcf32",
-         "ExcludeUsers": "<excludeUsers>",
-         "IncludeRoles": "",
-         "ExcludeGroups": "<excludeGroups>",
-         "IncludeUsers": "All"
+         "IncludeGroups": [],
+         "ExcludeRoles": [
+            "d29b2b05-8046-44ba-8758-1e26182fcf32"
+         ],
+         "ExcludeUsers": [
+            "<excludeUsers>"
+         ],
+         "IncludeRoles": [],
+         "ExcludeGroups": [
+            "<excludeGroups>"
+         ],
+         "IncludeUsers": [
+            "All"
+         ]
       },
       "Locations": {
-         "IncludeLocations": "All",
-         "ExcludeLocations": "<excludeLocations>"
+         "IncludeLocations": [
+            "All"
+         ],
+         "ExcludeLocations": [
+            "<excludeLocations>"
+         ]
       },
       "Platforms": {
-         "IncludePlatforms": "all",
-         "ExcludePlatforms": ""
+         "IncludePlatforms": [
+            "all"
+         ],
+         "ExcludePlatforms": []
       }
    },
    "State": "enabledForReportingButNotEnforced"
