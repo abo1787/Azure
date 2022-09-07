@@ -1,0 +1,77 @@
+{
+   "DisplayName": "PREVIEW - BLOCK - Disallowed Countries iOS",
+   "State": "enabledForReportingButNotEnforced",
+   "Conditions": {
+      "Applications": {
+         "ExcludeApplications": [
+            "0000000a-0000-0000-c000-000000000000",
+            "d4ebce55-015a-49b5-a083-c84d1797ae8c"
+         ],
+         "IncludeApplications": [
+            "All"
+         ],
+         "IncludeAuthenticationContextClassReferences": [],
+         "IncludeUserActions": []
+      },
+      "ClientAppTypes": [
+         "All"
+      ],
+      "Devices": {
+         "DeviceFilter": {
+            "Mode": null,
+            "Rule": null
+         }
+      },
+      "Locations": {
+         "ExcludeLocations": [],
+         "IncludeLocations": [
+            "All"
+         ]
+      },
+      "Platforms": {
+         "ExcludePlatforms": [],
+         "IncludePlatforms": [
+            "iOS"
+         ]
+      },
+      "SignInRiskLevels": [],
+      "UserRiskLevels": [],
+      "Users": {
+         "IncludeGroups": [],
+         "ExcludeRoles": [
+            "d29b2b05-8046-44ba-8758-1e26182fcf32"
+         ],
+         "ExcludeUsers": [],
+         "IncludeRoles": [],
+         "ExcludeGroups": [],
+         "IncludeUsers": []
+      }
+   },
+   "GrantControls": {
+      "BuiltInControls": [
+         "block"
+      ],
+      "CustomAuthenticationFactors": [],
+      "Operator": "OR",
+      "TermsOfUse": []
+   },
+   "SessionControls": {
+      "ApplicationEnforcedRestrictions": {
+         "IsEnabled": null
+      },
+      "CloudAppSecurity": {
+         "CloudAppSecurityType": null,
+         "IsEnabled": null
+      },
+      "PersistentBrowser": {
+         "IsEnabled": null,
+         "Mode": null
+      },
+      "SignInFrequency": {
+         "IsEnabled": null,
+         "Type": null,
+         "Value": null
+      }
+   },
+   "AdditionalProperties": {}
+}
