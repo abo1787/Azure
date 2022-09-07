@@ -31,13 +31,9 @@
          "ExcludeRoles": [
             "d29b2b05-8046-44ba-8758-1e26182fcf32"
          ],
-         "ExcludeUsers": [
-            "<excludeUsers>"
-         ],
+         "ExcludeUsers": [],
          "IncludeRoles": [],
-         "ExcludeGroups": [
-            "<excludeGroups>"
-         ],
+         "ExcludeGroups": [],
          "IncludeUsers": [
             "All"
          ]
@@ -46,9 +42,7 @@
          "IncludeLocations": [
             "All"
          ],
-         "ExcludeLocations": [
-            "<excludeLocations>"
-         ]
+         "ExcludeLocations": []
       },
       "Platforms": {
          "IncludePlatforms": [
