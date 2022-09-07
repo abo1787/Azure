@@ -1,31 +1,43 @@
 {
-   "SessionControls": {
-      "CloudAppSecurity": null,
-      "PersistentBrowser": null,
-      "SignInFrequency": null,
-      "ApplicationEnforcedRestrictions": null
-   },
    "DisplayName": "GLOBAL - BLOCK - Disallowed Countries (exclude iOS)",
-   "GrantControls": {
-      "Operator": "OR",
-      "BuiltInControls": [
-         "block"
-      ],
-      "TermsOfUse": [],
-      "CustomAuthenticationFactors": []
-   },
+   "State": "enabledForReportingButNotEnforced",
    "Conditions": {
-      "ClientAppTypes": [
-         "All"
-      ],
-      "SignInRiskLevels": [],
       "Applications": {
-         "ExcludeApplications": [],
+         "ExcludeApplications": [
+            "0000000a-0000-0000-c000-000000000000",
+            "d4ebce55-015a-49b5-a083-c84d1797ae8c"
+         ],
          "IncludeApplications": [
             "All"
          ],
+         "IncludeAuthenticationContextClassReferences": [],
          "IncludeUserActions": []
       },
+      "ClientAppTypes": [
+         "All"
+      ],
+      "Devices": {
+         "DeviceFilter": {
+            "Mode": null,
+            "Rule": null
+         }
+      },
+      "Locations": {
+         "ExcludeLocations": [],
+         "IncludeLocations": [
+            "All"
+         ]
+      },
+      "Platforms": {
+         "ExcludePlatforms": [
+            "iOS"
+         ],
+         "IncludePlatforms": [
+            "all"
+         ]
+      },
+      "SignInRiskLevels": [],
+      "UserRiskLevels": [],
       "Users": {
          "IncludeGroups": [],
          "ExcludeRoles": [
@@ -37,19 +49,33 @@
          "IncludeUsers": [
             "All"
          ]
-      },
-      "Locations": {
-         "IncludeLocations": [
-            "All"
-         ],
-         "ExcludeLocations": []
-      },
-      "Platforms": {
-         "IncludePlatforms": [
-            "all"
-         ],
-         "ExcludePlatforms": []
       }
    },
-   "State": "enabledForReportingButNotEnforced"
+   "GrantControls": {
+      "BuiltInControls": [
+         "block"
+      ],
+      "CustomAuthenticationFactors": [],
+      "Operator": "OR",
+      "TermsOfUse": []
+   },
+   "SessionControls": {
+      "ApplicationEnforcedRestrictions": {
+         "IsEnabled": null
+      },
+      "CloudAppSecurity": {
+         "CloudAppSecurityType": null,
+         "IsEnabled": null
+      },
+      "PersistentBrowser": {
+         "IsEnabled": null,
+         "Mode": null
+      },
+      "SignInFrequency": {
+         "IsEnabled": null,
+         "Type": null,
+         "Value": null
+      }
+   },
+   "AdditionalProperties": {}
 }
