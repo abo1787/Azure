@@ -1,0 +1,55 @@
+{
+   "SessionControls": {
+      "CloudAppSecurity": null,
+      "PersistentBrowser": null,
+      "SignInFrequency": null,
+      "ApplicationEnforcedRestrictions": null
+   },
+   "DisplayName": "GLOBAL - BLOCK - Disallowed Countries iOS",
+   "GrantControls": {
+      "Operator": "OR",
+      "BuiltInControls": [
+         "block"
+      ],
+      "TermsOfUse": [],
+      "CustomAuthenticationFactors": []
+   },
+   "Conditions": {
+      "ClientAppTypes": [
+         "All"
+      ],
+      "SignInRiskLevels": [],
+      "Applications": {
+         "ExcludeApplications": [],
+         "IncludeApplications": [
+            "All"
+         ],
+         "IncludeUserActions": []
+      },
+      "Users": {
+         "IncludeGroups": [],
+         "ExcludeRoles": [
+            "d29b2b05-8046-44ba-8758-1e26182fcf32"
+         ],
+         "ExcludeUsers": [],
+         "IncludeRoles": [],
+         "ExcludeGroups": [],
+         "IncludeUsers": [
+            "All"
+         ]
+      },
+      "Locations": {
+         "IncludeLocations": [
+            "All"
+         ],
+         "ExcludeLocations": []
+      },
+      "Platforms": {
+         "IncludePlatforms": [
+            "iOS"
+         ],
+         "ExcludePlatforms": []
+      }
+   },
+   "State": "enabledForReportingButNotEnforced"
+}
