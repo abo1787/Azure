@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.7.5
+    Version : 1.7.6
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -143,6 +143,9 @@ foreach ($sessionHost in $sessionHosts) {
    $vmNumberObj = $vmNumberObj.Split(".")[0]
    $vmNumberObj = $vmNumberObj.Split("-")[-1]
    if ($vmNumberObj.Length -eq 1) {
+      $vmNumberObj = "00" + $vmNumberObj
+   }
+   if ($vmNumberObj.Length -eq 2) {
       $vmNumberObj = "0" + $vmNumberObj
    }
    $sanitizedNumberTable += $vmNumberObj
@@ -416,7 +419,7 @@ if ($poolDeploymentSuccessful -eq $true) {
 #endregion
 
 #region Roll-Back on availability failure
-if ($poolAvailable -eq $false) {
+if ($poolDeploymentSuccessful -eq $true -and $poolAvailable -eq $false) {
    Write-Warning "One or more session hosts failed to become available before the timeout period expired. The host pool upgrade process will now be rolled back"
    $rollbackTriggered = $true
 
@@ -660,7 +663,7 @@ if ($poolUpgradeSuccessful -eq $true) {
 #endregion
 
 #region Roll-Back on upgrade failure
-if ($poolUpgradeSuccessful -eq $false) {
+if ($poolDeploymentSuccessful -eq $true -and $poolUpgradeSuccessful -eq $false) {
    Write-Warning "One or more session hosts failed to upgrade before the timeout period expired. The host pool upgrade process will now be rolled back"
    $rollbackTriggered = $true
 
