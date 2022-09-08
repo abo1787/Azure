@@ -10,7 +10,7 @@ Write-Output "Installing packages"
 $software = Import-Csv -Path $softwarePath
 foreach ($package in $software) {
 
-    Choco Install $package.Name -y -r --no-progress
+    Choco Install $package.Name -y -r --no-progress --ignore-checksums
     Write-Output "Installed package $($package.Name)"
     
 }
