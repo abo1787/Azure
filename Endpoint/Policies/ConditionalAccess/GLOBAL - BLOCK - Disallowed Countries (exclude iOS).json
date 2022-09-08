@@ -60,22 +60,10 @@
       "TermsOfUse": []
    },
    "SessionControls": {
-      "ApplicationEnforcedRestrictions": {
-         "IsEnabled": null
-      },
-      "CloudAppSecurity": {
-         "CloudAppSecurityType": null,
-         "IsEnabled": null
-      },
-      "PersistentBrowser": {
-         "IsEnabled": null,
-         "Mode": null
-      },
-      "SignInFrequency": {
-         "IsEnabled": null,
-         "Type": null,
-         "Value": null
-      }
+      "ApplicationEnforcedRestrictions": null,
+      "CloudAppSecurity": null,
+      "PersistentBrowser": null,
+      "SignInFrequency": null
    },
    "AdditionalProperties": {}
 }
