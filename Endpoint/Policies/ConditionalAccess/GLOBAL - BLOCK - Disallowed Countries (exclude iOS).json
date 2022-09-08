@@ -17,7 +17,10 @@
          "All"
       ],
       "Devices": {
-         "DeviceFilter": null
+         "DeviceFilter": {
+            "Mode": null,
+            "Rule": null
+         }
       },
       "Locations": {
          "ExcludeLocations": [],
