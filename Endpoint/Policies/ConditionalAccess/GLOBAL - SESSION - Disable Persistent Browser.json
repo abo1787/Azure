@@ -1,4 +1,4 @@
-﻿{
+{
    "DisplayName": "GLOBAL - SESSION - Disable Persistent Browser",
    "State": "enabledForReportingButNotEnforced",
    "Conditions": {
@@ -52,22 +52,13 @@
       "TermsOfUse": null
    },
    "SessionControls": {
-      "ApplicationEnforcedRestrictions": {
-         "IsEnabled": null
-      },
-      "CloudAppSecurity": {
-         "CloudAppSecurityType": null,
-         "IsEnabled": null
-      },
+      "ApplicationEnforcedRestrictions": null,
+      "CloudAppSecurity": null,
       "PersistentBrowser": {
          "IsEnabled": true,
          "Mode": "never"
       },
-      "SignInFrequency": {
-         "IsEnabled": null,
-         "Type": null,
-         "Value": null
-      }
+      "SignInFrequency": null
    },
    "AdditionalProperties": {}
 }
