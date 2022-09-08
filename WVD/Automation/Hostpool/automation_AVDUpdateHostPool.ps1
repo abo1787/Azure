@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.7.6
+    Version : 1.7.7
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -663,7 +663,7 @@ if ($poolUpgradeSuccessful -eq $true) {
 #endregion
 
 #region Roll-Back on upgrade failure
-if ($poolDeploymentSuccessful -eq $true -and $poolUpgradeSuccessful -eq $false) {
+if ($poolAvailable -eq $true -and $poolDeploymentSuccessful -eq $true -and $poolUpgradeSuccessful -eq $false) {
    Write-Warning "One or more session hosts failed to upgrade before the timeout period expired. The host pool upgrade process will now be rolled back"
    $rollbackTriggered = $true
 
