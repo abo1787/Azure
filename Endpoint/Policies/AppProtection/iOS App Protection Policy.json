@@ -14,7 +14,7 @@
    "AppActionIfMaximumPinRetriesExceeded": "block",
    "AppActionIfUnableToAuthenticateUser": "block",
    "AppDataEncryptionType": "whenDeviceLocked",
-   "AppGroupType": null,
+   "AppGroupType": "selectedPublicApps",
    "Assignments": null,
    "BlockDataIngestionIntoOrganizationDocuments": false,
    "ContactSyncBlocked": true,
