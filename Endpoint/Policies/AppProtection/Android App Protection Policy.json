@@ -71,6 +71,7 @@
    "MobileThreatDefenseRemediationAction": "block",
    "NotificationRestriction": "allow",
    "OrganizationalCredentialsRequired": false,
+   "PinCharacterSet":  "numeric",
    "PinRequired": false,
    "PrintBlocked": true,
    "RequiredAndroidSafetyNetAppsVerificationType": "none",
