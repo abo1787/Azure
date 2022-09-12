@@ -21,7 +21,7 @@
    "CustomBrowserProtocol": null,
    "CustomDialerAppProtocol": null,
    "DataBackupBlocked": true,
-   "Description": "",
+   "Description": "Protection Policy for iOS",
    "DeviceComplianceRequired": true,
    "DialerRestrictionLevel": null,
    "DisableAppPinIfDevicePinIsSet": false,

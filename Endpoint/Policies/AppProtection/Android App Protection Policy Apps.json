@@ -1,0 +1,238 @@
+{
+   "Apps": [
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.adobe.reader"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.cortana"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.crm.crmphone"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.crm.crmphone.fieldservices"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.crm.crmphone.sales"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.crm.crmtablet"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.d365.fs.mobile"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.dynamics.invoice"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.emmx"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.exchange.bookings"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.flow"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.ipviewer"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.launcher"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.lists.public"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.mobile.polymer"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.msapps"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.office.excel"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.office.lync15"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.office.officehub"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.office.officehubhl"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.office.officehubrow"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.office.officelens"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.office.onenote"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.office.powerpoint"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.office.word"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.planner"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.powerbim"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.ramobile"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.scmx"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.sharepoint"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.skydrive"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.stream"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.teams"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.todos"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.whiteboard.publicpreview"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.microsoft.workfolders"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.ms.office365admin"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "com.yammer.v1"
+         }
+      },
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.androidMobileAppIdentifier",
+            "packageId": "ols.microsoft.com.shiftr"
+         }
+      }
+   ]
+}
