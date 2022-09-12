@@ -1,0 +1,10 @@
+{
+   "Apps": [
+      {
+         "mobileAppIdentifier": {
+            "@odata.type": "#microsoft.graph.iosMobileAppIdentifier",
+            "bundleId": "com.microsoft.office.outlook"
+         }
+      }
+   ]
+}

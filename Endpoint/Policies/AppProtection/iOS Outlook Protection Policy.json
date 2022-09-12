@@ -20,16 +20,6 @@
    "AppActionIfUnableToAuthenticateUser": "block",
    "AppDataEncryptionType": "whenDeviceLocked",
    "AppGroupType": "selectedPublicApps",
-   "Apps": [
-      {
-         "id": "com.microsoft.office.outlook.ios",
-         "version": "-518090279",
-         "mobileAppIdentifier": {
-            "@odata.type": "#microsoft.graph.iosMobileAppIdentifier",
-            "bundleId": "com.microsoft.office.outlook"
-         }
-      }
-   ],
    "Assignments": null,
    "BlockDataIngestionIntoOrganizationDocuments": false,
    "ContactSyncBlocked": false,
