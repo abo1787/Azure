@@ -42,7 +42,7 @@
    "DisableAppEncryptionIfDeviceEncryptionIsEnabled": false,
    "DisableAppPinIfDevicePinIsSet": false,
    "DisableProtectionOfManagedOutboundOpenInData": false,
-   "DisplayName": "iOS App Protection Policy",
+   "DisplayName": "Android App Protection Policy",
    "EncryptAppData": true,
    "ExemptedAppPackages": null,
    "FingerprintBlocked": false,
