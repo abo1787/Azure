@@ -1,7 +1,11 @@
 
 # Azure Virtual Desktop Cost Analysis
 
-### Latest Release - v2.1.5
+### Latest Release - v2.1.6
+#### v2.1.6
+##### Fixes
+###### * Fixed issue with Premium SSD breaking retail price web request since MSFT changed meterName
+---
 #### v2.1.5
 ##### Fixes
 ###### * Fixed issue with Premium SSD breaking retail price web request since MSFT added reserved version
