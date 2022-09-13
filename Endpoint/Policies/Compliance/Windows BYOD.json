@@ -1,0 +1,17 @@
+{
+   "@odata.type": "#microsoft.graph.windows10CompliancePolicy",
+   "description": null,
+   "displayName": "Windows BYOD",
+   "version": 1,
+   "passwordRequired": false,
+   "passwordBlockSimple": false,
+   "passwordRequiredToUnlockFromIdle": false,
+   "passwordRequiredType": "deviceDefault",
+   "requireHealthyDeviceReport": false,
+   "osMinimumVersion": "10.0.19043.1949",
+   "earlyLaunchAntiMalwareDriverEnabled": false,
+   "bitLockerEnabled": false,
+   "secureBootEnabled": false,
+   "codeIntegrityEnabled": false,
+   "storageRequireEncryption": false
+}
