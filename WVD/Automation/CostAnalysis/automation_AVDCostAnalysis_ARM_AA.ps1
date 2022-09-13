@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.1.5
+    Version : 2.1.6
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -163,7 +163,7 @@ if (!$diskSize) {
 }
 $standardHDD = 'S' + $diskSize + ' Disks'
 $standardSSD = 'E' + $diskSize + ' Disks'
-$premiumSSD = 'P' + $diskSize + ' Disks'
+$premiumSSD = 'P' + $diskSize + ' LRS Disk'
 $diskTiers = @($standardHDD, $standardSSD, $premiumSSD)
 $retailDiskPrices = @()
 $originalDiskSize = $diskSize
@@ -198,8 +198,8 @@ $hourlyPremiumSSDCostUSD = $monthlyPremiumSSDCostUSD / 24
 
 # Get Meter Id for each Disk Tier
 $standardHDDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard HDD Managed Disks' } | Select-Object -ExpandProperty meterId
-$standardSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' } | Select-Object -ExpandProperty meterId
-$premiumSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' } | Select-Object -ExpandProperty meterId
+$standardSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' -and $_.skuName -like '*LRS' } | Select-Object -ExpandProperty meterId
+$premiumSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' -and $_.type -eq 'Consumption' } | Select-Object -ExpandProperty meterId
 
 # Get Azure price list for all reserved VM instance SKUs matching VM size
 Write-Output "Retrieving reserved instance prices for machine type '$vmSize'..."
@@ -312,7 +312,7 @@ if (!$skipBillingDay) {
          $diskSize = $diskSize.meterName -replace "[^0-9]"
          $standardHDD = 'S' + $diskSize + ' Disks'
          $standardSSD = 'E' + $diskSize + ' Disks'
-         $premiumSSD = 'P' + $diskSize + ' Disks'
+         $premiumSSD = 'P' + $diskSize + ' LRS Disk'
          $diskTiers = @($standardHDD, $standardSSD, $premiumSSD)
          $retailDiskPrices = @()
 
@@ -346,8 +346,8 @@ if (!$skipBillingDay) {
 
          # Get Meter Id for each Disk Tier
          $standardHDDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard HDD Managed Disks' } | Select-Object -ExpandProperty meterId
-         $standardSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' } | Select-Object -ExpandProperty meterId
-         $premiumSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' } | Select-Object -ExpandProperty meterId
+         $standardSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' -and $_.skuName -like '*LRS' } | Select-Object -ExpandProperty meterId
+         $premiumSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' -and $_.type -eq 'Consumption' } | Select-Object -ExpandProperty meterId
 
          # Get token for API call
          $azContext = Get-AzContext
@@ -942,7 +942,7 @@ if ($logAnalyticsQuery) {
                $diskSize = $diskSize.meterName -replace "[^0-9]"
                $standardHDD = 'S' + $diskSize + ' Disks'
                $standardSSD = 'E' + $diskSize + ' Disks'
-               $premiumSSD = 'P' + $diskSize + ' Disks'
+               $premiumSSD = 'P' + $diskSize + ' LRS Disk'
                $diskTiers = @($standardHDD, $standardSSD, $premiumSSD)
                $retailDiskPrices = @()
         
@@ -976,8 +976,8 @@ if ($logAnalyticsQuery) {
         
                # Get Meter Id for each Disk Tier
                $standardHDDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard HDD Managed Disks' } | Select-Object -ExpandProperty meterId
-               $standardSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' } | Select-Object -ExpandProperty meterId
-               $premiumSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' } | Select-Object -ExpandProperty meterId
+               $standardSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Standard SSD Managed Disks' -and $_.skuName -like '*LRS' } | Select-Object -ExpandProperty meterId
+               $premiumSSDMeterId = $retailDiskPrices | Where-Object { $_.productName -eq 'Premium SSD Managed Disks' -and $_.type -eq 'Consumption' } | Select-Object -ExpandProperty meterId
         
                # Get token for API call
                $azContext = Get-AzContext
