@@ -5,7 +5,7 @@
    "version": 1,
    "deviceThreatProtectionEnabled": true,
    "deviceThreatProtectionRequiredSecurityLevel": "unavailable",
-   "advancedThreatProtectionRequiredSecurityLevel": null,
+   "advancedThreatProtectionRequiredSecurityLevel": "low",
    "securityRequireSafetyNetAttestationBasicIntegrity": false,
    "securityRequireSafetyNetAttestationCertifiedDevice": false,
    "osMinimumVersion": "10",
