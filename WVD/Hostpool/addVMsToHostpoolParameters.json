@@ -3,10 +3,10 @@
     "contentVersion": "1.0.0.0",
     "parameters": {
         "nestedTemplatesLocation": {
-            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/armtemplates/Hostpool_07-27-2022/nestedTemplates/"
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/armtemplates/Hostpool_08-16-2022/nestedTemplates/"
         },
         "artifactsLocation": {
-            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_06-15-2022.zip"
+            "value": "https://wvdportalstorageblob.blob.core.windows.net/galleryartifacts/Configuration_08-10-2022.zip"
         },
         "hostpoolName": {
             "value": "<hostpoolName>"
