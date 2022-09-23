@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.3.1
+### Latest Release - v5.3.2
+#### v5.3.2
+##### Fixes
+###### * Fixed issue with grace period for host boot time when not using UTC
+---
 #### v5.3.1
 ##### New Features
 ###### * On-Demand disk bursting can now be enabled on supported disks
