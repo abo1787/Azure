@@ -98,9 +98,6 @@
         "vmGalleryImageHasPlan": {
             "value": false
         },
-        "vmImageVhdUri": {
-            "value": ""
-        },
         "vmCustomImageSourceId": {
             "value": "<vmCustomImageSourceId>"
         },
