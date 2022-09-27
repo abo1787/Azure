@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.3.2
+    Version : 5.3.3
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -378,7 +378,7 @@ Write-Output "Checking current host availability and workloads..."
 
 # Get all session hosts in the host pool
 $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object -Descending Session
-$hostsAvailableToStart = $allSessionHosts | Where-Object { $_.Status -eq "Unavailable" -and $_.AllowNewSession -eq $True -and $_.UpdateState -eq "Succeeded" } | Sort-Object { Get-Random }
+$hostsAvailableToStart = $allSessionHosts | Where-Object { ($_.Status -eq "Unavailable" -or $_.Status -eq "Shutdown") -and $_.AllowNewSession -eq $True -and $_.UpdateState -eq "Succeeded" } | Sort-Object { Get-Random }
 
 # Check the number of available running session hosts
 $maintenanceRunningSessionHost = 0
@@ -575,7 +575,7 @@ if ($limitSecondsToForceLogOffUser -ne 0 -and $peakToOffPeakTransitionTrigger -e
 
           $shutdownHost = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName -Name $SessionHostName
 
-          if ($shutdownHost.Status -eq "Unavailable") {
+          if ($shutdownHost.Status -eq "Unavailable" -or $shutdownHost.Status -eq "Shutdown") {
             $IsShutdownHostUnavailable = $true
           }
         }
@@ -598,7 +598,7 @@ if ($limitSecondsToForceLogOffUser -ne 0 -and $peakToOffPeakTransitionTrigger -e
     }
   }
   $allSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $HostpoolName | Sort-Object -Descending Session
-  $hostsAvailableToStart = $allSessionHosts | Where-Object { $_.Status -eq "Unavailable" -and $_.AllowNewSession -eq $True -and $_.UpdateState -eq "Succeeded" } | Sort-Object { Get-Random }
+  $hostsAvailableToStart = $allSessionHosts | Where-Object { ($_.Status -eq "Unavailable" -or $_.Status -eq "Shutdown") -and $_.AllowNewSession -eq $True -and $_.UpdateState -eq "Succeeded" } | Sort-Object { Get-Random }
 }
 if ($enhancedLogging -eq $True) {
   Write-Output "*** REGION *** Exited the 'Force-Logoff in Off-Peak Transistion' region"
@@ -903,7 +903,7 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
 
           $shutdownHost = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpoolName -Name $activeHostName
 
-          if ($shutdownHost.Status -eq "Unavailable") {
+          if ($shutdownHost.Status -eq "Unavailable" -or $shutdownHost.Status -eq "Shutdown") {
             $IsShutdownHostUnavailable = $true
           }
         }

@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.3.2
+### Latest Release - v5.3.3
+#### v5.3.3
+##### Fixes
+###### * Fixed issue with turned off machines in evaluation pools as Microsoft have changed these to show as 'Shutdown' instead of 'Unavailable'
+---
 #### v5.3.2
 ##### Fixes
 ###### * Fixed issue with grace period for host boot time when not using UTC
