@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.3.3
+### Latest Release - v5.3.4
+#### v5.3.4
+##### Other
+###### * Additional output added when using EnhancedLogging feature
+---
 #### v5.3.3
 ##### Fixes
 ###### * Fixed issue with turned off machines in evaluation pools as Microsoft have changed these to show as 'Shutdown' instead of 'Unavailable'
