@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.3.3
+    Version : 5.3.4
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -797,8 +797,15 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
   $sessionlessHostList = $allSessionHosts | Where-Object { $_.Session -eq 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
   $activeHostsWithSessions = $allSessionHosts | Where-Object { $_.Session -gt 0 -and $_.Status -eq "Available" -and $_.AllowNewSession -eq $True }
   $shutdownSpareCapacity = $false
+ 
   foreach ($sessionlessHost in $sessionlessHostList) {
     $activeHostsZeroSessions.Add($sessionlessHost) | Out-Null
+  }
+
+  if ($enhancedLogging -eq $True) {
+    Write-Output "*** LOGGING *** 'sessionlessHostList' = $sessionlessHostList"
+    Write-Output "*** LOGGING *** 'activeHostsWithSessions' = $activeHostsWithSessions"
+    Write-Output "*** LOGGING *** 'activeHostsZeroSessions' = $activeHostsZeroSessions"
   }
 
   # If any available hosts are running with 0 sessions, run the shutdown check sequence
@@ -820,9 +827,15 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
       }
     }
 
+    if ($enhancedLogging -eq $True) {
+      Write-Output "*** LOGGING *** 'shutdownSpareCapacity' = $shutdownSpareCapacity"
+    }
     # If no host with existing sessions has spare capacity, remove a host from $activeHostsZeroSessions array list
     if ($shutdownSpareCapacity -eq $false) {
-      $activeHostsZeroSessions.RemoveAt(0) 
+      $activeHostsZeroSessions.RemoveAt(0)
+      if ($enhancedLogging -eq $True) {
+        Write-Output "*** LOGGING *** 'Removed a host from 'activeHostsZeroSessions' array'"
+      }
     }
         
     foreach ($activeHost in $activeHostsZeroSessions) {
@@ -836,6 +849,9 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
       # Shut down host
       else {
 
+        if ($enhancedLogging -eq $True) {
+          Write-Output "*** LOGGING *** 'Proceeding to shut down host'"
+        }
         $activeHostName = $activeHost.Name
         $activeHostName = $activeHostName.Split("/")[1]
         $vmName = $activeHostName.Split(".")[0]
@@ -847,19 +863,33 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
         if ($finalSessionCheck -ne 0) {
           continue
         }
+        if ($enhancedLogging -eq $True) {
+          Write-Output "*** LOGGING *** 'Completed final shut down check on host'"
+        }
 
         # If using StartVMOnConnect then check boot time to allow grace period
         if ($hostpoolInfo.StartVMOnConnect -eq $True) {
 
+          if ($enhancedLogging -eq $True) {
+            Write-Output "*** LOGGING *** 'Start VM on Connect is enabled'"
+          }
           # Get the Activity Log of the VM
-          $vmLog = Get-AzLog -ResourceId $vmInfo.Id -WarningAction Ignore `
+          $vmLog = Get-AzActivityLog -ResourceId $vmInfo.Id -WarningAction Ignore `
           | Where-Object { $_.OperationName -eq 'Start Virtual Machine' } `
           | Sort-Object EventTimestamp -Descending `
           | Select-Object -First 1
+          if ($enhancedLogging -eq $True) {
+            Write-Output "*** LOGGING *** 'vmLog' = $vmLog"
+          }
           $bootTime = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId(($vmLog.EventTimestamp).ToUniversalTime(), $timeZone)
-
+          
           # Allow 15minute grace period between boot to ensure StartVMOnConnect isn't interrupted by script
           $bootTimeGrace = $currentDateTime.AddMinutes(-15)
+
+          if ($enhancedLogging -eq $True) {
+            Write-Output "*** LOGGING *** 'bootTime' = $bootTime"
+            Write-Output "*** LOGGING *** 'bootTimeGrace' = $bootTimeGrace"
+          }
 
           if ($bootTime -gt $bootTimeGrace) { 
             Write-Output "Start VM On Connect is enabled on the host pool and empty host '$vmName' has been running for less than 15 minutes. This machine will be left running so as not to interfere with this process" 
