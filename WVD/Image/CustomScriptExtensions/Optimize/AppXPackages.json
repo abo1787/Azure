@@ -208,5 +208,11 @@
         "VDIState": "Disabled",
         "URL": "",
         "Description": "Adobe Notification Client"
-    }
+    },
+    {
+      "AppxPackage": "MicrosoftCorporationII.QuickAssist",
+      "VDIState": "Enabled",
+      "URL": "https://apps.microsoft.com/store/detail/quick-assist/9P7BP5VNWKX5?hl=en-us&gl=us&icid=CNavAppsWindowsApps",
+      "Description": "Microsoft Quick Assist"
+  }
 ]
