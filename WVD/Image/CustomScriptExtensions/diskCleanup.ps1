@@ -59,7 +59,7 @@ foreach ($keyName in $sections) {
 }
 
 Write-Output 'Cleaning...'
-Get-Item -Path "C:\Windows\Temp\*" -Exclude "packer*", "script*", "mat*", "*.ses", "CreativeCloud*", "pdf24*" | Remove-Item -Recurse -Force
+Get-Item -Path "C:\Windows\Temp\*" -Exclude "packer*", "script*", "mat*", "*.ses", "CreativeCloud*", "pdf24*" | Remove-Item -Recurse -Force | Out-Null
 Start-Process -FilePath CleanMgr.exe -ArgumentList '/sagerun:1' -WindowStyle Hidden
 Start-Sleep -Seconds 180
 

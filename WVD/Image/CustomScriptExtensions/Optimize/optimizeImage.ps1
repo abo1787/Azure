@@ -175,7 +175,6 @@ $sections = @(
   'Setup Log Files',
   'System error memory dump files',
   'System error minidump files',
-  'Temporary Files',
   'Temporary Setup Files',
   'Temporary Sync Files',
   'Thumbnail Cache',
@@ -213,6 +212,7 @@ foreach ($keyName in $sections) {
 }
 
 Write-Output 'Running Disk Cleanup...'
+Get-Item -Path "C:\Windows\Temp\*" -Exclude "packer*", "script*", "mat*", "*.ses", "CreativeCloud*", "pdf24*" | Remove-Item -Recurse -Force | Out-Null
 Start-Process -FilePath CleanMgr.exe -ArgumentList '/sagerun:1' -WindowStyle Hidden
 Start-Sleep -Seconds 180
 
@@ -222,7 +222,7 @@ while ($diskCleanupRunning) {
   Start-Sleep -Seconds 10
 }
 Write-Output 'Disk Cleanup complete!'
-Stop-Process -Name cleanmgr
+Stop-Process -Name cleanmgr | Out-Null
 Write-Output 'Restoring default disk cleanup settings...'
 Get-ItemProperty @getItemParams | Remove-ItemProperty -Name StateFlags0001 -ErrorAction SilentlyContinue
 Write-Output 'Default disk cleanup settings restored'
