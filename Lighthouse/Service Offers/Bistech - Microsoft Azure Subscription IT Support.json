@@ -7,14 +7,14 @@
    "metadata": {
     "description": "Specify a unique name for your offer"
    },
-   "defaultValue": "Bistech - Microsoft Azure Subscription IT Support"
+   "defaultValue": "Bistech - Microsoft Azure Subscription Remote Access"
   },
   "mspOfferDescription": {
    "type": "string",
    "metadata": {
     "description": "Name of the Managed Service Provider offering"
    },
-   "defaultValue": "IT support for subscription customers"
+   "defaultValue": "Remote Access for Azure subscription customers"
   }
  },
  "variables": {
