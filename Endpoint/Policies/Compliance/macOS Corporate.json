@@ -11,7 +11,7 @@
    "passwordPreviousPasswordBlockCount": null,
    "passwordMinimumCharacterSetCount": null,
    "passwordRequiredType": "deviceDefault",
-   "osMinimumVersion": "10.15",
+   "osMinimumVersion": "11.7",
    "osMaximumVersion": null,
    "osMinimumBuildVersion": null,
    "osMaximumBuildVersion": null,
@@ -20,7 +20,7 @@
    "deviceThreatProtectionRequiredSecurityLevel": "unavailable",
    "advancedThreatProtectionRequiredSecurityLevel": "unavailable",
    "storageRequireEncryption": false,
-   "gatekeeperAllowedAppSource": "macAppStore",
+   "gatekeeperAllowedAppSource": "macAppStoreAndIdentifiedDevelopers",
    "firewallEnabled": true,
    "firewallBlockAllIncoming": false,
    "firewallEnableStealthMode": false

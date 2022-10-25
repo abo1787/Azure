@@ -19,7 +19,7 @@
    "securityBlockJailbrokenDevices": true,
    "deviceThreatProtectionEnabled": true,
    "deviceThreatProtectionRequiredSecurityLevel": "unavailable",
-   "advancedThreatProtectionRequiredSecurityLevel": "low",
+   "advancedThreatProtectionRequiredSecurityLevel": "unavailable",
    "managedEmailProfileRequired": false,
    "restrictedApps": []
 }

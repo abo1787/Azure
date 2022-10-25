@@ -7,7 +7,7 @@
    "passcodeExpirationDays": null,
    "passcodeMinimumLength": null,
    "passcodeMinutesOfInactivityBeforeLock": null,
-   "passcodeMinutesOfInactivityBeforeScreenTimeout": null,
+   "passcodeMinutesOfInactivityBeforeScreenTimeout": 5,
    "passcodePreviousPasscodeBlockCount": null,
    "passcodeMinimumCharacterSetCount": null,
    "passcodeRequiredType": "deviceDefault",

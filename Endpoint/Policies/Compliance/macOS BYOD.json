@@ -21,7 +21,7 @@
    "advancedThreatProtectionRequiredSecurityLevel": "unavailable",
    "storageRequireEncryption": false,
    "gatekeeperAllowedAppSource": "notConfigured",
-   "firewallEnabled": false,
+   "firewallEnabled": true,
    "firewallBlockAllIncoming": false,
    "firewallEnableStealthMode": false
 }
