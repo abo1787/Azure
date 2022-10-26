@@ -1,328 +1,327 @@
 {
-    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-    "contentVersion": "1.0.0.0",
-    "parameters": {
-        "imageTemplateName": {
-            "type": "string"
-        },
-        "api-version": {
-            "type": "string"
-        },
-        "location": {
-            "type": "string"
-        },
-        "vmSize": {
-            "type": "string"
-        },
-        "userIdentityResourceId": {
-            "type": "string"
-        },
-        "osDiskSize": {
-            "type": "int"
-        },
-        "publisher": {
-            "type": "string"
-        },
-        "offer": {
-            "type": "string"
-        },
-        "sku": {
-            "type": "string"
-        },
-        "sourceImageType": {
-            "type": "string"
-        },
-        "managedImageId": {
-            "type": "string"
-        },
-        "sharedImageVersionId": {
-            "type": "string"
-        },
-        "destinationImageDefinitionId": {
-            "type": "string"
-        },
-        "replicationRegions": {
-            "type": "array"
-        },
-        "runOutputName": {
-            "type": "string"
-        }
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "imageTemplateName": {
+      "type": "string"
     },
-    "variables": {},
-    "resources": [
-        {
-            "condition": "[equals(parameters('sourceImageType'), 'PlatformImage')]",
-            "name": "[concat(parameters('imageTemplateName'), '-PlatformImage')]",
-            "type": "Microsoft.VirtualMachineImages/imageTemplates",
-            "apiVersion": "[parameters('api-version')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [],
-            "tags": {},
-            "identity": {
-                "type": "UserAssigned",
-                "userAssignedIdentities": {
-                    "[parameters('userIdentityResourceId')]": {}
-                }
-            },
-            "properties": {
-                "buildTimeoutInMinutes": 240,
-                "vmProfile": {
-                    "vmSize": "[parameters('vmSize')]",
-                    "osDiskSizeGB": "[parameters('osDiskSize')]"
-                },
-                "source": {
-                    "type": "PlatformImage",
-                    "publisher": "[parameters('publisher')]",
-                    "offer": "[parameters('offer')]",
-                    "sku": "[parameters('sku')]",
-                    "version": "latest"
-
-                },
-                "customize": [
-                    {
-                        "type": "PowerShell",
-                        "name": "installFsLogix",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installFSLogix.ps1"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Install Teams",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installTeams.ps1"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Install OneDrive",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installOneDrive.ps1"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Download Locale UK",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/downloadLocaleUkAIB.ps1"
-                    },
-                    {
-                        "type": "WindowsRestart",
-                        "restartCheckCommand": "Write-Host 'Restarting post Software Install'",
-                        "restartTimeout": "5m"
-                    },
-                    {
-                        "type": "WindowsUpdate",
-                        "searchCriteria": "IsInstalled=0",
-                        "filters": [
-                            "exclude:$_.Title -like '*Preview*'",
-                            "include:$true"
-                        ],
-                        "updateLimit": 40
-                    },
-                    {
-                        "type": "WindowsRestart",
-                        "restartCheckCommand": "Write-Host 'Restarting post Windows Updates'",
-                        "restartTimeout": "5m"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Download Custom Sysprep",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/azureImageBuilderSysprep.ps1"
-                    }
-                ],
-                "distribute": [
-                    {
-                        "type": "SharedImage",
-                        "galleryImageId": "[parameters('destinationImageDefinitionId')]",
-                        "runOutputName": "[parameters('runOutputName')]",
-                        "replicationRegions": "[parameters('replicationRegions')]"
-                    }
-                ]
-            }
-        },
-        {
-            "condition": "[equals(parameters('sourceImageType'), 'ManagedImage')]",
-            "name": "[concat(parameters('imageTemplateName'), '-ManagedImage')]",
-            "type": "Microsoft.VirtualMachineImages/imageTemplates",
-            "apiVersion": "[parameters('api-version')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [],
-            "tags": {},
-            "identity": {
-                "type": "UserAssigned",
-                "userAssignedIdentities": {
-                    "[parameters('userIdentityResourceId')]": {}
-                }
-            },
-            "properties": {
-                "buildTimeoutInMinutes": 240,
-                "vmProfile": {
-                    "vmSize": "[parameters('vmSize')]",
-                    "osDiskSizeGB": "[parameters('osDiskSize')]"
-                },
-                "source": {
-                    "type": "ManagedImage",
-                    "imageId": "[parameters('managedImageId')]"
-                },
-                "customize": [
-                    {
-                        "type": "PowerShell",
-                        "name": "installFsLogix",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installFSLogix.ps1"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Install Teams",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installTeams.ps1"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Install OneDrive",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installOneDrive.ps1"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Download Locale UK",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/downloadLocaleUkAIB.ps1"
-                    },
-                    {
-                        "type": "WindowsRestart",
-                        "restartCheckCommand": "Write-Host 'Restarting post Software Install'",
-                        "restartTimeout": "5m"
-                    },
-                    {
-                        "type": "WindowsUpdate",
-                        "searchCriteria": "IsInstalled=0",
-                        "filters": [
-                            "exclude:$_.Title -like '*Preview*'",
-                            "include:$true"
-                        ],
-                        "updateLimit": 40
-                    },
-                    {
-                        "type": "WindowsRestart",
-                        "restartCheckCommand": "Write-Host 'Restarting post Windows Updates'",
-                        "restartTimeout": "5m"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Download Custom Sysprep",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/azureImageBuilderSysprep.ps1"
-                    }
-                ],
-                "distribute": [
-                    {
-                        "type": "SharedImage",
-                        "galleryImageId": "[parameters('destinationImageDefinitionId')]",
-                        "runOutputName": "[parameters('runOutputName')]",
-                        "replicationRegions": "[parameters('replicationRegions')]"
-                    }
-                ]
-            }
-        },
-        {
-            "condition": "[equals(parameters('sourceImageType'), 'SharedImageVersion')]",
-            "name": "[concat(parameters('imageTemplateName'), '-SharedImageVersion')]",
-            "type": "Microsoft.VirtualMachineImages/imageTemplates",
-            "apiVersion": "[parameters('api-version')]",
-            "location": "[parameters('location')]",
-            "dependsOn": [],
-            "tags": {},
-            "identity": {
-                "type": "UserAssigned",
-                "userAssignedIdentities": {
-                    "[parameters('userIdentityResourceId')]": {}
-                }
-            },
-            "properties": {
-                "buildTimeoutInMinutes": 240,
-                "vmProfile": {
-                    "vmSize": "[parameters('vmSize')]",
-                    "osDiskSizeGB": "[parameters('osDiskSize')]"
-                },
-                "source": {
-                    "type": "SharedImageVersion",
-                    "imageVersionId": "[parameters('sharedImageVersionId')]"
-                },
-                "customize": [
-                    {
-                        "type": "PowerShell",
-                        "name": "installFsLogix",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installFSLogix.ps1"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Install Teams",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installTeams.ps1"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Install OneDrive",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installOneDrive.ps1"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Download Locale UK",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/downloadLocaleUkAIB.ps1"
-                    },
-                    {
-                        "type": "WindowsRestart",
-                        "restartCheckCommand": "Write-Host 'Restarting post Software Install'",
-                        "restartTimeout": "5m"
-                    },
-                    {
-                        "type": "WindowsUpdate",
-                        "searchCriteria": "IsInstalled=0",
-                        "filters": [
-                            "exclude:$_.Title -like '*Preview*'",
-                            "include:$true"
-                        ],
-                        "updateLimit": 40
-                    },
-                    {
-                        "type": "WindowsRestart",
-                        "restartCheckCommand": "Write-Host 'Restarting post Windows Updates'",
-                        "restartTimeout": "5m"
-                    },
-                    {
-                        "type": "PowerShell",
-                        "name": "Download Custom Sysprep",
-                        "runElevated": true,
-                        "runAsSystem": true,
-                        "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/azureImageBuilderSysprep.ps1"
-                    }
-                ],
-                "distribute": [
-                    {
-                        "type": "SharedImage",
-                        "galleryImageId": "[parameters('destinationImageDefinitionId')]",
-                        "runOutputName": "[parameters('runOutputName')]",
-                        "replicationRegions": "[parameters('replicationRegions')]"
-                    }
-                ]
-            }
+    "api-version": {
+      "type": "string"
+    },
+    "location": {
+      "type": "string"
+    },
+    "vmSize": {
+      "type": "string"
+    },
+    "userIdentityResourceId": {
+      "type": "string"
+    },
+    "osDiskSize": {
+      "type": "int"
+    },
+    "publisher": {
+      "type": "string"
+    },
+    "offer": {
+      "type": "string"
+    },
+    "sku": {
+      "type": "string"
+    },
+    "sourceImageType": {
+      "type": "string"
+    },
+    "managedImageId": {
+      "type": "string"
+    },
+    "sharedImageVersionId": {
+      "type": "string"
+    },
+    "destinationImageDefinitionId": {
+      "type": "string"
+    },
+    "replicationRegions": {
+      "type": "array"
+    },
+    "runOutputName": {
+      "type": "string"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "condition": "[equals(parameters('sourceImageType'), 'PlatformImage')]",
+      "name": "[concat(parameters('imageTemplateName'), '-PlatformImage')]",
+      "type": "Microsoft.VirtualMachineImages/imageTemplates",
+      "apiVersion": "[parameters('api-version')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [],
+      "tags": {},
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[parameters('userIdentityResourceId')]": {}
         }
-    ]
+      },
+      "properties": {
+        "buildTimeoutInMinutes": 240,
+        "vmProfile": {
+          "vmSize": "[parameters('vmSize')]",
+          "osDiskSizeGB": "[parameters('osDiskSize')]"
+        },
+        "source": {
+          "type": "PlatformImage",
+          "publisher": "[parameters('publisher')]",
+          "offer": "[parameters('offer')]",
+          "sku": "[parameters('sku')]",
+          "version": "latest"
+        },
+        "customize": [
+          {
+            "type": "PowerShell",
+            "name": "installFsLogix",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installFSLogix.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Install Teams",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installTeams.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Install OneDrive",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installOneDrive.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Download Locale UK",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/downloadLocaleUkAIB.ps1"
+          },
+          {
+            "type": "WindowsRestart",
+            "restartCheckCommand": "Write-Host 'Restarting post Software Install'",
+            "restartTimeout": "5m"
+          },
+          {
+            "type": "WindowsUpdate",
+            "searchCriteria": "IsInstalled=0",
+            "filters": [
+              "exclude:$_.Title -like '*Preview*'",
+              "include:$true"
+            ],
+            "updateLimit": 40
+          },
+          {
+            "type": "WindowsRestart",
+            "restartCheckCommand": "Write-Host 'Restarting post Windows Updates'",
+            "restartTimeout": "5m"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Download Custom Sysprep",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/azureImageBuilderSysprep.ps1"
+          }
+        ],
+        "distribute": [
+          {
+            "type": "SharedImage",
+            "galleryImageId": "[parameters('destinationImageDefinitionId')]",
+            "runOutputName": "[parameters('runOutputName')]",
+            "replicationRegions": "[parameters('replicationRegions')]"
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[equals(parameters('sourceImageType'), 'ManagedImage')]",
+      "name": "[concat(parameters('imageTemplateName'), '-ManagedImage')]",
+      "type": "Microsoft.VirtualMachineImages/imageTemplates",
+      "apiVersion": "[parameters('api-version')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [],
+      "tags": {},
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[parameters('userIdentityResourceId')]": {}
+        }
+      },
+      "properties": {
+        "buildTimeoutInMinutes": 240,
+        "vmProfile": {
+          "vmSize": "[parameters('vmSize')]",
+          "osDiskSizeGB": "[parameters('osDiskSize')]"
+        },
+        "source": {
+          "type": "ManagedImage",
+          "imageId": "[parameters('managedImageId')]"
+        },
+        "customize": [
+          {
+            "type": "PowerShell",
+            "name": "installFsLogix",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installFSLogix.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Install Teams",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installTeams.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Install OneDrive",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installOneDrive.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Download Locale UK",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/downloadLocaleUkAIB.ps1"
+          },
+          {
+            "type": "WindowsRestart",
+            "restartCheckCommand": "Write-Host 'Restarting post Software Install'",
+            "restartTimeout": "5m"
+          },
+          {
+            "type": "WindowsUpdate",
+            "searchCriteria": "IsInstalled=0",
+            "filters": [
+              "exclude:$_.Title -like '*Preview*'",
+              "include:$true"
+            ],
+            "updateLimit": 40
+          },
+          {
+            "type": "WindowsRestart",
+            "restartCheckCommand": "Write-Host 'Restarting post Windows Updates'",
+            "restartTimeout": "5m"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Download Custom Sysprep",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/azureImageBuilderSysprep.ps1"
+          }
+        ],
+        "distribute": [
+          {
+            "type": "SharedImage",
+            "galleryImageId": "[parameters('destinationImageDefinitionId')]",
+            "runOutputName": "[parameters('runOutputName')]",
+            "replicationRegions": "[parameters('replicationRegions')]"
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[equals(parameters('sourceImageType'), 'SharedImageVersion')]",
+      "name": "[concat(parameters('imageTemplateName'), '-SharedImageVersion')]",
+      "type": "Microsoft.VirtualMachineImages/imageTemplates",
+      "apiVersion": "[parameters('api-version')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [],
+      "tags": {},
+      "identity": {
+        "type": "UserAssigned",
+        "userAssignedIdentities": {
+          "[parameters('userIdentityResourceId')]": {}
+        }
+      },
+      "properties": {
+        "buildTimeoutInMinutes": 240,
+        "vmProfile": {
+          "vmSize": "[parameters('vmSize')]",
+          "osDiskSizeGB": "[parameters('osDiskSize')]"
+        },
+        "source": {
+          "type": "SharedImageVersion",
+          "imageVersionId": "[parameters('sharedImageVersionId')]"
+        },
+        "customize": [
+          {
+            "type": "PowerShell",
+            "name": "installFsLogix",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installFSLogix.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Install Teams",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installTeams.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Install OneDrive",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/installOneDrive.ps1"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Download Locale UK",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/downloadLocaleUkAIB.ps1"
+          },
+          {
+            "type": "WindowsRestart",
+            "restartCheckCommand": "Write-Host 'Restarting post Software Install'",
+            "restartTimeout": "5m"
+          },
+          {
+            "type": "WindowsUpdate",
+            "searchCriteria": "IsInstalled=0",
+            "filters": [
+              "exclude:$_.Title -like '*Preview*'",
+              "include:$true"
+            ],
+            "updateLimit": 40
+          },
+          {
+            "type": "WindowsRestart",
+            "restartCheckCommand": "Write-Host 'Restarting post Windows Updates'",
+            "restartTimeout": "5m"
+          },
+          {
+            "type": "PowerShell",
+            "name": "Download Custom Sysprep",
+            "runElevated": true,
+            "runAsSystem": true,
+            "scriptUri": "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/azureImageBuilderSysprep.ps1"
+          }
+        ],
+        "distribute": [
+          {
+            "type": "SharedImage",
+            "galleryImageId": "[parameters('destinationImageDefinitionId')]",
+            "runOutputName": "[parameters('runOutputName')]",
+            "replicationRegions": "[parameters('replicationRegions')]"
+          }
+        ]
+      }
+    }
+  ]
 }

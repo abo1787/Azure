@@ -28,7 +28,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 5.3.4
+    Version : 5.3.5
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -881,19 +881,27 @@ if (!$global:MinRDSHcapacityTrigger -and !$global:hostWasStarted) {
           if ($enhancedLogging -eq $True) {
             Write-Output "*** LOGGING *** 'vmLog' = $vmLog"
           }
-          $bootTime = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId(($vmLog.EventTimestamp).ToUniversalTime(), $timeZone)
+          # Get boot time if log returns result
+          if ($vmLog) {
+            $bootTime = [System.TimeZoneInfo]::ConvertTimeBySystemTimeZoneId(($vmLog.EventTimestamp).ToUniversalTime(), $timeZone)
           
-          # Allow 15minute grace period between boot to ensure StartVMOnConnect isn't interrupted by script
-          $bootTimeGrace = $currentDateTime.AddMinutes(-15)
+            # Allow 15minute grace period between boot to ensure StartVMOnConnect isn't interrupted by script
+            $bootTimeGrace = $currentDateTime.AddMinutes(-15)
 
-          if ($enhancedLogging -eq $True) {
-            Write-Output "*** LOGGING *** 'bootTime' = $bootTime"
-            Write-Output "*** LOGGING *** 'bootTimeGrace' = $bootTimeGrace"
+            if ($enhancedLogging -eq $True) {
+              Write-Output "*** LOGGING *** 'bootTime' = $bootTime"
+              Write-Output "*** LOGGING *** 'bootTimeGrace' = $bootTimeGrace"
+            }
+
+            if ($bootTime -gt $bootTimeGrace) { 
+              Write-Output "Start VM On Connect is enabled on the host pool and empty host '$vmName' has been running for less than 15 minutes. This machine will be left running so as not to interfere with this process" 
+              continue
+            }
           }
-
-          if ($bootTime -gt $bootTimeGrace) { 
-            Write-Output "Start VM On Connect is enabled on the host pool and empty host '$vmName' has been running for less than 15 minutes. This machine will be left running so as not to interfere with this process" 
-            continue
+          else {
+            if ($enhancedLogging -eq $True) {
+              Write-Output "*** LOGGING *** 'vmLog' has not returned any data so the machine started more than 7 days ago"
+            }
           }
         }
 

@@ -1,7 +1,11 @@
 # Azure Virtual Desktop AutoScaling
 
 
-### Latest Release - v5.3.4
+### Latest Release - v5.3.5
+#### v5.3.5
+##### Fixes
+###### * Fixed issue with shutting down last host if minimum host was set to 0, start on connect was turned on, and the machine had been continually running for over 7 days
+---
 #### v5.3.4
 ##### Other
 ###### * Additional output added when using EnhancedLogging feature
