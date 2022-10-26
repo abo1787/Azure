@@ -10,6 +10,12 @@
         "description": "The 3 character Azure prefix for the customer for all resources"
       }
     },
+    "customerInternetIp": {
+      "type": "string",
+      "metadata": {
+        "description": "The customers overload IP address to whitelist for access"
+      }
+    },
     "location": {
       "type": "string",
       "metadata": {
@@ -17,17 +23,12 @@
       },
       "defaultValue": "uksouth",
       "allowedValues": [
-        "asia",
-        "asiapacific",
-        "australia",
         "australiacentral",
         "australiacentral2",
         "australiaeast",
         "australiasoutheast",
-        "brazil",
         "brazilsouth",
         "brazilsoutheast",
-        "canada",
         "canadacentral",
         "canadaeast",
         "centralindia",
@@ -37,42 +38,30 @@
         "eastus",
         "eastus2",
         "eastus2euap",
-        "europe",
-        "france",
         "francecentral",
         "francesouth",
-        "germany",
         "germanynorth",
         "germanywestcentral",
-        "global",
-        "india",
-        "japan",
         "japaneast",
         "japanwest",
-        "korea",
         "koreacentral",
         "koreasouth",
         "northcentralus",
         "northeurope",
-        "norway",
         "norwayeast",
         "norwaywest",
-        "qatarcentral",
-        "southafrica",
         "southafricanorth",
         "southafricawest",
         "southcentralus",
         "southeastasia",
         "southindia",
         "swedencentral",
-        "switzerland",
         "switzerlandnorth",
         "switzerlandwest",
         "uaecentral",
         "uaenorth",
         "uksouth",
         "ukwest",
-        "unitedstates",
         "westcentralus",
         "westeurope",
         "westindia",
@@ -92,11 +81,43 @@
         "description": "Set to 'true' to use existing Virtual Network"
       }
     },
-    "existingVirtualResourceGroup": {
+    "useExistingVnetResourceGroup": {
+      "type": "bool",
+      "defaultValue": false,
+      "allowedValues": [
+        true,
+        false
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use existing Virtual Network resource group"
+      }
+    },
+    "existingVirtualNetworkResourceGroup": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "If 'existingVnet' is true specify the name of the resource group containing the virtual network"
+        "description": "If 'useExistingVnetResourceGroup' is true specify the name of the resource group to deploy the virtual network into"
+      }
+    },
+    "vnetAddressSpace": {
+      "type": "string",
+      "defaultValue": "10.200.0.0/16",
+      "metadata": {
+        "description": "If 'existingVnet' is false specify the address space to use for the virtual network"
+      }
+    },
+    "intAddressSubnet": {
+      "type": "string",
+      "defaultValue": "10.200.0.0/24",
+      "metadata": {
+        "description": "If 'existingVnet' is false specify the address space to use for the application/internal server subnet"
+      }
+    },
+    "dmzAddressSubnet": {
+      "type": "string",
+      "defaultValue": "10.200.200.0/24",
+      "metadata": {
+        "description": "If 'existingVnet' is false specify the address space to use for the DMZ server subnet"
       }
     },
     "existingVirtualNetworkName": {
@@ -160,6 +181,23 @@
       "type": "string",
       "metadata": {
         "description": "The name of the Private DNS Zone that either already exists or is to be created"
+      }
+    },
+    "useExistingStorageAccount": {
+      "type": "bool",
+      "defaultValue": false,
+      "allowedValues": [
+        true,
+        false
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use an existing storage account"
+      }
+    },
+    "existingStorageAccountName": {
+      "type": "string",
+      "metadata": {
+        "description": "If 'useExistingStorageAccount' is true specify the name of the storage account"
       }
     },
     "MSLTimezone": {
@@ -753,7 +791,7 @@
         "description": "Password for the Virtual Machine. Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character. The value must be between 12 and 72 characters long."
       }
     },
-    "DeployMivb": {
+    "deployMivb": {
       "type": "bool",
       "defaultValue": true,
       "metadata": {
@@ -804,14 +842,14 @@
         "description": "Choose the size of the MiVB to deploy"
       }
     },
-    "DeployMicollab": {
+    "deployMicollab": {
       "type": "bool",
       "defaultValue": true,
       "metadata": {
         "description": "Set to 'true' to deploy a MiCollab server"
       }
     },
-    "MicollabVersion": {
+    "micollabVersion": {
       "type": "string",
       "defaultValue": "9.6.0.105",
       "allowedValues": [
@@ -822,7 +860,7 @@
         "description": "Specify the version of MiCollab to deploy"
       }
     },
-    "MicollabSize": {
+    "micollabSize": {
       "type": "object",
       "defaultValue": {
         "name": "MiCollab250",
@@ -855,7 +893,7 @@
         "description": "Choose the size of the MiCollab to deploy"
       }
     },
-    "DeployTeleworkerMBG": {
+    "deployTeleworkerMBG": {
       "type": "bool",
       "defaultValue": true,
       "metadata": {
@@ -970,473 +1008,1191 @@
   "variables": {
     "prefix": "[concat(parameters('customerPrefix'), '-')]",
     "locationShorten": {
-      "asia":"as",
-        "asiapacific":"aspc",
-        "australia":"au",
-        "australiacentral":"auc",
-        "australiacentral2":"auc2",
-        "australiaeast":"aue",
-        "australiasoutheast":"ause",
-        "brazil":"bz",
-        "brazilsouth":"bzs",
-        "brazilsoutheast":"bzse",
-        "canada":"cn",
-        "canadacentral":"cnc",
-        "canadaeast":"cne",
-        "centralindia":"indcn",
-        "centralus":"uscn",
-        "centraluseuap":"uscneuap",
-        "eastasia":"eas",
-        "eastus":"eus",
-        "eastus2":"eus2",
-        "eastus2euap":"eus2euap",
-        "europe":"eu",
-        "france":"fr",
-        "francecentral":"frc",
-        "francesouth":"frs",
-        "germany":"gm",
-        "germanynorth":"gmn",
-        "germanywestcentral":"gwc",
-        "india",
-        "japan",
-        "japaneast",
-        "japanwest",
-        "korea",
-        "koreacentral",
-        "koreasouth",
-        "northcentralus",
-        "northeurope",
-        "norway",
-        "norwayeast",
-        "norwaywest",
-        "qatarcentral",
-        "southafrica",
-        "southafricanorth",
-        "southafricawest",
-        "southcentralus",
-        "southeastasia",
-        "southindia",
-        "swedencentral",
-        "switzerland",
-        "switzerlandnorth",
-        "switzerlandwest",
-        "uaecentral",
-        "uaenorth",
-        "uksouth",
-        "ukwest",
-        "unitedstates",
-        "westcentralus",
-        "westeurope",
-        "westindia",
-        "westus",
-        "westus2",
-        "westus3"
+      "australiacentral": "acl",
+      "australiacentral2": "acl2",
+      "australiaeast": "ae",
+      "australiasoutheast": "ase",
+      "brazilsouth": "brs",
+      "brazilsoutheast": "bse",
+      "canadacentral": "cnc",
+      "canadaeast": "cne",
+      "centralindia": "inc",
+      "centralus": "cus",
+      "centraluseuap": "ccy",
+      "eastasia": "ea",
+      "eastus": "eus",
+      "eastus2": "eus2",
+      "eastus2euap": "ecy",
+      "francecentral": "frc",
+      "francesouth": "frs",
+      "germanynorth": "gn",
+      "germanywestcentral": "gwc",
+      "japaneast": "jpe",
+      "japanwest": "jpw",
+      "koreacentral": "krc",
+      "koreasouth": "krs",
+      "northcentralus": "ncus",
+      "northeurope": "ne",
+      "norwayeast": "nwe",
+      "norwaywest": "nww",
+      "southafricanorth": "san",
+      "southafricawest": "saw",
+      "southcentralus": "scus",
+      "southeastasia": "sea",
+      "southindia": "ins",
+      "swedencentral": "sdc",
+      "switzerlandnorth": "szn",
+      "switzerlandwest": "szw",
+      "uaecentral": "uac",
+      "uaenorth": "uan",
       "uksouth": "uks",
-      "ukwest": "uks",
-      "IndiaWest": "indw",
-      "IndiaSouth": "inds"
+      "ukwest": "ukw",
+      "westcentralus": "wcus",
+      "westeurope": "we",
+      "westindia": "inw",
+      "westus": "wus",
+      "westus2": "wus2",
+      "westus3": "wus3"
     },
-    "locationShortName": "[variables('locationShorten')[variables('location')]",
-    "windowsUsername": "AzureAdmin",
-    "mivbName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb01'",
-    "micollabName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-micollab'",
-    "teleworkerMBGName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mbg01'",
-    "sipMBGName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mbg02'",
-    "appNetworkSecurityGroupName": "[parameters('applicationSecurityGroupName')]",
-    "mbgNetworkSecurityGroupName": "[parameters('MBGSecurityGroupName')]",
-    "vnetName": "[parameters('virtualNetworkName')]",
-    "appSubnetName": "[parameters('intSubnetName')]",
-    "mbgSubnetName": "[parameters('dmzSubnetName')]",
-    "mivbLanNicName": "[concat(parameters('MivbName'), '-lan-nic')]",
-    "micollabLanNicName": "[concat(parameters('MicollabName'), '-lan-nic')]",
-    "mbgLanNicName": "[concat(parameters('MBGName'), '-lan-nic')]",
-    "mbgWanNicName": "[concat(parameters('MBGName'), '-wan-nic')]",
-    "mbgWanNicNameAWV": "[concat(parameters('MBGName'), '-wan-nic-awv')]",
-    "mivbOsDiskName": "[concat(parameters('MivbName'), '-OSdisk')]",
-    "micollabOsDiskName": "[concat(parameters('MicollabName'), '-OSdisk')]",
-    "mbgOsDiskName": "[concat(parameters('MBGName'), '-OSdisk')]",
-    "mivbImageName": "[concat(parameters('MivbName'), '-image')]",
-    "micollabImageName": "[concat(parameters('MicollabName'), '-image')]",
-    "mbgImageName": "[concat(parameters('MBGName'), '-image')]",
-    "publicIPAddressName": "[concat(parameters('MBGName'), '-publicIP')]",
-    "awvPublicIPAddressName": "[concat(parameters('MBGName'), '-AWV-publicIP')]",
+    "locationShortName": "[variables('locationShorten')[parameters('location')]]",
+    "mivbUris": {
+      "9.4 SP1": "",
+      "9.4": ""
+    },
+    "mivbUri": "[variables('mivbUris')[parameters('MivbVersion')]]",
+    "teleworkerMBGUris": {
+      "9.4 SP1": "",
+      "9.4": ""
+    },
+    "teleworkerMBGUri": "[variables('teleworkerMBGUris')[parameters('teleworkerMBGVersion')]]",
+    "sipMBGUris": {
+      "9.4 SP1": "",
+      "9.4": ""
+    },
+    "sipMBGUri": "[variables('sipMBGUris')[parameters('sipMBGVersion')]]",
+    "micollabUris": {
+      "9.4 SP1": "",
+      "9.4": ""
+    },
+    "micollabUri": "[variables('micollabUris')[parameters('micollabVersion')]]",
+    "applicationResourceGroupName": "[concat(variables('prefix'), 'mit-app-', variables('locationShortName'), '-rg')]",
+    "DMZResourceGroupName": "[concat(variables('prefix'), 'mit-dmz-', variables('locationShortName'), '-rg')]",
+    "username": "AzureAdmin",
+    "mivbName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb01')]",
+    "mivbImageName": "[concat(variables('mivbName'), '-image')]",
+    "mivbLanNicName": "[concat(variables('mivbName'), '-nic-lan')]",
+    "mivbOsDiskName": "[concat(variables('mivbName'), '-OSdisk')]",
+    "micollabName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-micollab')]",
+    "micollabImageName": "[concat(variables('micollabName'), '-image')]",
+    "micollabLanNicName": "[concat(variables('micollabName'), '-nic-lan')]",
+    "micollabOsDiskName": "[concat(variables('micollabName'), '-OSdisk')]",
+    "teleworkerMBGName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mbg01')]",
+    "teleworkerMBGImageName": "[concat(variables('teleworkerMBGName'), '-image')]",
+    "teleworkerMBGLanNicName": "[concat(variables('teleworkerMBGName'), '-nic-lan')]",
+    "teleworkerMBGWanNicName": "[concat(variables('teleworkerMBGName'), '-nic-wan')]",
+    "teleworkerMBGOsDiskName": "[concat(variables('teleworkerMBGName'), '-OSdisk')]",
+    "teleworkerMBGPublicIPAddressName": "[concat(variables('teleworkerMBGName'), '-pip')]",
+    "sipMBGName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mbg02')]",
+    "sipMBGImageName": "[concat(variables('sipMBGName'), '-image')]",
+    "sipMBGLanNicName": "[concat(variables('sipMBGName'), '-nic-lan')]",
+    "sipMBGWanNicName": "[concat(variables('sipMBGName'), '-nic-wan')]",
+    "sipMBGOsDiskName": "[concat(variables('sipMBGName'), '-OSdisk')]",
+    "sipMBGPublicIPAddressName": "[concat(variables('sipMBGName'), '-pip')]",
+    "newVnetResourceGroup": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-rg')]",
+    "vnetResourceGroup": "[if(equals(parameters('useExistingVnetResourceGroup'), 'true'), parameters('existingVirtualNetworkResourceGroup'), variables('newVnetResourceGroup'))]",
+    "newVnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-vnet')]",
+    "vnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingVirtualNetworkName'), variables('newVnetName'))]",
+    "newIntSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-snet')]",
+    "intSubnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingIntSubnetName'), variables('newIntSubnetName'))]",
+    "newDmzSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-snet')]",
+    "dmzSubnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingDMZSubnetName'), variables('newDmzSubnetName'))]",
+    "newIntNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-nsg')]",
+    "intNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingIntNSGName'), variables('newIntNSGName'))]",
+    "newDmzNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-nsg')]",
+    "dmzNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingDmzNSGName'), variables('newDmzNSGName'))]",
+    "newStorageAccountName": "[concat(variables('prefix'), 'mitelsa')]",
+    "storageAccountName": "[if(equals(parameters('useExistingStorageAccount'), 'true'), parameters('existingStorageAccountName'), variables('newStorageAccountName'))]",
     "customData": "[base64(concat('{\"domain-name\": \"', parameters('privateDnsZoneName'), '\", \"system-password\": \"', parameters('MSLPassword'), '\", \"remote-networks\": [',  parameters('MSLRemoteNetworks'), ']}'))]"
   },
   "functions": [],
   "resources": [
     {
-      "condition": "[parameters('DeployMBG')]",
-      "apiVersion": "2021-05-01",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('publicIPAddressName')]",
+      "condition": "[equals(parameters('useExistingVnetResourceGroup'), 'false')]",
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "location": "[parameters('location')]",
+      "name": "[variables('vnetResourceGroup')]",
+      "properties": {}
+
+    },
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "location": "[parameters('location')]",
+      "name": "[variables('applicationResourceGroupName')]",
+      "properties": {}
+
+    },
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "location": "[parameters('location')]",
+      "name": "[variables('DMZResourceGroupName')]",
+      "properties": {}
+
+    },
+    {
+      "condition": "[equals(parameters('useExistingStorageAccount'), 'false')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('storageAccountName')]",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "Basic"
+        "name": "Standard_LRS"
       },
+      "kind": "StorageV2",
       "properties": {
-        "publicIPAllocationMethod": "Static",
-        "publicIPAddressVersion": "IPv4",
-        "idleTimeoutInMinutes": 4
+        "supportsHttpsTrafficOnly": true
       }
     },
     {
-      "condition": "[parameters('AllocateAWVPublicIP')]",
-      "apiVersion": "2021-05-01",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "name": "[variables('awvPublicIPAddressName')]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "Basic"
-      },
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "NetworkResources",
+      "resourceGroup": "[variables('vnetResourceGroup')]",
       "properties": {
-        "publicIPAllocationMethod": "Static",
-        "publicIPAddressVersion": "IPv4",
-        "idleTimeoutInMinutes": 4
-      }
-    },
-    {
-      "condition": "[parameters('DeployMivb')]",
-      "apiVersion": "2020-11-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('mivbLanNicName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAddress": "[if (empty(parameters('MivbIPAddress')), json('null'), parameters('MivbIPAddress'))]",
-              "privateIPAllocationMethod": "[if (empty(parameters('MivbIPAddress')), 'Dynamic','Static')]",
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('appSubnetName'))]"
-              }
-            }
-          }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('appNetworkSecurityGroupName'))]",
-          "location": "[parameters('location')]"
-        }
-      }
-    },
-    {
-      "condition": "[parameters('DeployMicollab')]",
-      "apiVersion": "2020-11-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('micollabLanNicName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAddress": "[if (empty(parameters('MicollabIPAddress')), json('null'), parameters('MicollabIPAddress'))]",
-              "privateIPAllocationMethod": "[if (empty(parameters('MicollabIPAddress')), 'Dynamic','Static')]",
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('appSubnetName'))]"
-              }
-            }
-          }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('appNetworkSecurityGroupName'))]",
-          "location": "[parameters('location')]"
-        }
-      }
-    },
-    {
-      "condition": "[parameters('DeployMBG')]",
-      "apiVersion": "2020-11-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('mbgLanNicName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAddress": "[if (empty(parameters('MbgPrimaryNicIPAddress')), json('null'), parameters('MbgPrimaryNicIPAddress'))]",
-              "privateIPAllocationMethod": "[if (empty(parameters('MbgPrimaryNicIPAddress')), 'Dynamic','Static')]",
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('appSubnetName'))]"
-              }
-            }
-          }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('appNetworkSecurityGroupName'))]",
-          "location": "[parameters('location')]"
-        }
-      }
-    },
-    {
-      "condition": "[and(parameters('DeployMBG'),not(parameters('AllocateAWVPublicIP')))]",
-      "apiVersion": "2020-11-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('mbgWanNicName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "privateIPAddress": "[if (empty(parameters('MbgSecondaryNicIPAddress')), json('null'), parameters('MbgSecondaryNicIPAddress'))]",
-              "privateIPAllocationMethod": "[if (empty(parameters('MbgSecondaryNicIPAddress')), 'Dynamic','Static')]",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
-              },
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('mbgSubnetName'))]"
-              }
-            }
-          }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('mbgNetworkSecurityGroupName'))]",
-          "location": "[parameters('location')]"
-        }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
-      ]
-    },
-    {
-      "condition": "[and(parameters('DeployMBG'),parameters('AllocateAWVPublicIP'))]",
-      "apiVersion": "2020-11-01",
-      "type": "Microsoft.Network/networkInterfaces",
-      "name": "[variables('mbgWanNicNameAWV')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "ipconfig1",
-            "properties": {
-              "primary": "true",
-              "privateIPAddress": "[if (empty(parameters('MbgSecondaryNicIPAddress')), json('null'), parameters('MbgSecondaryNicIPAddress'))]",
-              "privateIPAllocationMethod": "[if (empty(parameters('MbgSecondaryNicIPAddress')), 'Dynamic','Static')]",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]"
-              },
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('mbgSubnetName'))]"
-              }
-            }
-          },
-          {
-            "name": "ipconfig2",
-            "properties": {
-              "privateIPAddress": "[if (empty(parameters('MbgAwvIPAddress')), json('null'), parameters('MbgAwvIPAddress'))]",
-              "privateIPAllocationMethod": "[if (empty(parameters('MbgAwvIPAddress')), 'Dynamic','Static')]",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('awvPublicIPAddressName'))]"
-              },
-              "subnet": {
-                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('mbgSubnetName'))]"
-              }
-            }
-          }
-        ],
-        "networkSecurityGroup": {
-          "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('mbgNetworkSecurityGroupName'))]",
-          "location": "[parameters('location')]"
-        }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('publicIPAddressName'))]",
-        "[resourceId('Microsoft.Network/publicIPAddresses', variables('awvPublicIPAddressName'))]"
-      ]
-    },
-    {
-      "condition": "[parameters('DeployMivb')]",
-      "apiVersion": "2020-06-01",
-      "type": "Microsoft.Compute/images",
-      "name": "[variables('mivbImageName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "hyperVGeneration": "V1",
-        "storageProfile": {
-          "osDisk": {
-            "osType": "Linux",
-            "osState": "Generalized",
-            "blobUri": "[parameters('MivbVhdUri')]",
-            "storageAccountType": "Standard_LRS",
-            "diskSizeGB": "[parameters('MivbSize').diskSizeGB]"
-          }
-        }
-      }
-    },
-    {
-      "condition": "[parameters('DeployMicollab')]",
-      "apiVersion": "2020-06-01",
-      "type": "Microsoft.Compute/images",
-      "name": "[variables('micollabImageName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "hyperVGeneration": "V1",
-        "storageProfile": {
-          "osDisk": {
-            "osType": "Linux",
-            "osState": "Generalized",
-            "blobUri": "[parameters('MicollabVhdUri')]",
-            "storageAccountType": "Standard_LRS",
-            "diskSizeGB": "[parameters('MicollabSize').diskSizeGB]"
-          }
-        }
-      }
-    },
-    {
-      "condition": "[parameters('DeployMBG')]",
-      "apiVersion": "2020-06-01",
-      "type": "Microsoft.Compute/images",
-      "name": "[variables('mbgImageName')]",
-      "location": "[parameters('location')]",
-      "properties": {
-        "hyperVGeneration": "V1",
-        "storageProfile": {
-          "osDisk": {
-            "osType": "Linux",
-            "osState": "Generalized",
-            "blobUri": "[parameters('MBGVhdUri')]",
-            "storageAccountType": "Standard_LRS",
-            "diskSizeGB": "[parameters('MBGSize').diskSizeGB]"
-          }
-        }
-      }
-    },
-    {
-      "condition": "[parameters('DeployMivb')]",
-      "apiVersion": "2021-11-01",
-      "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('MivbName')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces/', variables('mivbLanNicName'))]",
-        "[resourceId('Microsoft.Compute/images', variables('mivbImageName'))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('MivbSize').vmSize]"
-        },
-        "osProfile": {
-          "computerName": "[parameters('MivbName')]",
-          "adminUsername": "[parameters('VMAdminUsername')]",
-          "adminPassword": "[parameters('VMAdminPassword')]",
-          "customData": "[variables('customData')]"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "id": "[resourceId('Microsoft.Compute/images', variables('mivbImageName'))]"
-          }
-        },
-        "networkProfile": {
-          "networkInterfaces": [
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('mivbLanNicName'))]",
+              "condition": "[equals(parameters('useExistingVnet'), 'false')]",
+              "apiVersion": "2020-05-01",
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "name": "[variables('intNSGName')]",
+              "location": "[parameters('location')]",
               "properties": {
-                "primary": "true"
+                "securityRules": [
+                  {
+                    "name": "Bistech-AVD-RDP",
+                    "properties": {
+                      "description": "Bistech AVD NAT Gateway Public IP RDP",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "3389",
+                      "sourceAddressPrefix": "20.68.12.245/32",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 100,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Bistech-AVD-SSH",
+                    "properties": {
+                      "description": "Bistech AVD NAT Gateway Public IP SSH",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "22",
+                      "sourceAddressPrefix": "20.68.12.245/32",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 101,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "[concat(parameters('customerPrefix'), '-Overload-HTTPS')]",
+                    "properties": {
+                      "description": "Customer Overload Public IP HTTPS",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "[parameters('customerInternetIp')]",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 102,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "[concat(parameters('customerPrefix'), '-Overload-HTTP')]",
+                    "properties": {
+                      "description": "Customer Overload Public IP HTTP",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "80",
+                      "sourceAddressPrefix": "[parameters('customerInternetIp')]",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 103,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "[concat(parameters('customerPrefix'), '-Overload-MiCC')]",
+                    "properties": {
+                      "description": "Customer Overload Public IP MiCC",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "5024-5026,5030,7001,7003,8083-8084,42440",
+                      "sourceAddressPrefix": "[parameters('customerInternetIp')]",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 104,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "[concat(parameters('customerPrefix'), '-Overload-MiVCR')]",
+                    "properties": {
+                      "description": "Customer Overload Public IP MiVCR",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "8767-8768",
+                      "sourceAddressPrefix": "[parameters('customerInternetIp')]",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 105,
+                      "direction": "Inbound"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('useExistingVnet'), 'false')]",
+              "apiVersion": "2020-05-01",
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "name": "[variables('dmzNSGName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "HTTP",
+                    "properties": {
+                      "description": "Needed for Let’s Encrypt certificate challenges",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "80",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 100,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "HTTPS",
+                    "properties": {
+                      "description": "Web",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 101,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "SAC",
+                    "properties": {
+                      "description": "53xx Application Interface (Legacy)",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "3998",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 102,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "MIR-Replay-Media",
+                    "properties": {
+                      "description": "Search & replay clients (incl. Player, File Man for export, etc.) to the API server",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "4000",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 103,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "MIR-Replay-Server",
+                    "properties": {
+                      "description": "Replay server port for replay in the web",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "4040",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 104,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "AWV",
+                    "properties": {
+                      "description": "Use for Analog and Web Video Web Conferencing",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "4443",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 105,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "MIR-Client-Command",
+                    "properties": {
+                      "description": "CLIENTcommand to the API server (control channel)",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "4711",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 106,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "SIP-SIP-TLS",
+                    "properties": {
+                      "description": "This is for SIP and SIP TLS",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "5060-5061",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 107,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "WebRTC",
+                    "properties": {
+                      "description": "This is for Web RTC",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "5063",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 108,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Minet",
+                    "properties": {
+                      "description": "Minet ports that need to be opened for signalling",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "6801-6802",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 109,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "IP-Console",
+                    "properties": {
+                      "description": "The ports that need to be opened for the IP Console",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "6806-6807",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 110,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "MBG-Clustering",
+                    "properties": {
+                      "description": "This port is being used for MBG Clustering over the internet",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "6809",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 111,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "HTTPS-Phone-Avatar",
+                    "properties": {
+                      "description": "This port is being used for display Avatar on the phone",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "6881",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 112,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "MICC-Port-Range1",
+                    "properties": {
+                      "description": "These ports are being used by MICC",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "35001-35008",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 113,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "MICC-Port-Range2",
+                    "properties": {
+                      "description": "These ports are being used by MICC",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "36000-36004",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 114,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "MiCollab-Client",
+                    "properties": {
+                      "description": "Used by MiCollab Client softphone",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "36008",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 115,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "TFTP",
+                    "properties": {
+                      "description": "Used for TFTP",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "69",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 116,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "SIP",
+                    "properties": {
+                      "description": "Used for UDP SIP protocol",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "5060",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 117,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "TNA",
+                    "properties": {
+                      "description": "Used by the Telework Network Analyser tool",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "2000",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 118,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Phone-TFTP",
+                    "properties": {
+                      "description": "Used by phones to TFTP their software loads",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "2001",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 119,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Voice-SRTP",
+                    "properties": {
+                      "description": "Used for Voice SRTP",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "20002-29999",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 120,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Video-SRTP",
+                    "properties": {
+                      "description": "Used for Video SRTP",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "30000-30999",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 121,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "WebRTC-Media",
+                    "properties": {
+                      "description": "Used for WebRTC Media",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "32000-32499",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 122,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "GammaMedia",
+                    "properties": {
+                      "description": "Gamma Voice Traffic Range",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "6000-40000",
+                      "sourceAddressPrefix": "151.2.128.0/19",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 123,
+                      "direction": "Inbound"
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('useExistingVnet'), 'false')]",
+              "apiVersion": "2021-05-01",
+              "type": "Microsoft.Network/virtualNetworks",
+              "name": "[variables('vnetName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('vnetAddressSpace')]"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "[variables('newIntSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('intAddressSubnet')]",
+                      "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('intNSGName'))]"
+                      }
+                    }
+                  },
+                  {
+                    "name": "[variables('newDmzSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('dmzAddressSubnet')]",
+                      "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]"
+                      }
+                    }
+                  }
+                ]
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('vnetResourceGroup'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('useExistingPrivateDNSZone'), 'false')]",
+              "type": "Microsoft.Network/privateDnsZones",
+              "apiVersion": "2020-06-01",
+              "name": "[parameters('privateDnsZoneName')]",
+              "location": "global"
+            },
+            {
+              "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+              "apiVersion": "2020-06-01",
+              "name": "[concat(variables('vnetName'), '-link')]",
+              "location": "global",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+              ],
+              "properties": {
+                "registrationEnabled": "true",
+                "virtualNetwork": {
+                  "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+                }
               }
             }
           ]
         },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net')]"
-          }
-        }
+        "parameters": {}
       }
     },
     {
-      "condition": "[parameters('DeployMicollab')]",
-      "apiVersion": "2021-11-01",
-      "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('MicollabName')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces/', variables('micollabLanNicName'))]",
-        "[resourceId('Microsoft.Compute/images', variables('micollabImageName'))]"
-      ],
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "DMZResources",
+      "resourceGroup": "[variables('DMZResourceGroupName')]",
       "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('MicollabSize').vmSize]"
-        },
-        "osProfile": {
-          "computerName": "[parameters('MicollabName')]",
-          "adminUsername": "[parameters('VMAdminUsername')]",
-          "adminPassword": "[parameters('VMAdminPassword')]",
-          "customData": "[variables('customData')]"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "id": "[resourceId('Microsoft.Compute/images', variables('micollabImageName'))]"
-          }
-        },
-        "networkProfile": {
-          "networkInterfaces": [
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('micollabLanNicName'))]",
+              "condition": "[equals(parameters('deployTeleworkerMBG'), 'true')]",
+              "apiVersion": "2021-05-01",
+              "type": "Microsoft.Network/publicIPAddresses",
+              "name": "[variables('teleworkerMBGPublicIPAddressName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Basic"
+              },
               "properties": {
-                "primary": "true"
-              }
-            }
-          ]
-        },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net')]"
-          }
-        }
-      }
-    },
-    {
-      "condition": "[parameters('DeployMBG')]",
-      "apiVersion": "2021-11-01",
-      "type": "Microsoft.Compute/virtualMachines",
-      "name": "[parameters('MBGName')]",
-      "location": "[parameters('location')]",
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/networkInterfaces/', variables('mbgLanNicName'))]",
-        "[resourceId('Microsoft.Compute/images', variables('mbgImageName'))]",
-        "[resourceId('Microsoft.Network/networkInterfaces',variables('mbgWanNicName'))]"
-      ],
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('MBGSize').vmSize]"
-        },
-        "osProfile": {
-          "computerName": "[parameters('MBGName')]",
-          "adminUsername": "[parameters('VMAdminUsername')]",
-          "adminPassword": "[parameters('VMAdminPassword')]",
-          "customData": "[variables('customData')]"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "id": "[resourceId('Microsoft.Compute/images', variables('mbgImageName'))]"
-          }
-        },
-        "networkProfile": {
-          "networkInterfaces": [
+                "publicIPAllocationMethod": "Static",
+                "publicIPAddressVersion": "IPv4",
+                "idleTimeoutInMinutes": 4
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
+              ]
+            },
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('mbgLanNicName'))]",
+              "condition": "[equals(parameters('DeploySipMBG'), 'true')]",
+              "apiVersion": "2021-05-01",
+              "type": "Microsoft.Network/publicIPAddresses",
+              "name": "[variables('sipMBGPublicIPAddressName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Basic"
+              },
               "properties": {
-                "primary": "true"
+                "publicIPAllocationMethod": "Static",
+                "publicIPAddressVersion": "IPv4",
+                "idleTimeoutInMinutes": 4
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('deployTeleworkerMBG'), 'true')]",
+              "apiVersion": "2020-11-01",
+              "type": "Microsoft.Network/networkInterfaces",
+              "name": "[variables('teleworkerMBGLanNicName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('dmzSubnetName'))]"
+                      }
+                    }
+                  }
+                ],
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
+                  "location": "[parameters('location')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('deploysipMBG'), 'true')]",
+              "apiVersion": "2020-11-01",
+              "type": "Microsoft.Network/networkInterfaces",
+              "name": "[variables('sipMBGLanNicName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('dmzSubnetName'))]"
+                      }
+                    }
+                  }
+                ],
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
+                  "location": "[parameters('location')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('deployTeleworkerMBG'), 'true')]",
+              "apiVersion": "2020-11-01",
+              "type": "Microsoft.Network/networkInterfaces",
+              "name": "[variables('teleworkerMBGWanNicName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('teleworkerMBGPublicIPAddressName'))]"
+                      },
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('dmzSubnetName'))]"
+                      }
+                    }
+                  }
+                ],
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
+                  "location": "[parameters('location')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('teleworkerMBGPublicIPAddressName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('deploysipMBG'), 'true')]",
+              "apiVersion": "2020-11-01",
+              "type": "Microsoft.Network/networkInterfaces",
+              "name": "[variables('sipMBGWanNicName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "publicIPAddress": {
+                        "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('sipMBGPublicIPAddressName'))]"
+                      },
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('dmzSubnetName'))]"
+                      }
+                    }
+                  }
+                ],
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
+                  "location": "[parameters('location')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('sipMBGPublicIPAddressName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('deployTeleworkerMBG'), 'true')]",
+              "apiVersion": "2020-06-01",
+              "type": "Microsoft.Compute/images",
+              "name": "[variables('teleworkerMBGImageName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "hyperVGeneration": "V1",
+                "storageProfile": {
+                  "osDisk": {
+                    "osType": "Linux",
+                    "osState": "Generalized",
+                    "blobUri": "[variables('teleworkerMBGUri')]",
+                    "storageAccountType": "Standard_LRS",
+                    "diskSizeGB": "[parameters('teleworkerMBGSize').diskSizeGB]"
+                  }
+                }
               }
             },
             {
-              "id": "[if (parameters('AllocateAWVPublicIP'), resourceId('Microsoft.Network/networkInterfaces',variables('mbgWanNicNameAWV')), resourceId('Microsoft.Network/networkInterfaces',variables('mbgWanNicName')))]",
+              "condition": "[equals(parameters('deploysipMBG'), 'true')]",
+              "apiVersion": "2020-06-01",
+              "type": "Microsoft.Compute/images",
+              "name": "[variables('sipMBGImageName')]",
+              "location": "[parameters('location')]",
               "properties": {
-                "primary": "false"
+                "hyperVGeneration": "V1",
+                "storageProfile": {
+                  "osDisk": {
+                    "osType": "Linux",
+                    "osState": "Generalized",
+                    "blobUri": "[variables('sipMBGUri')]",
+                    "storageAccountType": "Standard_LRS",
+                    "diskSizeGB": "[parameters('sipMBGSize').diskSizeGB]"
+                  }
+                }
+              }
+            },
+            {
+              "condition": "[equals(parameters('deployTeleworkerMBG'), 'true')]",
+              "apiVersion": "2021-11-01",
+              "type": "Microsoft.Compute/virtualMachines",
+              "name": "[variables('teleworkerMBGName')]",
+              "location": "[parameters('location')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('teleworkerMBGLanNicName'))]",
+                "[resourceId('Microsoft.Compute/images', variables('teleworkerMBGImageName'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces',variables('teleworkerMBGWanNicName'))]"
+              ],
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "[parameters('teleworkerMBGSize').vmSize]"
+                },
+
+                "osProfile": {
+                  "computerName": "[variables('teleworkerMBGName')]",
+                  "adminUsername": "[variables('username')]",
+                  "adminPassword": "[parameters('MSLPassword')]",
+                  "customData": "[variables('customData')]"
+                },
+                "storageProfile": {
+                  "imageReference": {
+                    "id": "[resourceId('Microsoft.Compute/images', variables('teleworkerMBGImageName'))]"
+                  },
+                  "osDisk": {
+                    "createOption": "FromImage",
+                    "name": "[variables('teleworkerMBGOsDiskName')]"
+                  }
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('teleworkerMBGLanNicName'))]",
+                      "properties": {
+                        "primary": true
+                      }
+                    }
+                  ]
+                },
+                "diagnosticsProfile": {
+                  "bootDiagnostics": {
+                    "enabled": true,
+                    "storageUri": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net')]"
+                  }
+                }
+              }
+            },
+            {
+              "condition": "[equals(parameters('deploySipMBG'), 'true')]",
+              "apiVersion": "2021-11-01",
+              "type": "Microsoft.Compute/virtualMachines",
+              "name": "[variables('sipMBGName')]",
+              "location": "[parameters('location')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('sipMBGLanNicName'))]",
+                "[resourceId('Microsoft.Compute/images', variables('sipMBGImageName'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces',variables('sipMBGWanNicName'))]"
+              ],
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "[parameters('sipMBGSize').vmSize]"
+                },
+                "osProfile": {
+                  "computerName": "[variables('sipMBGName')]",
+                  "adminUsername": "[variables('username')]",
+                  "adminPassword": "[parameters('MSLPassword')]",
+                  "customData": "[variables('customData')]"
+                },
+                "storageProfile": {
+                  "imageReference": {
+                    "id": "[resourceId('Microsoft.Compute/images', variables('sipMBGImageName'))]"
+                  },
+                  "osDisk": {
+                    "createOption": "FromImage",
+                    "name": "[variables('sipMBGOsDiskName')]"
+                  }
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('sipMBGLanNicName'))]",
+                      "properties": {
+                        "primary": true
+                      }
+                    }
+                  ]
+                },
+                "diagnosticsProfile": {
+                  "bootDiagnostics": {
+                    "enabled": true,
+                    "storageUri": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net')]"
+                  }
+                }
               }
             }
           ]
         },
-        "diagnosticsProfile": {
-          "bootDiagnostics": {
-            "enabled": true,
-            "storageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net')]"
-          }
-        }
+        "parameters": {}
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "AppResources",
+      "resourceGroup": "[variables('applicationResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "condition": "[equals(parameters('deployMivb'), 'true')]",
+              "apiVersion": "2020-11-01",
+              "type": "Microsoft.Network/networkInterfaces",
+              "name": "[variables('mivbLanNicName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('intSubnetName'))]"
+                      }
+                    }
+                  }
+                ],
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('intNSGName'))]",
+                  "location": "[parameters('location')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('deployMicollab'), 'true')]",
+              "apiVersion": "2020-11-01",
+              "type": "Microsoft.Network/networkInterfaces",
+              "name": "[variables('micollabLanNicName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "ipConfigurations": [
+                  {
+                    "name": "ipconfig1",
+                    "properties": {
+                      "privateIPAllocationMethod": "Dynamic",
+                      "subnet": {
+                        "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', variables('vnetName'),  variables('intSubnetName'))]"
+                      }
+                    }
+                  }
+                ],
+                "networkSecurityGroup": {
+                  "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('intNSGName'))]",
+                  "location": "[parameters('location')]"
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('deployMivb'), 'true')]",
+              "apiVersion": "2020-06-01",
+              "type": "Microsoft.Compute/images",
+              "name": "[variables('mivbImageName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "hyperVGeneration": "V1",
+                "storageProfile": {
+                  "osDisk": {
+                    "osType": "Linux",
+                    "osState": "Generalized",
+                    "blobUri": "[variables('mivbUri')]",
+                    "storageAccountType": "Standard_LRS",
+                    "diskSizeGB": "[parameters('mivbSize').diskSizeGB]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
+              ]
+            },
+            {
+              "condition": "[equals(parameters('deployMicollab'), 'true')]",
+              "apiVersion": "2020-06-01",
+              "type": "Microsoft.Compute/images",
+              "name": "[variables('micollabImageName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "hyperVGeneration": "V1",
+                "storageProfile": {
+                  "osDisk": {
+                    "osType": "Linux",
+                    "osState": "Generalized",
+                    "blobUri": "[variables('micollabUri')]",
+                    "storageAccountType": "Standard_LRS",
+                    "diskSizeGB": "[parameters('micollabSize').diskSizeGB]"
+                  }
+                }
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
+              ]
+            },
+
+            {
+              "condition": "[equals(parameters('deployMivb'), 'true')]",
+              "apiVersion": "2021-11-01",
+              "type": "Microsoft.Compute/virtualMachines",
+              "name": "[variables('mivbName')]",
+              "location": "[parameters('location')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('mivbLanNicName'))]",
+                "[resourceId('Microsoft.Compute/images', variables('mivbImageName'))]"
+              ],
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "[parameters('MivbSize').vmSize]"
+                },
+                "osProfile": {
+                  "computerName": "[variables('mivbName')]",
+                  "adminUsername": "[variables('username')]",
+                  "adminPassword": "[parameters('MSLPassword')]",
+                  "customData": "[variables('customData')]"
+                },
+                "storageProfile": {
+                  "imageReference": {
+                    "id": "[resourceId('Microsoft.Compute/images', variables('mivbImageName'))]"
+                  },
+                  "osDisk": {
+                    "createOption": "FromImage",
+                    "name": "[variables('mivbOsDiskName')]"
+                  }
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('mivbLanNicName'))]",
+                      "properties": {
+                        "primary": true
+                      }
+                    }
+                  ]
+                },
+                "diagnosticsProfile": {
+                  "bootDiagnostics": {
+                    "enabled": true,
+                    "storageUri": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net')]"
+                  }
+                }
+              }
+            },
+            {
+              "condition": "[equals(parameters('deployMicollab'), 'true')]",
+              "apiVersion": "2021-11-01",
+              "type": "Microsoft.Compute/virtualMachines",
+              "name": "[variables('micollabName')]",
+              "location": "[parameters('location')]",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkInterfaces/', variables('micollabLanNicName'))]",
+                "[resourceId('Microsoft.Compute/images', variables('micollabImageName'))]"
+              ],
+              "properties": {
+                "hardwareProfile": {
+                  "vmSize": "[parameters('micollabSize').vmSize]"
+                },
+                "osProfile": {
+                  "computerName": "[variables('micollabName')]",
+                  "adminUsername": "[variables('username')]",
+                  "adminPassword": "[parameters('MSLPassword')]",
+                  "customData": "[variables('customData')]"
+                },
+                "storageProfile": {
+                  "imageReference": {
+                    "id": "[resourceId('Microsoft.Compute/images', variables('micollabImageName'))]"
+                  },
+                  "osDisk": {
+                    "createOption": "FromImage",
+                    "name": "[variables('micollabOsDiskName')]"
+                  }
+                },
+                "networkProfile": {
+                  "networkInterfaces": [
+                    {
+                      "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('micollabLanNicName'))]",
+                      "properties": {
+                        "primary": true
+                      }
+                    }
+                  ]
+                },
+                "diagnosticsProfile": {
+                  "bootDiagnostics": {
+                    "enabled": true,
+                    "storageUri": "[concat('https://', variables('storageAccountName'), '.blob.core.windows.net')]"
+                  }
+                }
+              }
+            }
+          ]
+        },
+        "parameters": {}
       }
     }
   ],
