@@ -1,0 +1,779 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "customerPrefix": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "metadata": {
+        "description": "The 3 character Azure prefix for the customer for all resources"
+      }
+    },
+    "customerInternetIp": {
+      "type": "string",
+      "metadata": {
+        "description": "The customers overload IP address to whitelist for access"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The location for all existing and new resources"
+      },
+      "defaultValue": "uksouth",
+      "allowedValues": [
+        "australiacentral",
+        "australiacentral2",
+        "australiaeast",
+        "australiasoutheast",
+        "brazilsouth",
+        "brazilsoutheast",
+        "canadacentral",
+        "canadaeast",
+        "centralindia",
+        "centralus",
+        "centraluseuap",
+        "eastasia",
+        "eastus",
+        "eastus2",
+        "eastus2euap",
+        "francecentral",
+        "francesouth",
+        "germanynorth",
+        "germanywestcentral",
+        "japaneast",
+        "japanwest",
+        "koreacentral",
+        "koreasouth",
+        "northcentralus",
+        "northeurope",
+        "norwayeast",
+        "norwaywest",
+        "southafricanorth",
+        "southafricawest",
+        "southcentralus",
+        "southeastasia",
+        "southindia",
+        "swedencentral",
+        "switzerlandnorth",
+        "switzerlandwest",
+        "uaecentral",
+        "uaenorth",
+        "uksouth",
+        "ukwest",
+        "westcentralus",
+        "westeurope",
+        "westindia",
+        "westus",
+        "westus2",
+        "westus3"
+      ]
+    },
+    "useExistingVnet": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use existing Virtual Network"
+      }
+    },
+    "existingVirtualNetworkName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'useExistingVnet' is true specify the name of the virtual network"
+      }
+    },
+    "vnetAddressSpace": {
+      "type": "string",
+      "defaultValue": "10.200.0.0/16",
+      "metadata": {
+        "description": "If 'useExistingVnet' is false specify the address space to use for the virtual network"
+      }
+    },
+    "intAddressSubnet": {
+      "type": "string",
+      "defaultValue": "10.200.0.0/24",
+      "metadata": {
+        "description": "If 'useExistingVnet' is false specify the address space to use for the application/internal server subnet"
+      }
+    },
+    "dmzAddressSubnet": {
+      "type": "string",
+      "defaultValue": "10.200.200.0/24",
+      "metadata": {
+        "description": "If 'useExistingVnet' is false specify the address space to use for the DMZ server subnet"
+      }
+    },
+    "existingIntSubnetName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'useExistingVnet' is true specify the name of the existing internal subnet"
+      }
+    },
+    "existingDMZSubnetName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'useExistingVnet' is true specify the name of the existing DMZ subnet"
+      }
+    },
+    "useExistingNSG": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use existing Network Security Groups"
+      }
+    },
+    "existingIntNSGName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'existingNSG' is true specify the name of the existing internal network security group"
+      }
+    },
+    "existingDmzNSGName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'existingNSG' is true specify the name of the existing DMZ network security group"
+      }
+    },
+    "useExistingPrivateDNSZone": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use an existing Private DNS Zone"
+      }
+    },
+    "privateDNSZoneName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Private DNS Zone that either already exists or is to be created"
+      }
+    },
+    "useExistingStorageAccount": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use an existing storage account"
+      }
+    },
+    "existingStorageAccountName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'useExistingStorageAccount' is true specify the name of the storage account"
+      }
+    }
+  },
+  "variables": {
+    "prefix": "[concat(parameters('customerPrefix'), '-')]",
+    "prefixCaps": "[toUpper(parameters('customerPrefix'))]",
+    "locationShorten": {
+      "australiacentral": "acl",
+      "australiacentral2": "acl2",
+      "australiaeast": "ae",
+      "australiasoutheast": "ase",
+      "brazilsouth": "brs",
+      "brazilsoutheast": "bse",
+      "canadacentral": "cnc",
+      "canadaeast": "cne",
+      "centralindia": "inc",
+      "centralus": "cus",
+      "centraluseuap": "ccy",
+      "eastasia": "ea",
+      "eastus": "eus",
+      "eastus2": "eus2",
+      "eastus2euap": "ecy",
+      "francecentral": "frc",
+      "francesouth": "frs",
+      "germanynorth": "gn",
+      "germanywestcentral": "gwc",
+      "japaneast": "jpe",
+      "japanwest": "jpw",
+      "koreacentral": "krc",
+      "koreasouth": "krs",
+      "northcentralus": "ncus",
+      "northeurope": "ne",
+      "norwayeast": "nwe",
+      "norwaywest": "nww",
+      "southafricanorth": "san",
+      "southafricawest": "saw",
+      "southcentralus": "scus",
+      "southeastasia": "sea",
+      "southindia": "ins",
+      "swedencentral": "sdc",
+      "switzerlandnorth": "szn",
+      "switzerlandwest": "szw",
+      "uaecentral": "uac",
+      "uaenorth": "uan",
+      "uksouth": "uks",
+      "ukwest": "ukw",
+      "westcentralus": "wcus",
+      "westeurope": "we",
+      "westindia": "inw",
+      "westus": "wus",
+      "westus2": "wus2",
+      "westus3": "wus3"
+    },
+    "locationShortName": "[variables('locationShorten')[parameters('location')]]",
+    "newVnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-vnet')]",
+    "vnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingVirtualNetworkName'), variables('newVnetName'))]",
+    "newIntSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-snet')]",
+    "intSubnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingIntSubnetName'), variables('newIntSubnetName'))]",
+    "newDmzSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-snet')]",
+    "dmzSubnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingDMZSubnetName'), variables('newDmzSubnetName'))]",
+    "newIntNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-nsg')]",
+    "intNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingIntNSGName'), variables('newIntNSGName'))]",
+    "newDmzNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-nsg')]",
+    "dmzNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingDmzNSGName'), variables('newDmzNSGName'))]",
+    "newStorageAccountName": "[concat(parameters('customerPrefix'), 'mitelsa')]",
+    "storageAccountName": "[if(equals(parameters('useExistingStorageAccount'), 'true'), parameters('existingStorageAccountName'), variables('newStorageAccountName'))]"
+  },
+  "functions": [],
+  "resources": [
+    {
+      "condition": "[equals(parameters('useExistingStorageAccount'), 'false')]",
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-04-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "supportsHttpsTrafficOnly": true
+      }
+    },
+    {
+      "condition": "[equals(parameters('useExistingNSG'), 'false')]",
+      "apiVersion": "2020-05-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('intNSGName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "Bistech-AVD-RDP",
+            "properties": {
+              "description": "Bistech AVD NAT Gateway Public IP RDP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3389",
+              "sourceAddressPrefix": "20.68.12.245/32",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Bistech-AVD-SSH",
+            "properties": {
+              "description": "Bistech AVD NAT Gateway Public IP SSH",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "22",
+              "sourceAddressPrefix": "20.68.12.245/32",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "[concat(variables('prefixCaps'), '-Overload-HTTPS')]",
+            "properties": {
+              "description": "Customer Overload Public IP HTTPS",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "[parameters('customerInternetIp')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 102,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "[concat(variables('prefixCaps'), '-Overload-HTTP')]",
+            "properties": {
+              "description": "Customer Overload Public IP HTTP",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "[parameters('customerInternetIp')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 103,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "[concat(variables('prefixCaps'), '-Overload-MiCC')]",
+            "properties": {
+              "description": "Customer Overload Public IP MiCC",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRanges": [
+                "5024-5026",
+                "5030",
+                "7001",
+                "7003",
+                "8083-8084",
+                "42440"
+              ],
+              "sourceAddressPrefix": "[parameters('customerInternetIp')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 104,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "[concat(variables('prefixCaps'), '-Overload-MiVCR')]",
+            "properties": {
+              "description": "Customer Overload Public IP MiVCR",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8767-8768",
+              "sourceAddressPrefix": "[parameters('customerInternetIp')]",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 105,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[equals(parameters('useExistingNSG'), 'false')]",
+      "apiVersion": "2020-05-01",
+      "type": "Microsoft.Network/networkSecurityGroups",
+      "name": "[variables('dmzNSGName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "securityRules": [
+          {
+            "name": "HTTP",
+            "properties": {
+              "description": "Needed for Let’s Encrypt certificate challenges",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "80",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 100,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "HTTPS",
+            "properties": {
+              "description": "Web",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "443",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "SAC",
+            "properties": {
+              "description": "53xx Application Interface (Legacy)",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3998",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 102,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "MIR-Replay-Media",
+            "properties": {
+              "description": "Search & replay clients (incl. Player, File Man for export, etc.) to the API server",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "4000",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 103,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "MIR-Replay-Server",
+            "properties": {
+              "description": "Replay server port for replay in the web",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "4040",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 104,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "AWV",
+            "properties": {
+              "description": "Use for Analog and Web Video Web Conferencing",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "4443",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 105,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "MIR-Client-Command",
+            "properties": {
+              "description": "CLIENTcommand to the API server (control channel)",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "4711",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 106,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "SIP-SIP-TLS",
+            "properties": {
+              "description": "This is for SIP and SIP TLS",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5060-5061",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 107,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "WebRTC",
+            "properties": {
+              "description": "This is for Web RTC",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5063",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 108,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Minet",
+            "properties": {
+              "description": "Minet ports that need to be opened for signalling",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "6801-6802",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 109,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "IP-Console",
+            "properties": {
+              "description": "The ports that need to be opened for the IP Console",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "6806-6807",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "MBG-Clustering",
+            "properties": {
+              "description": "This port is being used for MBG Clustering over the internet",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "6809",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 111,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "HTTPS-Phone-Avatar",
+            "properties": {
+              "description": "This port is being used for display Avatar on the phone",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "6881",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 112,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "MICC-Port-Range1",
+            "properties": {
+              "description": "These ports are being used by MICC",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "35001-35008",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 113,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "MICC-Port-Range2",
+            "properties": {
+              "description": "These ports are being used by MICC",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "36000-36004",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 114,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "MiCollab-Client",
+            "properties": {
+              "description": "Used by MiCollab Client softphone",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "36008",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 115,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "TFTP",
+            "properties": {
+              "description": "Used for TFTP",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "69",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 116,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "SIP",
+            "properties": {
+              "description": "Used for UDP SIP protocol",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "5060",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 117,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "TNA",
+            "properties": {
+              "description": "Used by the Telework Network Analyser tool",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "2000",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 118,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Phone-TFTP",
+            "properties": {
+              "description": "Used by phones to TFTP their software loads",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "2001",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 119,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Voice-SRTP",
+            "properties": {
+              "description": "Used for Voice SRTP",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "20002-29999",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 120,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "Video-SRTP",
+            "properties": {
+              "description": "Used for Video SRTP",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "30000-30999",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 121,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "WebRTC-Media",
+            "properties": {
+              "description": "Used for WebRTC Media",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "32000-32499",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 122,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "GammaMedia",
+            "properties": {
+              "description": "Gamma Voice Traffic Range",
+              "protocol": "Udp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "6000-40000",
+              "sourceAddressPrefix": "151.2.128.0/19",
+              "destinationAddressPrefix": "*",
+              "access": "Allow",
+              "priority": 123,
+              "direction": "Inbound"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[equals(parameters('useExistingVnet'), 'false')]",
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/virtualNetworks",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
+        "[resourceId('Microsoft.Network/networkSecurityGroups', variables('intNSGName'))]"
+      ],
+      "name": "[variables('vnetName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "addressSpace": {
+          "addressPrefixes": [
+            "[parameters('vnetAddressSpace')]"
+          ]
+        },
+        "subnets": [
+          {
+            "name": "[variables('intSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('intAddressSubnet')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('intNSGName'))]"
+              }
+            }
+          },
+          {
+            "name": "[variables('dmzSubnetName')]",
+            "properties": {
+              "addressPrefix": "[parameters('dmzAddressSubnet')]",
+              "networkSecurityGroup": {
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[equals(parameters('useExistingPrivateDNSZone'), 'false')]",
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones",
+      "name": "[parameters('privateDnsZoneName')]",
+      "location": "global",
+      "properties": {}
+    },
+    {
+      "apiVersion": "2018-09-01",
+      "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDNSZoneName'))]"
+      ],
+      "name": "[format('{0}/{1}', parameters('privateDnsZoneName'), format('{0}-link', variables('vnetName')))]",
+      "location": "global",
+      "properties": {
+        "registrationEnabled": true,
+        "virtualNetwork": {
+          "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
+        }
+      }
+    }
+  ],
+  "outputs": {}
+}

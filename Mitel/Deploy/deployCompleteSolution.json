@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "customerPrefix": {
@@ -71,22 +71,22 @@
       ]
     },
     "useExistingVnet": {
-      "type": "bool",
-      "defaultValue": false,
+      "type": "string",
+      "defaultValue": "false",
       "allowedValues": [
-        true,
-        false
+        "true",
+        "false"
       ],
       "metadata": {
         "description": "Set to 'true' to use existing Virtual Network"
       }
     },
     "useExistingVnetResourceGroup": {
-      "type": "bool",
-      "defaultValue": false,
+      "type": "string",
+      "defaultValue": "false",
       "allowedValues": [
-        true,
-        false
+        "true",
+        "false"
       ],
       "metadata": {
         "description": "Set to 'true' to use existing Virtual Network resource group"
@@ -142,11 +142,11 @@
       }
     },
     "useExistingNSG": {
-      "type": "bool",
-      "defaultValue": false,
+      "type": "string",
+      "defaultValue": "false",
       "allowedValues": [
-        true,
-        false
+        "true",
+        "false"
       ],
       "metadata": {
         "description": "Set to 'true' to use existing Network Security Groups"
@@ -167,11 +167,11 @@
       }
     },
     "useExistingPrivateDNSZone": {
-      "type": "bool",
-      "defaultValue": false,
+      "type": "string",
+      "defaultValue": "false",
       "allowedValues": [
-        true,
-        false
+        "true",
+        "false"
       ],
       "metadata": {
         "description": "Set to 'true' to use an existing Private DNS Zone"
@@ -184,11 +184,11 @@
       }
     },
     "useExistingStorageAccount": {
-      "type": "bool",
-      "defaultValue": false,
+      "type": "string",
+      "defaultValue": "false",
       "allowedValues": [
-        true,
-        false
+        "true",
+        "false"
       ],
       "metadata": {
         "description": "Set to 'true' to use an existing storage account"
@@ -196,6 +196,7 @@
     },
     "existingStorageAccountName": {
       "type": "string",
+      "defaultValue": "",
       "metadata": {
         "description": "If 'useExistingStorageAccount' is true specify the name of the storage account"
       }
@@ -792,8 +793,12 @@
       }
     },
     "deployMivb": {
-      "type": "bool",
-      "defaultValue": true,
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
       "metadata": {
         "description": "Set to 'true' to deploy a MiVoice Business server"
       }
@@ -803,7 +808,8 @@
       "defaultValue": "9.4 SP1",
       "allowedValues": [
         "9.4 SP1",
-        "9.4"
+        "9.4",
+        "9.3.0.19"
       ],
       "metadata": {
         "description": "Specify the version of MiVoice Business to deploy"
@@ -843,8 +849,12 @@
       }
     },
     "deployMicollab": {
-      "type": "bool",
-      "defaultValue": true,
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
       "metadata": {
         "description": "Set to 'true' to deploy a MiCollab server"
       }
@@ -854,7 +864,8 @@
       "defaultValue": "9.6.0.105",
       "allowedValues": [
         "9.6.0.105",
-        "9.6.0.13"
+        "9.6.0.13",
+        "9.5.0.101"
       ],
       "metadata": {
         "description": "Specify the version of MiCollab to deploy"
@@ -894,18 +905,22 @@
       }
     },
     "deployTeleworkerMBG": {
-      "type": "bool",
-      "defaultValue": true,
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
       "metadata": {
         "description": "Set to 'true' to deploy an MBG server in the DMZ to be used for Teleworker"
       }
     },
     "teleworkerMBGVersion": {
       "type": "string",
-      "defaultValue": "11.4.0.247",
+      "defaultValue": "11.4.0.227",
       "allowedValues": [
-        "11.4.0.247",
-        "11.4.0.227"
+        "11.4.0.227",
+        "11.3.0.68"
       ],
       "metadata": {
         "description": "Specify the version of MBG to deploy"
@@ -950,17 +965,22 @@
       }
     },
     "DeploySipMBG": {
-      "type": "bool",
-      "defaultValue": true,
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
       "metadata": {
         "description": "Set to 'true' to deploy an MBG server in the DMZ to be used for SIP Trunks/SRC"
       }
     },
     "sipMBGVersion": {
       "type": "string",
+      "defaultValue": "11.4.0.227",
       "allowedValues": [
-        "true",
-        "false"
+        "11.4.0.227",
+        "11.3.0.68"
       ],
       "metadata": {
         "description": "Specify the version of MBG to deploy"
@@ -1007,6 +1027,7 @@
   },
   "variables": {
     "prefix": "[concat(parameters('customerPrefix'), '-')]",
+    "prefixCaps": "[toUpper(parameters('customerPrefix'))]",
     "locationShorten": {
       "australiacentral": "acl",
       "australiacentral2": "acl2",
@@ -1055,26 +1076,24 @@
       "westus3": "wus3"
     },
     "locationShortName": "[variables('locationShorten')[parameters('location')]]",
+    "mslUriPrefix": "https://mitelpublic.blob.core.windows.net/deploy/msl/msl-",
+    "micollabUriPrefix": "https://mitelpublic.blob.core.windows.net/deploy/micollab/micollab-",
     "mivbUris": {
-      "9.4 SP1": "",
-      "9.4": ""
+      "9.4 SP1": "11.0-102.0",
+      "9.4": "11.0-93.0",
+      "9.3.0.19": "11.0-90.0"
     },
-    "mivbUri": "[variables('mivbUris')[parameters('MivbVersion')]]",
-    "teleworkerMBGUris": {
-      "9.4 SP1": "",
-      "9.4": ""
+    "mivbUriVersion": "[variables('mivbUris')[parameters('MivbVersion')]]",
+    "mivbUri": "[concat(variables('mslUriPrefix'), variables('mivbUriVersion'), '-01.vhd')]",
+    "MBGUris": {
+      "11.4.0.227": "11.0-97.0",
+      "11.3.0.68": "11.0-90.0"
     },
-    "teleworkerMBGUri": "[variables('teleworkerMBGUris')[parameters('teleworkerMBGVersion')]]",
-    "sipMBGUris": {
-      "9.4 SP1": "",
-      "9.4": ""
-    },
-    "sipMBGUri": "[variables('sipMBGUris')[parameters('sipMBGVersion')]]",
-    "micollabUris": {
-      "9.4 SP1": "",
-      "9.4": ""
-    },
-    "micollabUri": "[variables('micollabUris')[parameters('micollabVersion')]]",
+    "teleworkerMBGUriVersion": "[variables('MBGUris')[parameters('teleworkerMBGVersion')]]",
+    "teleworkerMBGUri": "[concat(variables('mslUriPrefix'), variables('teleworkerMBGUriVersion'), '-01.vhd')]",
+    "sipMBGUriVersion": "[variables('MBGUris')[parameters('sipMBGVersion')]]",
+    "sipMBGUri": "[concat(variables('mslUriPrefix'), variables('sipMBGUriVersion'), '-01.vhd')]",
+    "micollabUri": "[concat(variables('micollabUriPrefix'), parameters('micollabVersion'), '-01.vhd')]",
     "applicationResourceGroupName": "[concat(variables('prefix'), 'mit-app-', variables('locationShortName'), '-rg')]",
     "DMZResourceGroupName": "[concat(variables('prefix'), 'mit-dmz-', variables('locationShortName'), '-rg')]",
     "username": "AzureAdmin",
@@ -1110,7 +1129,7 @@
     "intNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingIntNSGName'), variables('newIntNSGName'))]",
     "newDmzNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-nsg')]",
     "dmzNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingDmzNSGName'), variables('newDmzNSGName'))]",
-    "newStorageAccountName": "[concat(variables('prefix'), 'mitelsa')]",
+    "newStorageAccountName": "[concat(parameters('customerPrefix'), 'mitelsa')]",
     "storageAccountName": "[if(equals(parameters('useExistingStorageAccount'), 'true'), parameters('existingStorageAccountName'), variables('newStorageAccountName'))]",
     "customData": "[base64(concat('{\"domain-name\": \"', parameters('privateDnsZoneName'), '\", \"system-password\": \"', parameters('MSLPassword'), '\", \"remote-networks\": [',  parameters('MSLRemoteNetworks'), ']}'))]"
   },
@@ -1142,24 +1161,13 @@
 
     },
     {
-      "condition": "[equals(parameters('useExistingStorageAccount'), 'false')]",
-      "type": "Microsoft.Storage/storageAccounts",
-      "apiVersion": "2021-04-01",
-      "name": "[variables('storageAccountName')]",
-      "location": "[parameters('location')]",
-      "sku": {
-        "name": "Standard_LRS"
-      },
-      "kind": "StorageV2",
-      "properties": {
-        "supportsHttpsTrafficOnly": true
-      }
-    },
-    {
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2021-04-01",
-      "name": "NetworkResources",
-      "resourceGroup": "[variables('vnetResourceGroup')]",
+      "name": "StorageResources",
+      "resourceGroup": "[variables('applicationResourceGroupName')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
+      ],
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -1169,7 +1177,42 @@
           "variables": {},
           "resources": [
             {
-              "condition": "[equals(parameters('useExistingVnet'), 'false')]",
+              "condition": "[equals(parameters('useExistingStorageAccount'), 'false')]",
+              "type": "Microsoft.Storage/storageAccounts",
+              "apiVersion": "2021-04-01",
+              "name": "[variables('storageAccountName')]",
+              "location": "[parameters('location')]",
+              "sku": {
+                "name": "Standard_LRS"
+              },
+              "kind": "StorageV2",
+              "properties": {
+                "supportsHttpsTrafficOnly": true
+              }
+            }
+          ]
+        },
+        "parameters": {}
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "NetworkResources",
+      "resourceGroup": "[variables('vnetResourceGroup')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups', variables('vnetResourceGroup'))]"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "condition": "[equals(parameters('useExistingNSG'), 'false')]",
               "apiVersion": "2020-05-01",
               "type": "Microsoft.Network/networkSecurityGroups",
               "name": "[variables('intNSGName')]",
@@ -1205,7 +1248,7 @@
                     }
                   },
                   {
-                    "name": "[concat(parameters('customerPrefix'), '-Overload-HTTPS')]",
+                    "name": "[concat(variables('prefixCaps'), '-Overload-HTTPS')]",
                     "properties": {
                       "description": "Customer Overload Public IP HTTPS",
                       "protocol": "Tcp",
@@ -1219,7 +1262,7 @@
                     }
                   },
                   {
-                    "name": "[concat(parameters('customerPrefix'), '-Overload-HTTP')]",
+                    "name": "[concat(variables('prefixCaps'), '-Overload-HTTP')]",
                     "properties": {
                       "description": "Customer Overload Public IP HTTP",
                       "protocol": "Tcp",
@@ -1233,12 +1276,19 @@
                     }
                   },
                   {
-                    "name": "[concat(parameters('customerPrefix'), '-Overload-MiCC')]",
+                    "name": "[concat(variables('prefixCaps'), '-Overload-MiCC')]",
                     "properties": {
                       "description": "Customer Overload Public IP MiCC",
                       "protocol": "Tcp",
                       "sourcePortRange": "*",
-                      "destinationPortRange": "5024-5026,5030,7001,7003,8083-8084,42440",
+                      "destinationPortRanges": [
+                        "5024-5026",
+                        "5030",
+                        "7001",
+                        "7003",
+                        "8083-8084",
+                        "42440"
+                      ],
                       "sourceAddressPrefix": "[parameters('customerInternetIp')]",
                       "destinationAddressPrefix": "*",
                       "access": "Allow",
@@ -1247,7 +1297,7 @@
                     }
                   },
                   {
-                    "name": "[concat(parameters('customerPrefix'), '-Overload-MiVCR')]",
+                    "name": "[concat(variables('prefixCaps'), '-Overload-MiVCR')]",
                     "properties": {
                       "description": "Customer Overload Public IP MiVCR",
                       "protocol": "Tcp",
@@ -1261,13 +1311,10 @@
                     }
                   }
                 ]
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
-              ]
+              }
             },
             {
-              "condition": "[equals(parameters('useExistingVnet'), 'false')]",
+              "condition": "[equals(parameters('useExistingNSG'), 'false')]",
               "apiVersion": "2020-05-01",
               "type": "Microsoft.Network/networkSecurityGroups",
               "name": "[variables('dmzNSGName')]",
@@ -1611,15 +1658,16 @@
                     }
                   }
                 ]
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('useExistingVnet'), 'false')]",
-              "apiVersion": "2021-05-01",
+              "apiVersion": "2020-11-01",
               "type": "Microsoft.Network/virtualNetworks",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('intNSGName'))]"
+              ],
               "name": "[variables('vnetName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -1630,7 +1678,7 @@
                 },
                 "subnets": [
                   {
-                    "name": "[variables('newIntSubnetName')]",
+                    "name": "[variables('intSubnetName')]",
                     "properties": {
                       "addressPrefix": "[parameters('intAddressSubnet')]",
                       "networkSecurityGroup": {
@@ -1639,7 +1687,7 @@
                     }
                   },
                   {
-                    "name": "[variables('newDmzSubnetName')]",
+                    "name": "[variables('dmzSubnetName')]",
                     "properties": {
                       "addressPrefix": "[parameters('dmzAddressSubnet')]",
                       "networkSecurityGroup": {
@@ -1648,29 +1696,26 @@
                     }
                   }
                 ]
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('vnetResourceGroup'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('useExistingPrivateDNSZone'), 'false')]",
               "type": "Microsoft.Network/privateDnsZones",
-              "apiVersion": "2020-06-01",
+              "apiVersion": "2018-09-01",
               "name": "[parameters('privateDnsZoneName')]",
-              "location": "global"
+              "location": "global",
+              "properties": {}
             },
             {
+              "apiVersion": "2018-09-01",
               "type": "Microsoft.Network/privateDnsZones/virtualNetworkLinks",
-              "apiVersion": "2020-06-01",
-              "name": "[concat(variables('vnetName'), '-link')]",
-              "location": "global",
               "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]",
-                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDnsZoneName'))]"
+                "[resourceId('Microsoft.Network/privateDnsZones', parameters('privateDNSZoneName'))]"
               ],
+              "name": "[format('{0}/{1}', parameters('privateDnsZoneName'), format('{0}-link', variables('vnetName')))]",
+              "location": "global",
               "properties": {
-                "registrationEnabled": "true",
+                "registrationEnabled": true,
                 "virtualNetwork": {
                   "id": "[resourceId('Microsoft.Network/virtualNetworks', variables('vnetName'))]"
                 }
@@ -1686,6 +1731,9 @@
       "apiVersion": "2021-04-01",
       "name": "DMZResources",
       "resourceGroup": "[variables('DMZResourceGroupName')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
+      ],
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -1696,7 +1744,7 @@
           "resources": [
             {
               "condition": "[equals(parameters('deployTeleworkerMBG'), 'true')]",
-              "apiVersion": "2021-05-01",
+              "apiVersion": "2020-11-01",
               "type": "Microsoft.Network/publicIPAddresses",
               "name": "[variables('teleworkerMBGPublicIPAddressName')]",
               "location": "[parameters('location')]",
@@ -1707,14 +1755,11 @@
                 "publicIPAllocationMethod": "Static",
                 "publicIPAddressVersion": "IPv4",
                 "idleTimeoutInMinutes": 4
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('DeploySipMBG'), 'true')]",
-              "apiVersion": "2021-05-01",
+              "apiVersion": "2020-11-01",
               "type": "Microsoft.Network/publicIPAddresses",
               "name": "[variables('sipMBGPublicIPAddressName')]",
               "location": "[parameters('location')]",
@@ -1725,10 +1770,7 @@
                 "publicIPAllocationMethod": "Static",
                 "publicIPAddressVersion": "IPv4",
                 "idleTimeoutInMinutes": 4
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('deployTeleworkerMBG'), 'true')]",
@@ -1752,10 +1794,7 @@
                   "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
                   "location": "[parameters('location')]"
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('deploysipMBG'), 'true')]",
@@ -1779,15 +1818,15 @@
                   "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
                   "location": "[parameters('location')]"
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('DMZResourceGroupName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('deployTeleworkerMBG'), 'true')]",
               "apiVersion": "2020-11-01",
               "type": "Microsoft.Network/networkInterfaces",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('teleworkerMBGPublicIPAddressName'))]"
+              ],
               "name": "[variables('teleworkerMBGWanNicName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -1809,15 +1848,15 @@
                   "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
                   "location": "[parameters('location')]"
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', variables('teleworkerMBGPublicIPAddressName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('deploysipMBG'), 'true')]",
               "apiVersion": "2020-11-01",
               "type": "Microsoft.Network/networkInterfaces",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', variables('sipMBGPublicIPAddressName'))]"
+              ],
               "name": "[variables('sipMBGWanNicName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -1839,10 +1878,7 @@
                   "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('dmzNSGName'))]",
                   "location": "[parameters('location')]"
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/publicIPAddresses', variables('sipMBGPublicIPAddressName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('deployTeleworkerMBG'), 'true')]",
@@ -1888,11 +1924,6 @@
               "type": "Microsoft.Compute/virtualMachines",
               "name": "[variables('teleworkerMBGName')]",
               "location": "[parameters('location')]",
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces/', variables('teleworkerMBGLanNicName'))]",
-                "[resourceId('Microsoft.Compute/images', variables('teleworkerMBGImageName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces',variables('teleworkerMBGWanNicName'))]"
-              ],
               "properties": {
                 "hardwareProfile": {
                   "vmSize": "[parameters('teleworkerMBGSize').vmSize]"
@@ -1937,11 +1968,6 @@
               "type": "Microsoft.Compute/virtualMachines",
               "name": "[variables('sipMBGName')]",
               "location": "[parameters('location')]",
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces/', variables('sipMBGLanNicName'))]",
-                "[resourceId('Microsoft.Compute/images', variables('sipMBGImageName'))]",
-                "[resourceId('Microsoft.Network/networkInterfaces',variables('sipMBGWanNicName'))]"
-              ],
               "properties": {
                 "hardwareProfile": {
                   "vmSize": "[parameters('sipMBGSize').vmSize]"
@@ -1989,6 +2015,9 @@
       "apiVersion": "2021-04-01",
       "name": "AppResources",
       "resourceGroup": "[variables('applicationResourceGroupName')]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
+      ],
       "properties": {
         "mode": "Incremental",
         "template": {
@@ -2019,10 +2048,7 @@
                   "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('intNSGName'))]",
                   "location": "[parameters('location')]"
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('deployMicollab'), 'true')]",
@@ -2046,10 +2072,7 @@
                   "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('intNSGName'))]",
                   "location": "[parameters('location')]"
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('deployMivb'), 'true')]",
@@ -2068,10 +2091,7 @@
                     "diskSizeGB": "[parameters('mivbSize').diskSizeGB]"
                   }
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
-              ]
+              }
             },
             {
               "condition": "[equals(parameters('deployMicollab'), 'true')]",
@@ -2090,10 +2110,7 @@
                     "diskSizeGB": "[parameters('micollabSize').diskSizeGB]"
                   }
                 }
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Resources/resourceGroups', variables('applicationResourceGroupName'))]"
-              ]
+              }
             },
 
             {
@@ -2102,10 +2119,6 @@
               "type": "Microsoft.Compute/virtualMachines",
               "name": "[variables('mivbName')]",
               "location": "[parameters('location')]",
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces/', variables('mivbLanNicName'))]",
-                "[resourceId('Microsoft.Compute/images', variables('mivbImageName'))]"
-              ],
               "properties": {
                 "hardwareProfile": {
                   "vmSize": "[parameters('MivbSize').vmSize]"
@@ -2149,10 +2162,6 @@
               "type": "Microsoft.Compute/virtualMachines",
               "name": "[variables('micollabName')]",
               "location": "[parameters('location')]",
-              "dependsOn": [
-                "[resourceId('Microsoft.Network/networkInterfaces/', variables('micollabLanNicName'))]",
-                "[resourceId('Microsoft.Compute/images', variables('micollabImageName'))]"
-              ],
               "properties": {
                 "hardwareProfile": {
                   "vmSize": "[parameters('micollabSize').vmSize]"

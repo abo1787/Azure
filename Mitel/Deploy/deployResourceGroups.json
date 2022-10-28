@@ -1,0 +1,166 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "customerPrefix": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "metadata": {
+        "description": "The 3 character Azure prefix for the customer for all resources"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The location for all existing and new resources"
+      },
+      "defaultValue": "uksouth",
+      "allowedValues": [
+        "australiacentral",
+        "australiacentral2",
+        "australiaeast",
+        "australiasoutheast",
+        "brazilsouth",
+        "brazilsoutheast",
+        "canadacentral",
+        "canadaeast",
+        "centralindia",
+        "centralus",
+        "centraluseuap",
+        "eastasia",
+        "eastus",
+        "eastus2",
+        "eastus2euap",
+        "francecentral",
+        "francesouth",
+        "germanynorth",
+        "germanywestcentral",
+        "japaneast",
+        "japanwest",
+        "koreacentral",
+        "koreasouth",
+        "northcentralus",
+        "northeurope",
+        "norwayeast",
+        "norwaywest",
+        "southafricanorth",
+        "southafricawest",
+        "southcentralus",
+        "southeastasia",
+        "southindia",
+        "swedencentral",
+        "switzerlandnorth",
+        "switzerlandwest",
+        "uaecentral",
+        "uaenorth",
+        "uksouth",
+        "ukwest",
+        "westcentralus",
+        "westeurope",
+        "westindia",
+        "westus",
+        "westus2",
+        "westus3"
+      ]
+    },
+    "useExistingVnetResourceGroup": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use existing Virtual Network resource group"
+      }
+    },
+    "existingVirtualNetworkResourceGroup": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'useExistingVnetResourceGroup' is true specify the name of the resource group to deploy the virtual network into"
+      }
+    }
+  },
+  "variables": {
+    "prefix": "[concat(parameters('customerPrefix'), '-')]",
+    "locationShorten": {
+      "australiacentral": "acl",
+      "australiacentral2": "acl2",
+      "australiaeast": "ae",
+      "australiasoutheast": "ase",
+      "brazilsouth": "brs",
+      "brazilsoutheast": "bse",
+      "canadacentral": "cnc",
+      "canadaeast": "cne",
+      "centralindia": "inc",
+      "centralus": "cus",
+      "centraluseuap": "ccy",
+      "eastasia": "ea",
+      "eastus": "eus",
+      "eastus2": "eus2",
+      "eastus2euap": "ecy",
+      "francecentral": "frc",
+      "francesouth": "frs",
+      "germanynorth": "gn",
+      "germanywestcentral": "gwc",
+      "japaneast": "jpe",
+      "japanwest": "jpw",
+      "koreacentral": "krc",
+      "koreasouth": "krs",
+      "northcentralus": "ncus",
+      "northeurope": "ne",
+      "norwayeast": "nwe",
+      "norwaywest": "nww",
+      "southafricanorth": "san",
+      "southafricawest": "saw",
+      "southcentralus": "scus",
+      "southeastasia": "sea",
+      "southindia": "ins",
+      "swedencentral": "sdc",
+      "switzerlandnorth": "szn",
+      "switzerlandwest": "szw",
+      "uaecentral": "uac",
+      "uaenorth": "uan",
+      "uksouth": "uks",
+      "ukwest": "ukw",
+      "westcentralus": "wcus",
+      "westeurope": "we",
+      "westindia": "inw",
+      "westus": "wus",
+      "westus2": "wus2",
+      "westus3": "wus3"
+    },
+    "locationShortName": "[variables('locationShorten')[parameters('location')]]",
+    "applicationResourceGroupName": "[concat(variables('prefix'), 'mit-app-', variables('locationShortName'), '-rg')]",
+    "DMZResourceGroupName": "[concat(variables('prefix'), 'mit-dmz-', variables('locationShortName'), '-rg')]",
+    "newVnetResourceGroup": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-rg')]",
+    "vnetResourceGroup": "[if(equals(parameters('useExistingVnetResourceGroup'), 'true'), parameters('existingVirtualNetworkResourceGroup'), variables('newVnetResourceGroup'))]"
+  },
+  "resources": [
+    {
+      "condition": "[equals(parameters('useExistingVnetResourceGroup'), 'false')]",
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "location": "[parameters('location')]",
+      "name": "[variables('vnetResourceGroup')]",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "location": "[parameters('location')]",
+      "name": "[variables('applicationResourceGroupName')]",
+      "properties": {}
+    },
+    {
+      "type": "Microsoft.Resources/resourceGroups",
+      "apiVersion": "2021-04-01",
+      "location": "[parameters('location')]",
+      "name": "[variables('DMZResourceGroupName')]",
+      "properties": {}
+    }
+  ],
+  "outputs": {}
+}
