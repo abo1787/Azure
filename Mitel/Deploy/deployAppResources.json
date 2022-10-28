@@ -621,6 +621,14 @@
         "description": "The MSL initial password. Password must be between 6-72 characters long and must contain: \r\n1) An uppercase character\r\n2) A lowercase character\r\n3) A numeric digit\r\n4) A special character\r\n5) Control characters are not allowed"
       }
     },
+    "windowsPassword": {
+      "type": "securestring",
+      "minLength": 12,
+      "maxLength": 123,
+      "metadata": {
+        "description": "The password for Windows servers. Password must between 12-123 characters long and must contain: \r\n1) An uppercase character\r\n2) A lowercase character\r\n3) A numeric digit\r\n4) A special character\r\n5) Control characters are not allowed"
+      }
+    },
     "MSLRemoteNetworks": {
       "type": "string",
       "defaultValue": "\"20.68.12.245/32\"",
@@ -741,6 +749,285 @@
       "metadata": {
         "description": "Choose the size of the MiCollab to deploy"
       }
+    },
+    "deployMicc": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy a MiContact Centre server"
+      }
+    },
+    "miccVersion": {
+      "type": "string",
+      "defaultValue": "Server 2022",
+      "allowedValues": [
+        "Server 2022",
+        "Server 2022 Small-Disk",
+        "Server 2019",
+        "Server 2019 Small-Disk"
+      ],
+      "metadata": {
+        "description": "The Windows Server version for the VM. This will pick the latest Gen2 image of this given Windows version."
+      }
+    },
+    "miccSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "MiCCSmall",
+        "vmSize": "Standard_D2s_v4",
+        "diskSizeGB": 256
+      },
+      "allowedValues": [
+        {
+          "name": "MiCCSmall",
+          "vmSize": "Standard_D2s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MiCCMedium",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 512
+        },
+        {
+          "name": "MiCCLarge",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 1024
+        },
+        {
+          "name": "MiCCXLarge",
+          "vmSize": "Standard_D16s_v4",
+          "diskSizeGB": 1024
+        }
+      ],
+      "metadata": {
+        "description": "Choose MiCC system size."
+      }
+    },
+    "deploySQL": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy a SQL server"
+      }
+    },
+    "sqlVersion": {
+      "type": "string",
+      "defaultValue": "Server 2022",
+      "allowedValues": [
+        "Server 2022",
+        "Server 2022 Small-Disk",
+        "Server 2019",
+        "Server 2019 Small-Disk"
+      ],
+      "metadata": {
+        "description": "The Windows Server version for the VM. This will pick the latest Gen2 image of this given Windows version."
+      }
+    },
+    "sqlSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "SQLSmall",
+        "vmSize": "Standard_D4s_v4",
+        "diskSizeGB": 128,
+        "secondDiskSizeGB": 256
+      },
+      "allowedValues": [
+        {
+          "name": "SQLSmall",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 128,
+          "secondDiskSizeGB": 256
+        },
+        {
+          "name": "SQLMedium",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 128,
+          "secondDiskSizeGB": 512
+        },
+        {
+          "name": "SQLLarge",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 128,
+          "secondDiskSizeGB": 512
+        }
+      ],
+      "metadata": {
+        "description": "Choose SQL system size."
+      }
+    },
+    "deployIVR": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy an IVR server"
+      }
+    },
+    "IVRVersion": {
+      "type": "string",
+      "defaultValue": "Server 2022",
+      "allowedValues": [
+        "Server 2022",
+        "Server 2022 Small-Disk",
+        "Server 2019",
+        "Server 2019 Small-Disk"
+      ],
+      "metadata": {
+        "description": "The Windows Server version for the VM. This will pick the latest Gen2 image of this given Windows version."
+      }
+    },
+    "deployMivcr": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy a MiVCR server"
+      }
+    },
+    "mivcrVersion": {
+      "type": "string",
+      "defaultValue": "Server 2022",
+      "allowedValues": [
+        "Server 2022",
+        "Server 2022 Small-Disk",
+        "Server 2019",
+        "Server 2019 Small-Disk"
+      ],
+      "metadata": {
+        "description": "The Windows Server version for the VM. This will pick the latest Gen2 image of this given Windows version."
+      }
+    },
+    "mivcrSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "MIRServerASmall",
+        "vmSize": "Standard_D4s_v4",
+        "diskSizeGB": 256
+      },
+      "allowedValues": [
+        {
+          "name": "MIRServerASmall",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerAMedium",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerALarge",
+          "vmSize": "Standard_D16s_v4",
+          "diskSizeGB": 512
+        },
+        {
+          "name": "MIRServerBAudioSmall",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerBAudioMedium",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerBAudioLarge",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerCSmall",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerCMedium",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerCLarge",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerDSmall",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerDMedium",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerDLarge",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerESmall",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerEMedium",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerELarge",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerHSmall",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerHMedium",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerHLarge",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRArchiveNAS",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "SATranscriptionCore",
+          "vmSize": "Standard_D2s_v4",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "SATranscriptionDecoder",
+          "vmSize": "Standard_E8s_v4",
+          "diskSizeGB": 128
+        }
+      ],
+      "metadata": {
+        "description": "Choose MiVCR system size."
+      }
     }
   },
   "variables": {
@@ -806,12 +1093,40 @@
     "username": "AzureAdmin",
     "mivbName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb01')]",
     "mivbImageName": "[concat(variables('mivbName'), '-image')]",
-    "mivbLanNicName": "[concat(variables('mivbName'), '-nic-lan')]",
+    "mivbLanNicName": "[concat(variables('mivbName'), '-nic')]",
     "mivbOsDiskName": "[concat(variables('mivbName'), '-disk-os')]",
     "micollabName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-micollab')]",
     "micollabImageName": "[concat(variables('micollabName'), '-image')]",
-    "micollabLanNicName": "[concat(variables('micollabName'), '-nic-lan')]",
+    "micollabLanNicName": "[concat(variables('micollabName'), '-nic')]",
     "micollabOsDiskName": "[concat(variables('micollabName'), '-disk-os')]",
+    "osVersions": {
+      "Server 2022": "2022-datacenter-g2",
+      "Server 2022 Small-Disk": "2022-datacenter-smalldisk-g2",
+      "Server 2019": "2019-datacenter-gensecond",
+      "Server 2019 Small-Disk": "2019-datacenter-smalldisk-g2"
+    },
+    "miccOsVersion": "[variables('osVersions')[parameters('miccVersion')]]",
+    "miccName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-micc')]",
+    "miccLanNicName": "[concat(variables('miccName'), '-nic')]",
+    "miccOsDiskName": "[concat(variables('miccName'), '-disk-os')]",
+    "sqlOsVersion": "[variables('osVersions')[parameters('sqlVersion')]]",
+    "sqlName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-sql')]",
+    "sqlLanNicName": "[concat(variables('sqlName'), '-nic')]",
+    "sqlOsDiskName": "[concat(variables('sqlName'), '-disk-os')]",
+    "sqlDataDiskName": "[concat(variables('sqlName'), '-disk-data')]",
+    "ivrOsVersion": "[variables('osVersions')[parameters('ivrVersion')]]",
+    "ivrName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-ivr-01')]",
+    "ivrLanNicName": "[concat(variables('ivrName'), '-nic')]",
+    "ivrOsDiskName": "[concat(variables('ivrName'), '-disk-os')]",
+    "ivrSize": {
+      "name": "MiCCIVR",
+      "vmSize": "Standard_F4s_v2",
+      "diskSizeGB": 128
+    },
+    "mivcrOsVersion": "[variables('osVersions')[parameters('mivcrVersion')]]",
+    "mivcrName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivcr')]",
+    "mivcrLanNicName": "[concat(variables('mivcrName'), '-nic')]",
+    "mivcrOsDiskName": "[concat(variables('mivcrName'), '-disk-os')]",
     "vnetName": "[parameters('virtualNetworkName')]",
     "customData": "[base64(concat('{\"domain-name\": \"', parameters('privateDnsZoneName'), '\", \"system-password\": \"', parameters('MSLPassword'), '\", \"time-zone\": \"', parameters('MSLTimezone'), '\", \"remote-networks\": [',  parameters('MSLRemoteNetworks'), ']}'))]"
   },
@@ -866,6 +1181,106 @@
       }
     },
     {
+      "condition": "[equals(parameters('deployMicc'), 'true')]",
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('miccLanNicName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[concat(subscription().id, '/resourceGroups/', parameters('vnetResourceGroup'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnetName'), '/subnets/', parameters('intSubnetName'))]"
+              }
+            }
+          }
+        ],
+        "enableAcceleratedNetworking": true,
+        "networkSecurityGroup": {
+          "id": "[concat(subscription().id, '/resourceGroups/', parameters('vnetResourceGroup'), '/providers/Microsoft.Network/networkSecurityGroups/', parameters('intNSGName'))]",
+          "location": "[resourceGroup().location]"
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('deploySQL'), 'true')]",
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('sqlLanNicName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[concat(subscription().id, '/resourceGroups/', parameters('vnetResourceGroup'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnetName'), '/subnets/', parameters('intSubnetName'))]"
+              }
+            }
+          }
+        ],
+        "enableAcceleratedNetworking": true,
+        "networkSecurityGroup": {
+          "id": "[concat(subscription().id, '/resourceGroups/', parameters('vnetResourceGroup'), '/providers/Microsoft.Network/networkSecurityGroups/', parameters('intNSGName'))]",
+          "location": "[resourceGroup().location]"
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('deployIVR'), 'true')]",
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('ivrLanNicName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[concat(subscription().id, '/resourceGroups/', parameters('vnetResourceGroup'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnetName'), '/subnets/', parameters('intSubnetName'))]"
+              }
+            }
+          }
+        ],
+        "enableAcceleratedNetworking": true,
+        "networkSecurityGroup": {
+          "id": "[concat(subscription().id, '/resourceGroups/', parameters('vnetResourceGroup'), '/providers/Microsoft.Network/networkSecurityGroups/', parameters('intNSGName'))]",
+          "location": "[resourceGroup().location]"
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('deployMivcr'), 'true')]",
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/networkInterfaces",
+      "name": "[variables('mivcrLanNicName')]",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[concat(subscription().id, '/resourceGroups/', parameters('vnetResourceGroup'), '/providers/Microsoft.Network/virtualNetworks/', variables('vnetName'), '/subnets/', parameters('intSubnetName'))]"
+              }
+            }
+          }
+        ],
+        "enableAcceleratedNetworking": true,
+        "networkSecurityGroup": {
+          "id": "[concat(subscription().id, '/resourceGroups/', parameters('vnetResourceGroup'), '/providers/Microsoft.Network/networkSecurityGroups/', parameters('intNSGName'))]",
+          "location": "[resourceGroup().location]"
+        }
+      }
+    },
+    {
       "condition": "[equals(parameters('deployMivb'), 'true')]",
       "apiVersion": "2020-06-01",
       "type": "Microsoft.Compute/images",
@@ -901,6 +1316,22 @@
             "diskSizeGB": "[parameters('micollabSize').diskSizeGB]"
           }
         }
+      }
+    },
+    {
+      "condition": "[equals(parameters('deploySQL'), 'true')]",
+      "apiVersion": "2022-03-02",
+      "type": "Microsoft.Compute/disks",
+      "name": "[variables('sqlDataDiskName')]",
+      "location": "[resourceGroup().location]",
+      "sku": {
+        "name": "StandardSSD_LRS"
+      },
+      "properties": {
+        "creationData": {
+          "createOption": "Empty"
+        },
+        "diskSizeGB": "[parameters('sqlSize').secondDiskSizeGB]"
       }
     },
     {
@@ -995,6 +1426,410 @@
           }
         }
       }
+    },
+    {
+      "condition": "[equals(parameters('deployMicc'), 'true')]",
+      "apiVersion": "2021-11-01",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('miccName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces/', variables('miccLanNicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('miccSize').vmSize]"
+        },
+        "osProfile": {
+          "computerName": "micc",
+          "adminUsername": "[variables('username')]",
+          "adminPassword": "[parameters('windowsPassword')]",
+          "windowsConfiguration": {
+            "enableAutomaticUpdates": true,
+            "provisionVmAgent": true,
+            "patchSettings": {
+              "enableHotpatching": false,
+              "patchMode": "AutomaticByOS"
+            }
+          }
+        },
+        "securityProfile": {
+          "securityType": "TrustedLaunch",
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          }
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[variables('miccOsVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "name": "[variables('miccOsDiskName')]",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            },
+            "deleteOption": "Detach",
+            "diskSizeGB": "[parameters('miccSize').diskSizeGB]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('miccLanNicName'))]",
+              "properties": {
+                "primary": true,
+                "deleteOption": "Detach"
+              }
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "[concat(variables('miccName'),'/GuestAttestation')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2018-10-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Security.WindowsAttestation",
+        "type": "GuestAttestation",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "AttestationConfig": {
+            "MaaSettings": {
+              "maaEndpoint": "",
+              "maaTenantName": "GuestAttestation"
+            },
+            "AscSettings": {
+              "ascReportingEndpoint": "",
+              "ascReportingFrequency": ""
+            },
+            "useCustomToken": "false",
+            "disableAlerts": "false"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('miccName'))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deploySQL'), 'true')]",
+      "apiVersion": "2021-11-01",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('sqlName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces/', variables('sqlLanNicName'))]",
+        "[resourceId('Microsoft.Compute/disks/', variables('sqlDataDiskName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('sqlSize').vmSize]"
+        },
+        "osProfile": {
+          "computerName": "sql",
+          "adminUsername": "[variables('username')]",
+          "adminPassword": "[parameters('windowsPassword')]",
+          "windowsConfiguration": {
+            "enableAutomaticUpdates": true,
+            "provisionVmAgent": true,
+            "patchSettings": {
+              "enableHotpatching": false,
+              "patchMode": "AutomaticByOS"
+            }
+          }
+        },
+        "securityProfile": {
+          "securityType": "TrustedLaunch",
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          }
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[variables('sqlOsVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "name": "[variables('sqlOsDiskName')]",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            },
+            "deleteOption": "Detach",
+            "diskSizeGB": "[parameters('sqlSize').diskSizeGB]"
+          },
+          "dataDisks": [
+            {
+              "lun": 0,
+              "name": "[variables('sqlDataDiskName')]",
+              "deleteOption": "Detach",
+              "createOption": "Attach",
+              "managedDisk": {
+                "id": "[resourceId('Microsoft.Compute/disks', concat(variables('sqlDataDiskName')))]"
+              }
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('sqlLanNicName'))]",
+              "properties": {
+                "primary": true,
+                "deleteOption": "Detach"
+              }
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "[concat(variables('sqlName'),'/GuestAttestation')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2018-10-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Security.WindowsAttestation",
+        "type": "GuestAttestation",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "AttestationConfig": {
+            "MaaSettings": {
+              "maaEndpoint": "",
+              "maaTenantName": "GuestAttestation"
+            },
+            "AscSettings": {
+              "ascReportingEndpoint": "",
+              "ascReportingFrequency": ""
+            },
+            "useCustomToken": "false",
+            "disableAlerts": "false"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('sqlName'))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployIVR'), 'true')]",
+      "apiVersion": "2021-11-01",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('ivrName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces/', variables('ivrLanNicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[variables('ivrSize').vmSize]"
+        },
+        "osProfile": {
+          "computerName": "ivr01",
+          "adminUsername": "[variables('username')]",
+          "adminPassword": "[parameters('windowsPassword')]",
+          "windowsConfiguration": {
+            "enableAutomaticUpdates": true,
+            "provisionVmAgent": true,
+            "patchSettings": {
+              "enableHotpatching": false,
+              "patchMode": "AutomaticByOS"
+            }
+          }
+        },
+        "securityProfile": {
+          "securityType": "TrustedLaunch",
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          }
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[variables('ivrOsVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "name": "[variables('ivrOsDiskName')]",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            },
+            "deleteOption": "Detach",
+            "diskSizeGB": "[variables('ivrSize').diskSizeGB]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('ivrLanNicName'))]",
+              "properties": {
+                "primary": true,
+                "deleteOption": "Detach"
+              }
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "[concat(variables('ivrName'),'/GuestAttestation')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2018-10-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Security.WindowsAttestation",
+        "type": "GuestAttestation",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "AttestationConfig": {
+            "MaaSettings": {
+              "maaEndpoint": "",
+              "maaTenantName": "GuestAttestation"
+            },
+            "AscSettings": {
+              "ascReportingEndpoint": "",
+              "ascReportingFrequency": ""
+            },
+            "useCustomToken": "false",
+            "disableAlerts": "false"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('ivrName'))]"
+      ]
+    },
+    {
+      "condition": "[equals(parameters('deployMivcr'), 'true')]",
+      "apiVersion": "2021-11-01",
+      "type": "Microsoft.Compute/virtualMachines",
+      "name": "[variables('mivcrName')]",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces/', variables('mivcrLanNicName'))]"
+      ],
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('mivcrSize').vmSize]"
+        },
+        "osProfile": {
+          "computerName": "mivcr",
+          "adminUsername": "[variables('username')]",
+          "adminPassword": "[parameters('windowsPassword')]",
+          "windowsConfiguration": {
+            "enableAutomaticUpdates": true,
+            "provisionVmAgent": true,
+            "patchSettings": {
+              "enableHotpatching": false,
+              "patchMode": "AutomaticByOS"
+            }
+          }
+        },
+        "securityProfile": {
+          "securityType": "TrustedLaunch",
+          "uefiSettings": {
+            "secureBootEnabled": true,
+            "vTpmEnabled": true
+          }
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "[variables('mivcrOsVersion')]",
+            "version": "latest"
+          },
+          "osDisk": {
+            "createOption": "FromImage",
+            "name": "[variables('mivcrOsDiskName')]",
+            "managedDisk": {
+              "storageAccountType": "StandardSSD_LRS"
+            },
+            "deleteOption": "Detach",
+            "diskSizeGB": "[parameters('mivcrSize').diskSizeGB]"
+          }
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces',variables('mivcrLanNicName'))]",
+              "properties": {
+                "primary": true,
+                "deleteOption": "Detach"
+              }
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "[concat('https://', parameters('storageAccountName'), '.blob.core.windows.net')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "[concat(variables('mivcrName'),'/GuestAttestation')]",
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2018-10-01",
+      "location": "[resourceGroup().location]",
+      "properties": {
+        "publisher": "Microsoft.Azure.Security.WindowsAttestation",
+        "type": "GuestAttestation",
+        "typeHandlerVersion": "1.0",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "AttestationConfig": {
+            "MaaSettings": {
+              "maaEndpoint": "",
+              "maaTenantName": "GuestAttestation"
+            },
+            "AscSettings": {
+              "ascReportingEndpoint": "",
+              "ascReportingFrequency": ""
+            },
+            "useCustomToken": "false",
+            "disableAlerts": "false"
+          }
+        }
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Compute/virtualMachines/', variables('mivcrName'))]"
+      ]
     }
   ],
   "outputs": {}

@@ -12,12 +12,18 @@ Creates all networking required to support Mitel resources
 
 #### Create DMZ Resources
 Creates selected resources required in a DMZ. Selections include:
+
   * MiVoice Border Gateway
 
 #### Create Application Resources
 Creates selected resources required for applications. Selections include:
+
   * MiVoice Business
   * MiCollab
+  * MiCC
+  * IVR
+  * MiVCR
+  * SQL
 
 ## Deploy to Azure buttons
 
