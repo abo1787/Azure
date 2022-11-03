@@ -1091,7 +1091,7 @@
     "mivbUri": "[concat(variables('mslUriPrefix'), variables('mivbUriVersion'), '-1.vhd')]",
     "micollabUri": "[concat(variables('micollabUriPrefix'), parameters('micollabVersion'), '-01.vhd')]",
     "username": "AzureAdmin",
-    "mivbName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb01')]",
+    "mivbName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb-01')]",
     "mivbImageName": "[concat(variables('mivbName'), '-image')]",
     "mivbLanNicName": "[concat(variables('mivbName'), '-nic')]",
     "mivbOsDiskName": "[concat(variables('mivbName'), '-disk-os')]",
