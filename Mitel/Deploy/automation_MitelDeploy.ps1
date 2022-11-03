@@ -44,188 +44,12 @@
 
 #region Parameters
 
-# Get parameters from...
 Param(
 
   [Parameter(mandatory)]
-  [string]$customerPrefix,
-  
-  [Parameter(mandatory)]
-  [string]$customerInternetIp,
-
-  [Parameter(mandatory)]
-  [string]$location,
-
-  [Parameter(mandatory)]
-  [string]$vnetResourceGroupName,
-
-  [Parameter(mandatory)]
-  [string]$applicationResourceGroupName,
-
-  [Parameter(mandatory)]
-  [string]$dmzResourceGroupName,
-
-  [Parameter(mandatory)]
-  [string]$vnetAddressSpace,
-
-  [Parameter(mandatory)]
-  [string]$intAddressSubnet,
-
-  [Parameter(mandatory)]
-  [string]$dmzAddressSubnet,
-
-  [Parameter(mandatory)]
-  [string]$vnetName,
-
-  [Parameter(mandatory)]
-  [string]$intSubnetName,
-
-  [Parameter(mandatory)]
-  [string]$dmzSubnetName,
-
-  [Parameter(mandatory)]
-  [string]$intNSGName,
-
-  [Parameter(mandatory)]
-  [string]$dmzNSGName,
-
-  [Parameter(mandatory)]
-  [string]$storageAccountName,
-
-  [Parameter(mandatory)]
-  [string]$deployUri,
-
-  [Parameter(mandatory)]
-  [securestring]$deployUriSAS,
-
-  [Parameter(mandatory)]
-  [string]$privateDNSZoneName,
-
-  [Parameter(mandatory)]
-  [string]$mslTimezone,
-
-  [Parameter(mandatory)]
-  [securestring]$mslPassword,
-
-  [Parameter(mandatory)]
-  [securestring]$windowsPassword,
-
-  [Parameter(mandatory)]
-  [string]$mslRemoteNetworks,
-
-  [Parameter(mandatory)]
-  [string]$deployMivb,
-
-  [string]$mivbVersion,
-  [string]$mivbVMSize,
-  [int]$mivbOSDiskSize,
-  [string]$mivbName,
-  [string]$mivbImageName,
-  [string]$mivbLanNicName,
-  [string]$mivbOsDiskName,
-
-  [Parameter(mandatory)]
-  [string]$deployMicollab,
-
-  [string]$micollabVersion,
-  [string]$micollabVMSize,
-  [int]$micollabOSDiskSize,
-  [string]$micollabName,
-  [string]$micollabImageName,
-  [string]$micollabLanNicName,
-  [string]$micollabOsDiskName,
-
-  [Parameter(mandatory)]
-  [string]$deployMicc,
-
-  [string]$miccVersion,
-  [string]$miccVMSize,
-  [int]$miccOSDiskSize,
-  [string]$miccName,
-  [string]$miccLanNicName,
-  [string]$miccOsDiskName,
-
-  [Parameter(mandatory)]
-  [string]$deploySQL,
-
-  [string]$sqlVersion,
-  [string]$sqlVMSize,
-  [int]$sqlOSDiskSize,
-  [int]$sqlDataDiskSize,
-  [string]$sqlName,
-  [string]$sqlLanNicName,
-  [string]$sqlOsDiskName,
-  [string]$sqlDataDiskName,
-
-  [Parameter(mandatory)]
-  [string]$deployIVR,
-
-  [string]$ivrVersion,
-  [string]$ivrVMSize,
-  [int]$ivrOSDiskSize,
-  [string]$ivrName,
-  [string]$ivrLanNicName,
-  [string]$ivrOsDiskName,
-
-  [Parameter(mandatory)]
-  [string]$deployMivcr,
-
-  [string]$mivcrVersion,
-  [string]$mivcrVMSize,
-  [int]$mivcrOSDiskSize,
-  [string]$mivcrName,
-  [string]$mivcrLanNicName,
-  [string]$mivcrOsDiskName,
-
-  [Parameter(mandatory)]
-  [string]$deployTeleworkerMBG,
-
-  [string]$teleworkerMBGVersion,
-  [string]$teleworkerMBGVMSize,
-  [int]$teleworkerMBGOSDiskSize,
-  [string]$teleworkerMBGName,
-  [string]$teleworkerMBGImageName,
-  [string]$teleworkerMBGLanNicName,
-  [string]$teleworkerMBGDMZNicName,
-  [string]$teleworkerMBGDMZPublicIPAddressName,
-  [string]$teleworkerMBGOsDiskName,
-
-  [Parameter(mandatory)]
-  [string]$deploySIPMBG,
-
-  [string]$sipMBGVersion,
-  [string]$sipMBGVMSize,
-  [int]$sipMBGOSDiskSize,
-  [string]$sipMBGName,
-  [string]$sipMBGImageName,
-  [string]$sipMBGLanNicName,
-  [string]$sipMBGDMZNicName,
-  [string]$sipMBGDMZPublicIPAddressName,
-  [string]$sipMBGOsDiskName,
-
-  [Parameter(mandatory)]
-  [string]$customData
+  [string]$vaultName
 
 )
-$prefixCaps = $customerPrefix.ToUpper()
-$privateDNSLinkName = $vnetName + '-link'
-switch ($mivbVersion) {
-  "9.4 SP1" { $mivbMSLVersion = "11.0-102.0" }
-  "9.4" { $mivbMSLVersion = "11.0-93.0" }
-  "9.3.0.19" { $mivbMSLVersion = "11.0-90.0" }
-}
-switch ($teleworkerMBGVersion) {
-  "11.4.0.227" { $teleworkerMBGMSLVersion = "11.0-97.0" }
-  "11.3.0.68" { $teleworkerMBGMSLVersion = "11.0-90.0" }
-}
-switch ($sipMBGVersion) {
-  "11.4.0.227" { $sipMBGMSLVersion = "11.0-97.0" }
-  "11.3.0.68" { $sipMBGMSLVersion = "11.0-90.0" }
-}
-[string]$username = "AzureAdmin"
-[pscredential]$mslCreds = New-Object System.Management.Automation.PSCredential ($username, $mslPassword)
-[pscredential]$windowsCreds = New-Object System.Management.Automation.PSCredential ($username, $windowsPassword)
-$jobTimeout = 420
 #endregion
 
 #region Pre-Reqs
@@ -247,6 +71,32 @@ if (!$azAuthentication) {
 else {
   Write-Output "Successfully authenticated to Azure using the Automation Account"
 }
+#endregion
+
+#region Retrieve Secrets
+$secrets = Get-AzKeyVaultSecret -VaultName $vaultName
+$secrets | ForEach-Object { New-Variable -Name $_.name -Value (Get-AzKeyVaultSecret -VaultName $_.VaultName -Name $_.Name -AsPlainText) }
+
+# Set values
+$prefixCaps = $customerPrefix.ToUpper()
+$privateDNSLinkName = $vnetName + '-link'
+switch ($mivbVersion) {
+  "9.4 SP1" { $mivbMSLVersion = "11.0-102.0" }
+  "9.4" { $mivbMSLVersion = "11.0-93.0" }
+  "9.3.0.19" { $mivbMSLVersion = "11.0-90.0" }
+}
+switch ($teleworkerMBGVersion) {
+  "11.4.0.227" { $teleworkerMBGMSLVersion = "11.0-97.0" }
+  "11.3.0.68" { $teleworkerMBGMSLVersion = "11.0-90.0" }
+}
+switch ($sipMBGVersion) {
+  "11.4.0.227" { $sipMBGMSLVersion = "11.0-97.0" }
+  "11.3.0.68" { $sipMBGMSLVersion = "11.0-90.0" }
+}
+[string]$username = "AzureAdmin"
+[pscredential]$mslCreds = New-Object System.Management.Automation.PSCredential ($username, $mslPassword)
+[pscredential]$windowsCreds = New-Object System.Management.Automation.PSCredential ($username, $windowsPassword)
+$jobTimeout = 420
 #endregion
 
 #region Resource Groups
@@ -1154,7 +1004,7 @@ if ($deployMivcr -eq $true) {
     -EnableSecureBoot
   $vmConfig = Set-AzVMOSDisk `
     -VM $vmConfig `
-    -Name $mivcrOSDiskSize `
+    -Name $mivcrOsDiskName `
     -StorageAccountType StandardSSD_LRS `
     -DiskSizeInGB $mivcrOSDiskSize `
     -CreateOption FromImage `

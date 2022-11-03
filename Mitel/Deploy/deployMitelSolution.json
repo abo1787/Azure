@@ -1494,6 +1494,28 @@
       "dependsOn": [
         "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
       ],
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), '/add')]",
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[reference(resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName')), '2021-06-22', 'full').identity.principalId]",
+            "permissions": {
+              "certificates": [],
+              "keys": [],
+              "secrets": [ "All" ],
+              "storage": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
       "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2022-07-01",
       "name": "[format('{0}/{1}', variables('keyVaultName'), 'customerPrefix')]",
