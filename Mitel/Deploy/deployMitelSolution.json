@@ -1,5 +1,5 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2018-05-01/subscriptionDeploymentTemplate.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "azureADTenantId": {
@@ -1436,1105 +1436,1072 @@
   "functions": [],
   "resources": [
     {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2021-04-01",
-      "name": "Resources",
-      "resourceGroup": "[variables('vnetResourceGroupName')]",
+      "type": "Microsoft.Automation/automationAccounts",
+      "apiVersion": "2021-06-22",
+      "name": "[variables('automationAccountName')]",
+      "location": "[parameters('location')]",
+      "identity": {
+        "type": "SystemAssigned"
+      },
       "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "parameters": {},
-          "variables": {},
-          "resources": [
-            {
-              "type": "Microsoft.Automation/automationAccounts",
-              "apiVersion": "2021-06-22",
-              "name": "[variables('automationAccountName')]",
-              "location": "[parameters('location')]",
-              "identity": {
-                "type": "SystemAssigned"
-              },
-              "properties": {
-                "sku": {
-                  "name": "Basic"
-                }
-              }
-            },
-            {
-              "type": "Microsoft.Automation/automationAccounts/runbooks",
-              "apiVersion": "2019-06-01",
-              "name": "[format('{0}/{1}', variables('automationAccountName'), 'automation_DeployMitel_Runbook')]",
-              "location": "[parameters('location')]",
-              "dependsOn": [
-                "[variables('automationAccountName')]"
-              ],
-              "properties": {
-                "runbookType": "PowerShell",
-                "logProgress": false,
-                "logVerbose": false,
-                "publishContentLink": {
-                  "uri": "https://raw.githubusercontent.com/Bistech/Azure/master/Mitel/Deploy/automation_DeployMitel_Runbook.ps1",
-                  "version": "1.0.0.0"
-                }
-              }
-            },
-            {
-              "type": "Microsoft.KeyVault/vaults",
-              "apiVersion": "2022-07-01",
-              "name": "[variables('keyVaultName')]",
-              "location": "[parameters('location')]",
-              "properties": {
-                "enabledForDeployment": false,
-                "enabledForDiskEncryption": false,
-                "enabledForTemplateDeployment": false,
-                "tenantId": "[parameters('azureADTenantId')]",
-                "accessPolicies": [],
-                "sku": {
-                  "name": "standard",
-                  "family": "A"
-                },
-                "networkAcls": {
-                  "defaultAction": "Allow",
-                  "bypass": "AzureServices"
-                }
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/accessPolicies",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), '/add')]",
-              "properties": {
-                "accessPolicies": [
-                  {
-                    "tenantId": "[subscription().tenantId]",
-                    "objectId": "[reference(resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName')), '2021-06-22', 'full').identity.principalId]",
-                    "permissions": {
-                      "certificates": [],
-                      "keys": [],
-                      "secrets": [ "All" ],
-                      "storage": []
-                    }
-                  }
-                ]
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'customerPrefix')]",
-              "properties": {
-                "value": "[parameters('customerPrefix')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'customerInternetIp')]",
-              "properties": {
-                "value": "[parameters('customerInternetIp')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'location')]",
-              "properties": {
-                "value": "[parameters('location')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetResourceGroupName')]",
-              "properties": {
-                "value": "[variables('vnetResourceGroupName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'applicationResourceGroupName')]",
-              "properties": {
-                "value": "[variables('applicationResourceGroupName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'DMZResourceGroupName')]",
-              "properties": {
-                "value": "[variables('DMZResourceGroupName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetAddressSpace')]",
-              "properties": {
-                "value": "[parameters('vnetAddressSpace')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'intAddressSubnet')]",
-              "properties": {
-                "value": "[parameters('intAddressSubnet')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzAddressSubnet')]",
-              "properties": {
-                "value": "[parameters('dmzAddressSubnet')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetName')]",
-              "properties": {
-                "value": "[variables('vnetName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'intSubnetName')]",
-              "properties": {
-                "value": "[variables('intSubnetName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzSubnetName')]",
-              "properties": {
-                "value": "[variables('dmzSubnetName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'intNSGName')]",
-              "properties": {
-                "value": "[variables('intNSGName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzNSGName')]",
-              "properties": {
-                "value": "[variables('dmzNSGName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'storageAccountName')]",
-              "properties": {
-                "value": "[variables('storageAccountName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployUri')]",
-              "properties": {
-                "value": "[parameters('deployUri')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployUriSAS')]",
-              "properties": {
-                "value": "[parameters('deployUriSAS')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'privateDNSZoneName')]",
-              "properties": {
-                "value": "[parameters('privateDNSZoneName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'MSLTimezone')]",
-              "properties": {
-                "value": "[parameters('MSLTimezone')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'MSLPassword')]",
-              "properties": {
-                "value": "[parameters('MSLPassword')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'windowsPassword')]",
-              "properties": {
-                "value": "[parameters('windowsPassword')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'MSLRemoteNetworks')]",
-              "properties": {
-                "value": "[parameters('MSLRemoteNetworks')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMivb')]",
-              "properties": {
-                "value": "[parameters('deployMivb')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbVersion')]",
-              "properties": {
-                "value": "[parameters('MivbVersion')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbVMSize')]",
-              "properties": {
-                "value": "[parameters('MivbSize').vmSize]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbOSDiskSize')]",
-              "properties": {
-                "value": "[parameters('MivbSize').diskSizeGB]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbName')]",
-              "properties": {
-                "value": "[variables('mivbName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbImageName')]",
-              "properties": {
-                "value": "[variables('mivbImageName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbLanNicName')]",
-              "properties": {
-                "value": "[variables('mivbLanNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbOsDiskName')]",
-              "properties": {
-                "value": "[variables('mivbOsDiskName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMicollab')]",
-              "properties": {
-                "value": "[parameters('deployMicollab')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabVersion')]",
-              "properties": {
-                "value": "[parameters('micollabVersion')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabVMSize')]",
-              "properties": {
-                "value": "[parameters('micollabSize').vmSize]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabOSDiskSize')]",
-              "properties": {
-                "value": "[parameters('micollabSize').diskSizeGB]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabName')]",
-              "properties": {
-                "value": "[variables('micollabName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabImageName')]",
-              "properties": {
-                "value": "[variables('micollabImageName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabLanNicName')]",
-              "properties": {
-                "value": "[variables('micollabLanNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabOsDiskName')]",
-              "properties": {
-                "value": "[variables('micollabOsDiskName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMicc')]",
-              "properties": {
-                "value": "[parameters('deployMicc')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccVersion')]",
-              "properties": {
-                "value": "[variables('miccOsVersion')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccVMSize')]",
-              "properties": {
-                "value": "[parameters('miccSize').vmSize]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccOSDiskSize')]",
-              "properties": {
-                "value": "[parameters('miccSize').diskSizeGB]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccName')]",
-              "properties": {
-                "value": "[variables('miccName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccLanNicName')]",
-              "properties": {
-                "value": "[variables('miccLanNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccOsDiskName')]",
-              "properties": {
-                "value": "[variables('miccOsDiskName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deploySQL')]",
-              "properties": {
-                "value": "[parameters('deploySQL')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlVersion')]",
-              "properties": {
-                "value": "[variables('sqlOsVersion')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlVMSize')]",
-              "properties": {
-                "value": "[parameters('sqlSize').vmSize]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlOSDiskSize')]",
-              "properties": {
-                "value": "[parameters('sqlSize').diskSizeGB]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlDataDiskSize')]",
-              "properties": {
-                "value": "[parameters('sqlSize').secondDiskSizeGB]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlName')]",
-              "properties": {
-                "value": "[variables('sqlName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlLanNicName')]",
-              "properties": {
-                "value": "[variables('sqlLanNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlOsDiskName')]",
-              "properties": {
-                "value": "[variables('sqlOsDiskName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlDataDiskName')]",
-              "properties": {
-                "value": "[variables('sqlDataDiskName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployIVR')]",
-              "properties": {
-                "value": "[parameters('deployIVR')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrVersion')]",
-              "properties": {
-                "value": "[variables('ivrOsVersion')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrVMSize')]",
-              "properties": {
-                "value": "[variables('ivrSize').vmSize]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrOSDiskSize')]",
-              "properties": {
-                "value": "[variables('ivrSize').diskSizeGB]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrName')]",
-              "properties": {
-                "value": "[variables('ivrName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrLanNicName')]",
-              "properties": {
-                "value": "[variables('ivrLanNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrOsDiskName')]",
-              "properties": {
-                "value": "[variables('ivrOsDiskName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMivcr')]",
-              "properties": {
-                "value": "[parameters('deployMivcr')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrVersion')]",
-              "properties": {
-                "value": "[variables('mivcrOsVersion')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrVMSize')]",
-              "properties": {
-                "value": "[parameters('mivcrSize').vmSize]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrOSDiskSize')]",
-              "properties": {
-                "value": "[parameters('mivcrSize').diskSizeGB]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrName')]",
-              "properties": {
-                "value": "[variables('mivcrName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrLanNicName')]",
-              "properties": {
-                "value": "[variables('mivcrLanNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrOsDiskName')]",
-              "properties": {
-                "value": "[variables('mivcrOsDiskName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployTeleworkerMBG')]",
-              "properties": {
-                "value": "[parameters('deployTeleworkerMBG')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGVersion')]",
-              "properties": {
-                "value": "[parameters('teleworkerMBGVersion')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGVMSize')]",
-              "properties": {
-                "value": "[parameters('teleworkerMBGSize').vmSize]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGOSDiskSize')]",
-              "properties": {
-                "value": "[parameters('teleworkerMBGSize').diskSizeGB]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGName')]",
-              "properties": {
-                "value": "[variables('teleworkerMBGName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGImageName')]",
-              "properties": {
-                "value": "[variables('teleworkerMBGImageName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGLanNicName')]",
-              "properties": {
-                "value": "[variables('teleworkerMBGLanNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGDMZNicName')]",
-              "properties": {
-                "value": "[variables('teleworkerMBGDMZNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGDMZPublicIPAddressName')]",
-              "properties": {
-                "value": "[variables('teleworkerMBGDMZPublicIPAddressName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGOsDiskName')]",
-              "properties": {
-                "value": "[variables('teleworkerMBGOsDiskName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'deploySipMBG')]",
-              "properties": {
-                "value": "[parameters('deploySipMBG')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGVersion')]",
-              "properties": {
-                "value": "[parameters('sipMBGVersion')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGVMSize')]",
-              "properties": {
-                "value": "[parameters('sipMBGSize').vmSize]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGOSDiskSize')]",
-              "properties": {
-                "value": "[parameters('sipMBGSize').diskSizeGB]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGName')]",
-              "properties": {
-                "value": "[variables('sipMBGName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGImageName')]",
-              "properties": {
-                "value": "[variables('sipMBGImageName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGLanNicName')]",
-              "properties": {
-                "value": "[variables('sipMBGLanNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGDMZNicName')]",
-              "properties": {
-                "value": "[variables('sipMBGDMZNicName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGDMZPublicIPAddressName')]",
-              "properties": {
-                "value": "[variables('sipMBGDMZPublicIPAddressName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGOsDiskName')]",
-              "properties": {
-                "value": "[variables('sipMBGOsDiskName')]"
-              }
-            },
-            {
-              "dependsOn": [
-                "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
-              ],
-              "type": "Microsoft.KeyVault/vaults/secrets",
-              "apiVersion": "2022-07-01",
-              "name": "[format('{0}/{1}', variables('keyVaultName'), 'customData')]",
-              "properties": {
-                "value": "[variables('customData')]"
-              }
-            }
-          ]
+        "sku": {
+          "name": "Basic"
         }
-      }
-
-
-
+      },
+      "resources": [
+        {
+          "type": "runbooks",
+          "apiVersion": "2019-06-01",
+          "name": "automation_DeployMitel_Runbook",
+          "location": "[parameters('location')]",
+          "dependsOn": [
+            "[variables('automationAccountName')]"
+          ],
+          "properties": {
+            "runbookType": "PowerShell",
+            "logProgress": false,
+            "logVerbose": false,
+            "publishContentLink": {
+              "uri": "https://raw.githubusercontent.com/Bistech/Azure/master/Mitel/Deploy/automation_DeployMitel_Runbook.ps1",
+              "version": "1.0.0.0"
+            }
+          }
+        }
+      ]
     },
     {
-      "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2021-04-01",
-      "name": "RoleAssignment",
+      "type": "Microsoft.Authorization/roleAssignments",
+      "apiVersion": "2022-04-01",
+      "name": "[guid(resourceGroup().id)]",
+      "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
+      "dependsOn": [
+        "[resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName'))]"
+      ],
       "properties": {
-        "mode": "Incremental",
-        "template": {
-          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
-          "contentVersion": "1.0.0.0",
-          "parameters": {},
-          "variables": {},
-          "resources": [
-            {
-              "type": "Microsoft.Authorization/roleAssignments",
-              "apiVersion": "2022-04-01",
-              "name": "[guid(resourceGroup().id)]",
-              "dependsOn": [
-                "[resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName'))]"
-              ],
-              "properties": {
-                "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
-                "principalId": "[reference(resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName')), '2021-06-22', 'full').identity.principalId]"
-              }
-            }
-          ]
+        "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
+        "principalId": "[reference(resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName')), '2021-06-22', 'full').identity.principalId]"
+      }
+    },
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2022-07-01",
+      "name": "[variables('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false,
+        "tenantId": "[parameters('azureADTenantId')]",
+        "accessPolicies": [],
+        "sku": {
+          "name": "standard",
+          "family": "A"
+        },
+        "networkAcls": {
+          "defaultAction": "Allow",
+          "bypass": "AzureServices"
         }
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), '/add')]",
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[subscription().tenantId]",
+            "objectId": "[reference(resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName')), '2021-06-22', 'full').identity.principalId]",
+            "permissions": {
+              "certificates": [],
+              "keys": [],
+              "secrets": [ "All" ],
+              "storage": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'customerPrefix')]",
+      "properties": {
+        "value": "[parameters('customerPrefix')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'customerInternetIp')]",
+      "properties": {
+        "value": "[parameters('customerInternetIp')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'location')]",
+      "properties": {
+        "value": "[parameters('location')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetResourceGroupName')]",
+      "properties": {
+        "value": "[variables('vnetResourceGroupName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'applicationResourceGroupName')]",
+      "properties": {
+        "value": "[variables('applicationResourceGroupName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'DMZResourceGroupName')]",
+      "properties": {
+        "value": "[variables('DMZResourceGroupName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetAddressSpace')]",
+      "properties": {
+        "value": "[parameters('vnetAddressSpace')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'intAddressSubnet')]",
+      "properties": {
+        "value": "[parameters('intAddressSubnet')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzAddressSubnet')]",
+      "properties": {
+        "value": "[parameters('dmzAddressSubnet')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetName')]",
+      "properties": {
+        "value": "[variables('vnetName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'intSubnetName')]",
+      "properties": {
+        "value": "[variables('intSubnetName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzSubnetName')]",
+      "properties": {
+        "value": "[variables('dmzSubnetName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'intNSGName')]",
+      "properties": {
+        "value": "[variables('intNSGName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzNSGName')]",
+      "properties": {
+        "value": "[variables('dmzNSGName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'storageAccountName')]",
+      "properties": {
+        "value": "[variables('storageAccountName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployUri')]",
+      "properties": {
+        "value": "[parameters('deployUri')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployUriSAS')]",
+      "properties": {
+        "value": "[parameters('deployUriSAS')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'privateDNSZoneName')]",
+      "properties": {
+        "value": "[parameters('privateDNSZoneName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'MSLTimezone')]",
+      "properties": {
+        "value": "[parameters('MSLTimezone')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'MSLPassword')]",
+      "properties": {
+        "value": "[parameters('MSLPassword')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'windowsPassword')]",
+      "properties": {
+        "value": "[parameters('windowsPassword')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'MSLRemoteNetworks')]",
+      "properties": {
+        "value": "[parameters('MSLRemoteNetworks')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMivb')]",
+      "properties": {
+        "value": "[parameters('deployMivb')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbVersion')]",
+      "properties": {
+        "value": "[parameters('MivbVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbVMSize')]",
+      "properties": {
+        "value": "[parameters('MivbSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('MivbSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbName')]",
+      "properties": {
+        "value": "[variables('mivbName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbImageName')]",
+      "properties": {
+        "value": "[variables('mivbImageName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbLanNicName')]",
+      "properties": {
+        "value": "[variables('mivbLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbOsDiskName')]",
+      "properties": {
+        "value": "[variables('mivbOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMicollab')]",
+      "properties": {
+        "value": "[parameters('deployMicollab')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabVersion')]",
+      "properties": {
+        "value": "[parameters('micollabVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabVMSize')]",
+      "properties": {
+        "value": "[parameters('micollabSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('micollabSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabName')]",
+      "properties": {
+        "value": "[variables('micollabName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabImageName')]",
+      "properties": {
+        "value": "[variables('micollabImageName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabLanNicName')]",
+      "properties": {
+        "value": "[variables('micollabLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabOsDiskName')]",
+      "properties": {
+        "value": "[variables('micollabOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMicc')]",
+      "properties": {
+        "value": "[parameters('deployMicc')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccVersion')]",
+      "properties": {
+        "value": "[variables('miccOsVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccVMSize')]",
+      "properties": {
+        "value": "[parameters('miccSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('miccSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccName')]",
+      "properties": {
+        "value": "[variables('miccName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccLanNicName')]",
+      "properties": {
+        "value": "[variables('miccLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccOsDiskName')]",
+      "properties": {
+        "value": "[variables('miccOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deploySQL')]",
+      "properties": {
+        "value": "[parameters('deploySQL')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlVersion')]",
+      "properties": {
+        "value": "[variables('sqlOsVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlVMSize')]",
+      "properties": {
+        "value": "[parameters('sqlSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('sqlSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlDataDiskSize')]",
+      "properties": {
+        "value": "[parameters('sqlSize').secondDiskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlName')]",
+      "properties": {
+        "value": "[variables('sqlName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlLanNicName')]",
+      "properties": {
+        "value": "[variables('sqlLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlOsDiskName')]",
+      "properties": {
+        "value": "[variables('sqlOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlDataDiskName')]",
+      "properties": {
+        "value": "[variables('sqlDataDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployIVR')]",
+      "properties": {
+        "value": "[parameters('deployIVR')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrVersion')]",
+      "properties": {
+        "value": "[variables('ivrOsVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrVMSize')]",
+      "properties": {
+        "value": "[variables('ivrSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrOSDiskSize')]",
+      "properties": {
+        "value": "[variables('ivrSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrName')]",
+      "properties": {
+        "value": "[variables('ivrName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrLanNicName')]",
+      "properties": {
+        "value": "[variables('ivrLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrOsDiskName')]",
+      "properties": {
+        "value": "[variables('ivrOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMivcr')]",
+      "properties": {
+        "value": "[parameters('deployMivcr')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrVersion')]",
+      "properties": {
+        "value": "[variables('mivcrOsVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrVMSize')]",
+      "properties": {
+        "value": "[parameters('mivcrSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('mivcrSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrName')]",
+      "properties": {
+        "value": "[variables('mivcrName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrLanNicName')]",
+      "properties": {
+        "value": "[variables('mivcrLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrOsDiskName')]",
+      "properties": {
+        "value": "[variables('mivcrOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployTeleworkerMBG')]",
+      "properties": {
+        "value": "[parameters('deployTeleworkerMBG')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGVersion')]",
+      "properties": {
+        "value": "[parameters('teleworkerMBGVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGVMSize')]",
+      "properties": {
+        "value": "[parameters('teleworkerMBGSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('teleworkerMBGSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGImageName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGImageName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGLanNicName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGDMZNicName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGDMZNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGDMZPublicIPAddressName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGDMZPublicIPAddressName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGOsDiskName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deploySipMBG')]",
+      "properties": {
+        "value": "[parameters('deploySipMBG')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGVersion')]",
+      "properties": {
+        "value": "[parameters('sipMBGVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGVMSize')]",
+      "properties": {
+        "value": "[parameters('sipMBGSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('sipMBGSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGName')]",
+      "properties": {
+        "value": "[variables('sipMBGName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGImageName')]",
+      "properties": {
+        "value": "[variables('sipMBGImageName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGLanNicName')]",
+      "properties": {
+        "value": "[variables('sipMBGLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGDMZNicName')]",
+      "properties": {
+        "value": "[variables('sipMBGDMZNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGDMZPublicIPAddressName')]",
+      "properties": {
+        "value": "[variables('sipMBGDMZPublicIPAddressName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGOsDiskName')]",
+      "properties": {
+        "value": "[variables('sipMBGOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'customData')]",
+      "properties": {
+        "value": "[variables('customData')]"
       }
     }
   ],
