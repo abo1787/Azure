@@ -125,7 +125,6 @@ if (!$dmzResourceGroup) {
 #endregion
 
 #region Storage Account
-[string]$storageAccountSAS = $null
 $storageAccount = Get-AzStorageAccount | Where-Object { $_.StorageAccountName -eq $storageAccountName } -ErrorAction SilentlyContinue
 if (!$storageAccount) {
   New-AzStorageAccount `
@@ -589,7 +588,7 @@ if (!$privateDNSZone) {
 # Create container
 $container = Get-AzStorageContainer -Name "msl" -Context $context -ErrorAction SilentlyContinue
 if (!$container) {
-  New-AzStorageContainer -Name "msl" -Context $context
+  New-AzStorageContainer -Name "msl" -Context $context | Out-Null
   Write-Output "Created container 'msl' in storage account '$storageAccountName'"
 }
 
@@ -660,7 +659,7 @@ if ($deploySIPMBG -eq $true) {
 # Create container
 $container = Get-AzStorageContainer -Name "micollab" -Context $context -ErrorAction SilentlyContinue
 if (!$container) {
-  New-AzStorageContainer -Name "micollab" -Context $context
+  New-AzStorageContainer -Name "micollab" -Context $context | Out-Null
   Write-Output "Created container 'micollab' in storage account '$storageAccountName'"
 }
 
@@ -1148,7 +1147,8 @@ if ($deployTeleworkerMBG -eq $true) {
       -AllocationMethod Static `
       -IpAddressVersion IPv4 `
       -Sku Basic `
-      -IdleTimeoutInMinutes 4
+      -IdleTimeoutInMinutes 4 `
+      -WarningAction Ignore
   }
 
   $teleworkerMBGDMZNic = Get-AzNetworkInterface -Name $teleworkerMBGDMZNicName -ResourceGroupName $dmzResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
@@ -1160,8 +1160,7 @@ if ($deployTeleworkerMBG -eq $true) {
       -SubnetId $dmzSubnetId `
       -NetworkSecurityGroupId $dmzNSG.Id `
       -IpConfigurationName "ipconfig1" `
-      -PublicIpAddressId $teleworkerMBGPublicIPAddress.Id `
-      -EnableAcceleratedNetworking
+      -PublicIpAddressId $teleworkerMBGPublicIPAddress.Id
 
     Write-Output "Teleworker MiVoice Border Gateway DMZ network interface '$teleworkerMBGDMZNicName' created"
   }
@@ -1245,7 +1244,8 @@ if ($deploySIPMBG -eq $true) {
       -AllocationMethod Static `
       -IpAddressVersion IPv4 `
       -Sku Basic `
-      -IdleTimeoutInMinutes 4
+      -IdleTimeoutInMinutes 4 `
+      -WarningAction Ignore
   }
 
   $sipMBGDMZNic = Get-AzNetworkInterface -Name $sipMBGDMZNicName -ResourceGroupName $dmzResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
@@ -1257,8 +1257,7 @@ if ($deploySIPMBG -eq $true) {
       -SubnetId $dmzSubnetId `
       -NetworkSecurityGroupId $dmzNSG.Id `
       -IpConfigurationName "ipconfig1" `
-      -PublicIpAddressId $sipMBGPublicIPAddress.Id `
-      -EnableAcceleratedNetworking
+      -PublicIpAddressId $sipMBGPublicIPAddress.Id
 
     Write-Output "SIP MiVoice Border Gateway DMZ network interface '$sipMBGDMZNicName' created"
   }
