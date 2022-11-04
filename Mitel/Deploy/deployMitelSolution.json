@@ -1473,7 +1473,7 @@
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "name": "[guid(resourceGroup().id)]",
-      "scope":"[subscription()]",
+      "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
       "dependsOn": [
         "[resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName'))]"
       ],
