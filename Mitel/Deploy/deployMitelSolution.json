@@ -1473,13 +1473,13 @@
       "type": "Microsoft.Authorization/roleAssignments",
       "apiVersion": "2022-04-01",
       "name": "[guid(resourceGroup().id)]",
-      "scope": "[concat('/subscriptions/', subscription().subscriptionId)]",
       "dependsOn": [
         "[resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName'))]"
       ],
       "properties": {
         "roleDefinitionId": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Authorization/roleDefinitions/', 'b24988ac-6180-42a0-ab88-20f7382dd24c')]",
-        "principalId": "[reference(resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName')), '2021-06-22', 'full').identity.principalId]"
+        "principalId": "[reference(resourceId('Microsoft.Automation/automationAccounts', variables('automationAccountName')), '2021-06-22', 'full').identity.principalId]",
+        "principalType": "ServicePrincipal"
       }
     },
     {
