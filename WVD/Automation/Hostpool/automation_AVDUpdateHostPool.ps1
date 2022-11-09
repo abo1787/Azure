@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.7.8
+    Version : 1.7.9
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -369,13 +369,14 @@ if ($poolDeploymentSuccessful -eq $true) {
   $poolAvailable = $false
   [int]$availableHosts = 0
   $availableStartTime = Get-Date
-  $availableTimeoutTime = $availableStartTime.AddMinutes(20)
+  $availableTimeoutTime = $availableStartTime.AddMinutes(10)
   foreach ($newSessionHost in $newSessionHosts) {
+    $newSessionHostVMName = $newSessionHost.Name.Split("/")[1]
+    $newSessionHostVMName = $newSessionHostVMName.Split(".")[0]
     $isHostAvailable = $false
     while ($(Get-Date) -le $availableTimeoutTime -and $isHostAvailable -eq $false) {
       $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -ErrorAction SilentlyContinue
       if ($newVMStatus.Status -eq "Available") {
-        Write-Output "Host '$newSessionHost' is now available"
         $isHostAvailable = $true
         $availableHosts = $availableHosts + 1
       }
@@ -394,17 +395,18 @@ if ($poolDeploymentSuccessful -eq $true) {
       Write-Output "Host '$notAvailableHostVMName' has been rebooted as it is still not showing as available"
     }
   }
-  # Wait for all previously unavailable session hosts to become available
-  Start-Sleep -Seconds 60 | Out-Null
-  $2ndAvailableStartTime = Get-Date
-  $2ndAvailableTimeoutTime = $2ndAvailableStartTime.AddMinutes(20)
-  foreach ($notAvailableHost in $notAvailableHosts) {
-    $notAvailableHostName = $notAvailableHost.Name.Split("/")[1]
+
+  # Wait for all new session hosts to become available
+  [int]$availableHosts = 0
+  $availableStartTime = Get-Date
+  $availableTimeoutTime = $availableStartTime.AddMinutes(10)
+  foreach ($newSessionHost in $newSessionHosts) {
+    $newSessionHostVMName = $newSessionHost.Name.Split("/")[1]
+    $newSessionHostVMName = $newSessionHostVMName.Split(".")[0]
     $isHostAvailable = $false
-    while ($(Get-Date) -le $2ndAvailableTimeoutTime -and $isHostAvailable -eq $false) {
-      $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $notAvailableHostName -ErrorAction SilentlyContinue
+    while ($(Get-Date) -le $availableTimeoutTime -and $isHostAvailable -eq $false) {
+      $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -ErrorAction SilentlyContinue
       if ($newVMStatus.Status -eq "Available") {
-        Write-Output "Host '$notAvailableHostName' is now available"
         $isHostAvailable = $true
         $availableHosts = $availableHosts + 1
       }
