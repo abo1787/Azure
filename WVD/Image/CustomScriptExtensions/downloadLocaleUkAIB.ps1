@@ -1,138 +1,48 @@
+#region Parameters
 [CmdletBinding(SupportsShouldProcess = $true)]
 param (
     
-    [string] $osVersion,
-    [string] $ExecutableName = "en-GB.zip"
+  [string] $osVersion,
+  [string] $executableName = "en-GB.zip"
 )
 
-#####################################
-
-# Helper #
-##########
-#region Functions
-function LogInfo($message) {
-    Log "Info" $message
+Write-Output "Starting Install UK Language script..."
+# Check osVersion to set correct Language Pack version
+if ($osVersion -eq "19h2-evd" -or $osVersion -eq "19h2-ent") {
+  $langPackUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/LangPacks/1909/en-GB.zip"
 }
-
-function LogError($message) {
-    Log "Error" $message
+else {
+  $langPackUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/LangPacks/2004/en-GB.zip"
 }
-
-function LogSkip($message) {
-    Log "Skip" $message
-}
-function LogWarning($message) {
-    Log "Warning" $message
-}
-
-function Log {
-
-    <#
-    .SYNOPSIS
-   Creates a log file and stores logs based on categories with tab seperation
-    .PARAMETER category
-    Category to put into the trace
-    .PARAMETER message
-    Message to be loged
-    .EXAMPLE
-    Log 'Info' 'Message'
-    #>
-
-    Param (
-        $category = 'Info',
-        [Parameter(Mandatory = $true)]
-        $message
-    )
-
-    $date = get-date
-    $content = "[$date]`t$category`t`t$message`n"
-    Write-Verbose "$content" -verbose
-
-    if (! $script:Log) {
-        $File = Join-Path $env:TEMP "log.log"
-        Write-Error "Log file not found, create new $File"
-        $script:Log = $File
-    }
-    else {
-        $File = $script:Log
-    }
-    Add-Content $File $content -ErrorAction Stop
-}
-
-function Set-Logger {
-    <#
-    .SYNOPSIS
-    Sets default log file and stores in a script accessible variable $script:Log
-    Log File name "executionCustomScriptExtension_$date.log"
-    .PARAMETER Path
-    Path to the log file
-    .EXAMPLE
-    Set-Logger
-    Create a logger in
-    #>
-
-    Param (
-        [Parameter(Mandatory = $true)]
-        $Path
-    )
-
-    # Create central log file with given date
-
-    $date = Get-Date -UFormat "%Y-%m-%d %H-%M-%S"
-
-    $scriptName = (Get-Item $PSCommandPath ).Basename
-    $scriptName = $scriptName -replace "-", ""
-
-    Set-Variable logFile -Scope Script
-    $script:logFile = "executionCustomScriptExtension_" + $scriptName + "_" + $date + ".log"
-
-    if ((Test-Path $path ) -eq $false) {
-        $null = New-Item -Path $path -type directory
-    }
-
-    $script:Log = Join-Path $path $logfile
-
-    Add-Content $script:Log "Date`t`t`tCategory`t`tDetails"
-}
+$xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
+$localeUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUkAIB.ps1"
 #endregion
 
-# Write to AIB Output
-$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Write-Output "$timeStamp *** STARTING UK LANGUAGE INSTALL ***"
-
-Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\UKLocale" # inside "executionCustomScriptExtension_$scriptName_$date.log"
-
-# Check osVersion to set correct Language Pack version
-if($osVersion -eq "19h2-evd" -or $osVersion -eq "19h2-ent"){
-    $Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/LangPacks/1909/en-GB.zip"
-}
-else{
-    $Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/LangPacks/2004/en-GB.zip"
-}
-
-# Set Directory
+#region Check/Create Directory
+Write-Output "Checking/Creating temporary download directory..."
 $dirPath = "C:\Windows\Temp"
 New-Item -Path $dirPath -Name "setLocaleUk" -ItemType Directory
 $filePath = "C:\Windows\Temp\setLocaleUk"
+#endregion
 
-# Get Local Experience Pack
-Invoke-WebRequest -Uri $Uri -OutFile "$filePath\en-GB.zip"
-$LangArchivePath = Join-Path $filePath "en-GB.zip"
-    
-# Prepare Local Experience Pack
-Expand-Archive -Path $LangArchivePath -DestinationPath $filePath
-
-# Get xml File
-$xmlUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUk.xml"
+#region Download software
+Write-Output "Downloading software..."
+Invoke-WebRequest -Uri $langPackUri -OutFile "$filePath\en-GB.zip"
 Invoke-WebRequest -Uri $xmlUri -OutFile "$filePath\setLocaleUkAIB.xml"
-
-# Get Locale Script
-$localeUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/setLocaleUkAIB.ps1"
 Invoke-WebRequest -Uri $localeUri -OutFile "$filePath\setLocaleUkAIB.ps1"
+#endregion
 
-# Run setLocaleUk script
+#region File Paths
+$langArchivePath = Join-Path $filePath "en-GB.zip"
+#endregion
+    
+#region File Extraction
+Write-Output "Extracting language packs..."
+Expand-Archive -Path $langArchivePath -DestinationPath $filePath
+#endregion
+
+#region Install Software
+Write-Output "Installing UK Language Pack..."
 & "$filePath\setLocaleUkAIB.ps1"
-
-# Write to AIB Output
-$timeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-Write-Output "$timeStamp *** COMPLETED UK LANGUAGE INSTALL ***"
+Write-Output "Completed installing UK Language Pack"
+#endregion

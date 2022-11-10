@@ -1,137 +1,63 @@
+#region Parameters
 [CmdletBinding(SupportsShouldProcess = $true)]
 param (
     
-    [string] $appsToInstall,
-    [string] $ExecutableName = "OfficeDeploy.zip"
+  [string] $appsToInstall,
+  [string] $executableName = "OfficeDeploy.zip"
 )
 
-#####################################
+Write-Output "Starting Install Office 365 script..."
+$officeUri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/OfficeDeploy.zip"
 
-##########
-# Helper #
-##########
-#region Functions
-function LogInfo($message) {
-    Log "Info" $message
+#endregion
+
+#region Download software
+Write-Output "Downloading software..."
+Invoke-WebRequest -Uri $officeUri -OutFile "$($PSScriptRoot)\$executableName"
+#endregion
+
+#region File Paths
+$M365ArchivePath = Join-Path $PSScriptRoot "OfficeDeploy.zip"
+$executableName = "OfficeDeploy\setup.exe"
+$M365ExePath = Join-Path $PSScriptRoot $executableName
+if ($appsToInstall -eq "All") {
+  $switches = "/configure .\OfficeDeploy\Configuration_AllApps.xml"
 }
-
-function LogError($message) {
-    Log "Error" $message
+if ($appsToInstall -eq "No_Access") {
+  $switches = "/configure .\OfficeDeploy\Configuration_NoAccess.xml"
 }
-
-function LogSkip($message) {
-    Log "Skip" $message
+if ($appsToInstall -eq "No_Access_OneNote") {
+  $switches = "/configure .\OfficeDeploy\Configuration_NoAccessOneNote.xml"
 }
-function LogWarning($message) {
-    Log "Warning" $message
+if ($appsToInstall -eq "No_Access_Publisher") {
+  $switches = "/configure .\OfficeDeploy\Configuration_NoAccessPublisher.xml"
 }
-
-function Log {
-
-    <#
-    .SYNOPSIS
-   Creates a log file and stores logs based on categories with tab seperation
-    .PARAMETER category
-    Category to put into the trace
-    .PARAMETER message
-    Message to be loged
-    .EXAMPLE
-    Log 'Info' 'Message'
-    #>
-
-    Param (
-        $category = 'Info',
-        [Parameter(Mandatory = $true)]
-        $message
-    )
-
-    $date = get-date
-    $content = "[$date]`t$category`t`t$message`n"
-    Write-Verbose "$content" -verbose
-
-    if (! $script:Log) {
-        $File = Join-Path $env:TEMP "log.log"
-        Write-Error "Log file not found, create new $File"
-        $script:Log = $File
-    }
-    else {
-        $File = $script:Log
-    }
-    Add-Content $File $content -ErrorAction Stop
+if ($appsToInstall -eq "No_Access_OneNote_Publisher") {
+  $switches = "/configure .\OfficeDeploy\Configuration_NoAccessPublisherOneNote.xml"
 }
-
-function Set-Logger {
-    <#
-    .SYNOPSIS
-    Sets default log file and stores in a script accessible variable $script:Log
-    Log File name "executionCustomScriptExtension_$date.log"
-    .PARAMETER Path
-    Path to the log file
-    .EXAMPLE
-    Set-Logger
-    Create a logger in
-    #>
-
-    Param (
-        [Parameter(Mandatory = $true)]
-        $Path
-    )
-
-    # Create central log file with given date
-
-    $date = Get-Date -UFormat "%Y-%m-%d %H-%M-%S"
-
-    $scriptName = (Get-Item $PSCommandPath ).Basename
-    $scriptName = $scriptName -replace "-", ""
-
-    Set-Variable logFile -Scope Script
-    $script:logFile = "executionCustomScriptExtension_" + $scriptName + "_" + $date + ".log"
-
-    if ((Test-Path $path ) -eq $false) {
-        $null = New-Item -Path $path -type directory
-    }
-
-    $script:Log = Join-Path $path $logfile
-
-    Add-Content $script:Log "Date`t`t`tCategory`t`tDetails"
+if ($appsToInstall -eq "No_OneNote") {
+  $switches = "/configure .\OfficeDeploy\Configuration_NoOneNote.xml"
+}
+if ($appsToInstall -eq "No_OneNote_Publisher") {
+  $switches = "/configure .\OfficeDeploy\Configuration_NoOneNotePublisher.xml"
+}
+if ($appsToInstall -eq "No_Publisher") {
+  $switches = "/configure .\OfficeDeploy\Configuration_NoPublisher.xml"
 }
 #endregion
 
-Set-Logger "C:\WindowsAzure\Logs\Plugins\Microsoft.Compute.CustomScriptExtension\executionLog\M365Apps" # inside "executionCustomScriptExtension_$scriptName_$date.log"
-
-$Uri = "https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Image/CustomScriptExtensions/OfficeDeploy.zip"
-Invoke-WebRequest -Uri $Uri -OutFile "$($PSScriptRoot)\$ExecutableName"
-$M365ArchivePath = Join-Path $PSScriptRoot "OfficeDeploy.zip"
+#region File Extraction
+Write-Output "Extracting files..."
 Expand-Archive -Path $M365ArchivePath -DestinationPath $PSScriptRoot
+#endregion
 
-$ExecutableName = "OfficeDeploy\setup.exe"
-$M365ExePath = Join-Path $PSScriptRoot $ExecutableName
-
-# Set switches to use correct config file
-if($appsToInstall -eq "All"){
-    $switches = "/configure .\OfficeDeploy\Configuration_AllApps.xml"
+#region Install Software
+Write-Output "Installing Office 365..."
+$installer = Start-Process -FilePath $M365ExePath -ArgumentList $switches -Wait -PassThru
+if ($installer.ExitCode -eq 0) {
+  Write-Output "Office 365 was successfully installed"
 }
-if($appsToInstall -eq "No_Access"){
-    $switches = "/configure .\OfficeDeploy\Configuration_NoAccess.xml"
+else {
+  Write-Output "Office 365 installation failed"
 }
-if($appsToInstall -eq "No_Access_OneNote"){
-    $switches = "/configure .\OfficeDeploy\Configuration_NoAccessOneNote.xml"
-}
-if($appsToInstall -eq "No_Access_Publisher"){
-    $switches = "/configure .\OfficeDeploy\Configuration_NoAccessPublisher.xml"
-}
-if($appsToInstall -eq "No_Access_OneNote_Publisher"){
-    $switches = "/configure .\OfficeDeploy\Configuration_NoAccessPublisherOneNote.xml"
-}
-if($appsToInstall -eq "No_OneNote"){
-    $switches = "/configure .\OfficeDeploy\Configuration_NoOneNote.xml"
-}
-if($appsToInstall -eq "No_OneNote_Publisher"){
-    $switches = "/configure .\OfficeDeploy\Configuration_NoOneNotePublisher.xml"
-}
-if($appsToInstall -eq "No_Publisher"){
-    $switches = "/configure .\OfficeDeploy\Configuration_NoPublisher.xml"
-}
-
-$Installer = Start-Process -FilePath $M365ExePath -ArgumentList $Switches -Wait -PassThru
-LogInfo("The exit code is $($Installer.ExitCode) and Apps to install is $AppsToInstall")
+#endregion

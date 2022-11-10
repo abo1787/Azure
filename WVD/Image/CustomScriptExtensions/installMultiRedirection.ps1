@@ -1,3 +1,4 @@
+#region Parameters
 [CmdletBinding(SupportsShouldProcess = $true)]
 param (
     
@@ -5,25 +6,30 @@ param (
 
 )
 
-# Download installer
-Write-Output "Downloading installer..."
-$uri = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4QWrF"
-Invoke-WebRequest -Uri $uri -OutFile "$($PSScriptRoot)\$executableName"
-$msiPath = "$($PSScriptRoot)\$executableName"
+Write-Output "Starting Install Multimedia Redirection script..."
+$mmRedirectionUri = "https://query.prod.cms.rt.microsoft.com/cms/api/am/binary/RE4QWrF"
+#endregion
 
-# Set Reg key to enable
+#region Download software
+Write-Output "Downloading software..."
+Invoke-WebRequest -Uri $mmRedirectionUri -OutFile "$($PSScriptRoot)\$executableName"
+#endregion
+
+#region File Paths
+$mmRedirectionPath = "$($PSScriptRoot)\$executableName"
+$mmRedirectionScriptBlock = { msiexec /i $mmRedirectionPath /qn }
+#endregion
+
+#region Install Software
+Write-Output "Checking/Setting Multimedia Redirection registry key..."
 Set-Location HKLM:
-Write-Output "Setting Multimedia Redirection registry key"
 if ((Test-Path "Software\Microsoft\MSRDC\Policies") -eq $false) {
   New-Item -Path "Software\Microsoft\MSRDC\Policies" -Force
 }
 New-ItemProperty "Software\Microsoft\MSRDC\Policies" -Name "ReleaseRing" -Value "insider" -PropertyType String -Force
 Write-Output "Set ReleaseRing Reg Key to value 'insider' successfully"
 
-# Install
-Write-Output "Installing Multimedia Redirection from path $MSIPath"
-$scriptBlock = { msiexec /i $msiPath /qn }
-Invoke-Command $scriptBlock -Verbose
-
-# Output
+Write-Output "Installing Multimedia Redirection..."
+Invoke-Command $mmRedirectionScriptBlock -Verbose
 Write-Output "Multimedia Redirection was successfully installed"
+#endregion
