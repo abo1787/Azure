@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.7.9
+    Version : 1.8.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -371,8 +371,6 @@ if ($poolDeploymentSuccessful -eq $true) {
   $availableStartTime = Get-Date
   $availableTimeoutTime = $availableStartTime.AddMinutes(10)
   foreach ($newSessionHost in $newSessionHosts) {
-    $newSessionHostVMName = $newSessionHost.Name.Split("/")[1]
-    $newSessionHostVMName = $newSessionHostVMName.Split(".")[0]
     $isHostAvailable = $false
     while ($(Get-Date) -le $availableTimeoutTime -and $isHostAvailable -eq $false) {
       $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -ErrorAction SilentlyContinue
@@ -401,8 +399,6 @@ if ($poolDeploymentSuccessful -eq $true) {
   $availableStartTime = Get-Date
   $availableTimeoutTime = $availableStartTime.AddMinutes(10)
   foreach ($newSessionHost in $newSessionHosts) {
-    $newSessionHostVMName = $newSessionHost.Name.Split("/")[1]
-    $newSessionHostVMName = $newSessionHostVMName.Split(".")[0]
     $isHostAvailable = $false
     while ($(Get-Date) -le $availableTimeoutTime -and $isHostAvailable -eq $false) {
       $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -ErrorAction SilentlyContinue
