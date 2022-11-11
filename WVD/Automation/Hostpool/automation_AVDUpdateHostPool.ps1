@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.8.0
+    Version : 1.9.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -566,20 +566,12 @@ if ($poolAvailable -eq $true) {
   Write-Output "Waiting for new hosts to upgrade..."
   [int]$upgradedHosts = 0
   $upgradeStartTime = Get-Date
-  $upgradeTimeoutTime = $upgradeStartTime.AddMinutes(30)
+  $upgradeTimeoutTime = $upgradeStartTime.AddMinutes(20)
   foreach ($newSessionHost in $newSessionHosts) {
     $hasUpgraded = $false
     while ($(Get-Date) -le $upgradeTimeoutTime -and $hasUpgraded -eq $false) {
-      $newVMName = $newSessionHost.Split(".")[0]
       $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost
       if ($newVMStatus.Status -eq "Available" -and $newVMStatus.AgentVersion -eq $agentVersion) {
-        Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -AllowNewSession:$true -ErrorAction SilentlyContinue | Out-Null
-        $vm = Get-AzVM | Where-Object { $_.Name -eq $newVmName }
-        $vmTags = @{}
-        $vmTags += $vm.Tags
-        $vmTags | ForEach-Object { $_.VMMaintenance = "False"; $_ } | Out-Null
-        Update-AzVM -VM $vm -ResourceGroupName $vm.ResourceGroupName -Tag $vmTags | Out-Null
-        Write-Output "Host '$newSessionHost' has now upgraded"
         $hasUpgraded = $true
         $upgradedHosts = $upgradedHosts + 1
       }
@@ -597,36 +589,28 @@ if ($poolAvailable -eq $true) {
       Restart-AzVM -Name $failedVMName -ResourceGroupName $vm.ResourceGroupName -NoWait | Out-Null
       Write-Output "Host '$failedVMName' has been rebooted to re-attempt upgrade"
     }
+  }
 
-    # Wait for all failed upgrade session hosts to upgrade
-    $2ndUpgradeStartTime = Get-Date
-    $2ndUpgradeTimeoutTime = $2ndUpgradeStartTime.AddMinutes(30)
-    foreach ($failedUpgradeHost in $failedUpgradeHosts) {
-      $hasUpgraded = $false
-      while ($(Get-Date) -le $2ndUpgradeTimeoutTime -and $hasUpgraded -eq $false) {
-        $failedVMName = $failedUpgradeHost.Name.Split("/")[1]
-        $failedVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $failedVMName
-        if ($failedVMStatus.Status -eq "Available" -and $failedVMStatus.AgentVersion -eq $agentVersion) {
-          Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $failedVMName -AllowNewSession:$true -ErrorAction SilentlyContinue | Out-Null
-          $vmName = $failedVMName.Split(".")[0]
-          $vm = Get-AzVM | Where-Object { $_.Name -eq $vmName }
-          $vmTags = @{}
-          $vmTags += $vm.Tags
-          $vmTags | ForEach-Object { $_.VMMaintenance = "False"; $_ } | Out-Null
-          Update-AzVM -VM $vm -ResourceGroupName $vm.ResourceGroupName -Tag $vmTags | Out-Null
-          Write-Output "Host '$failedVMName' has now upgraded"
-          $hasUpgraded = $true
-          $upgradedHosts = $upgradedHosts + 1
-        }
+  # Wait for all failed upgrade session hosts to upgrade
+  [int]$upgradedHosts = 0
+  $upgradeStartTime = Get-Date
+  $upgradeTimeoutTime = $upgradeStartTime.AddMinutes(20)
+  foreach ($newSessionHost in $newSessionHosts) {
+    $hasUpgraded = $false
+    while ($(Get-Date) -le $upgradeTimeoutTime -and $hasUpgraded -eq $false) {
+      $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost
+      if ($newVMStatus.Status -eq "Available" -and $newVMStatus.AgentVersion -eq $agentVersion) {
+        $hasUpgraded = $true
+        $upgradedHosts = $upgradedHosts + 1
       }
     }
   }
-}
 
-# Check to see if all hosts upgraded successfully, if not call rollback
-if ($upgradedHosts -eq $vmNumberOfInstances) {
-  $poolUpgradeSuccessful = $true
-  Write-Output "All new hosts have now upgraded"
+  # Check to see if all hosts upgraded successfully, if not call rollback
+  if ($upgradedHosts -eq $vmNumberOfInstances) {
+    $poolUpgradeSuccessful = $true
+    Write-Output "All new hosts have now upgraded"
+  }
 }
 #endregion
 
@@ -657,6 +641,21 @@ if ($poolUpgradeSuccessful -eq $true) {
     Start-Sleep -Seconds 120
     Write-Output "All new hosts have accelerated networking enabled"
     $acceleratedNetworkingEnabled = $true
+  }
+}
+#endregion
+
+#region Enable new hosts
+if ($poolUpgradeSuccessful -eq $true) {
+  Write-Output "Allowing sessions to connect to new hosts"
+  foreach ($newSessionHost in $newSessionHosts) {
+    $newVMName = $newSessionHost.Split(".")[0]
+    Update-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -AllowNewSession:$true -ErrorAction SilentlyContinue | Out-Null
+    $vm = Get-AzVM | Where-Object { $_.Name -eq $newVmName }
+    $vmTags = @{}
+    $vmTags += $vm.Tags
+    $vmTags | ForEach-Object { $_.VMMaintenance = "False"; $_ } | Out-Null
+    Update-AzVM -VM $vm -ResourceGroupName $vm.ResourceGroupName -Tag $vmTags | Out-Null
   }
 }
 #endregion
@@ -728,7 +727,6 @@ if ($poolAvailable -eq $true -and $poolDeploymentSuccessful -eq $true -and $pool
 
 #region Old Hosts
 if ($poolUpgradeSuccessful -eq $true) {
-  Write-Output "Allowing sessions to connect to new hosts"
   # Remove template parameter file
   Remove-Item $updateHostpoolParametersFilePath
 
