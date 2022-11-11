@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.9.0
+    Version : 2.0.0
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -120,17 +120,17 @@ else {
 #endregion
 
 #region Cleanup old Resource Group Deployments
+$aaAccount = Get-AzAutomationAccount | Where-Object { $_.AutomationAccountName -eq 'AVDAutomationAccount' }
 Write-Output "Starting update for resource group '$resourceGroupName'..."
-Write-Output "Removing previous resource group deployments..."
-$deploymentsToDelete = Get-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName | Where-Object { $_.DeploymentName -notlike "HostPool*" }
-foreach ($deployment in $deploymentsToDelete) {
-  try {
-    Remove-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $deployment.DeploymentName | Out-Null
-  }
-  catch { 
-    Write-Error "Error deleting resource group deployment '$($deployment.DeploymentName)'" 
-  }
-}
+Write-Output "Triggering 'automation_AVDResourceDeploymentCleaner_Runbook' to clean up previous resource group deployments..."
+$params = @{"resourceGroupName" = "$resourceGroupName" }
+
+Start-AzAutomationRunbook `
+  -AutomationAccountName 'AVDAutomationAccount' `
+  -Name 'automation_AVDResourceDeploymentCleaner_Runbook'`
+  -ResourceGroupName $aaAccount.ResourceGroupName `
+  -Parameters $params `
+| Out-Null
 #endregion
 
 #region Get Values for Deployment
