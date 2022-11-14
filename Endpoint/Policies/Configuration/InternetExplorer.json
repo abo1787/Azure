@@ -1,1065 +1,1065 @@
 {
   "@odata.type": "#microsoft.graph.windows10CustomConfiguration",
-  "supportsScopeTags": true,
+  "displayName": "Microsoft Internet Explorer",
+  "description": null,
+  "version": 1,
+  "deviceManagementApplicabilityRuleDeviceMode": null,
   "deviceManagementApplicabilityRuleOsEdition": null,
   "deviceManagementApplicabilityRuleOsVersion": null,
-  "deviceManagementApplicabilityRuleDeviceMode": null,
-  "description": null,
-  "displayName": "Microsoft Internet Explorer",
-  "version": 1,
   "omaSettings": [
     {
       "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowUpdatesToStatusBarViaScript",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowUpdatesToStatusBarViaScript",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowUpdatesToStatusBarViaScript",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2103\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneEnableCrossSiteScriptingFilter",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneEnableCrossSiteScriptingFilter",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneEnableCrossSiteScriptingFilter",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1409\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowScriptlets",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowScriptlets",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowScriptlets",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1209\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/TrustedSitesZoneInitializeAndScriptActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-TrustedSitesZoneInitializeAndScriptActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/TrustedSitesZoneInitializeAndScriptActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1201\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneDownloadSignedActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneDownloadSignedActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneDownloadSignedActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1001\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowCopyPasteViaScript",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowCopyPasteViaScript",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowCopyPasteViaScript",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1407\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictFileDownloadInternetExplorerProcesses",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictFileDownloadInternetExplorerProcesses",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictFileDownloadInternetExplorerProcesses",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/TrustedSitesZoneJavaPermissions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-TrustedSitesZoneJavaPermissions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/TrustedSitesZoneJavaPermissions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1C00\" value=\"65536\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/LockedDownRestrictedSitesZoneJavaPermissions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownRestrictedSitesZoneJavaPermissions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownRestrictedSitesZoneJavaPermissions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1C00\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneIncludeLocalPathWhenUploadingFilesToServer",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneIncludeLocalPathWhenUploadingFilesToServer",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneIncludeLocalPathWhenUploadingFilesToServer",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname160A\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowVBScriptToRunInInternetExplorer",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowVBScriptToRunInInternetExplorer",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowVBScriptToRunInInternetExplorer",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname140C\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2709\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname120c\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneDownloadSignedActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneDownloadSignedActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneDownloadSignedActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1001\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneLogonOptions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneLogonOptions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneLogonOptions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1A00\" value=\"65536\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneShowSecurityWarningForPotentiallyUnsafeFiles",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneShowSecurityWarningForPotentiallyUnsafeFiles",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneShowSecurityWarningForPotentiallyUnsafeFiles",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1806\" value=\"1\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/IntranetZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-IntranetZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/IntranetZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname270C\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RemoveRunThisTimeButtonForOutdatedActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RemoveRunThisTimeButtonForOutdatedActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RemoveRunThisTimeButtonForOutdatedActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/LockedDownTrustedSitesZoneJavaPermissions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownTrustedSitesZoneJavaPermissions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownTrustedSitesZoneJavaPermissions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1C00\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowOnlyApprovedDomainsToUseActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowOnlyApprovedDomainsToUseActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowOnlyApprovedDomainsToUseActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname120b\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname120c\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DoNotAllowUsersToAddSites",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DoNotAllowUsersToAddSites",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DoNotAllowUsersToAddSites",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/LockedDownIntranetJavaPermissions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownIntranetJavaPermissions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownIntranetJavaPermissions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1C00\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneNavigateWindowsAndFrames",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneNavigateWindowsAndFrames",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneNavigateWindowsAndFrames",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1607\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2709\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/ScriptedWindowSecurityRestrictionsInternetExplorerProcesses",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-ScriptedWindowSecurityRestrictionsInternetExplorerProcesses",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/ScriptedWindowSecurityRestrictionsInternetExplorerProcesses",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/AllowEnhancedProtectedMode",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-AllowEnhancedProtectedMode",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/AllowEnhancedProtectedMode",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2001\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DoNotAllowActiveXControlsInProtectedMode",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DoNotAllowActiveXControlsInProtectedMode",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DoNotAllowActiveXControlsInProtectedMode",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneInitializeAndScriptActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneInitializeAndScriptActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneInitializeAndScriptActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1201\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/MKProtocolSecurityRestrictionInternetExplorerProcesses",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-MKProtocolSecurityRestrictionInternetExplorerProcesses",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/MKProtocolSecurityRestrictionInternetExplorerProcesses",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DisableBypassOfSmartScreenWarningsAboutUncommonFiles",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableBypassOfSmartScreenWarningsAboutUncommonFiles",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableBypassOfSmartScreenWarningsAboutUncommonFiles",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DisableBypassOfSmartScreenWarnings",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableBypassOfSmartScreenWarnings",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableBypassOfSmartScreenWarnings",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/AllowSoftwareWhenSignatureIsInvalid",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-AllowSoftwareWhenSignatureIsInvalid",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/AllowSoftwareWhenSignatureIsInvalid",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cdisabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/LocalMachineZoneJavaPermissions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LocalMachineZoneJavaPermissions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LocalMachineZoneJavaPermissions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1C00\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowDragAndDropCopyAndPasteFiles",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowDragAndDropCopyAndPasteFiles",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowDragAndDropCopyAndPasteFiles",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1802\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowVBScriptToRunInInternetExplorer",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowVBScriptToRunInInternetExplorer",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowVBScriptToRunInInternetExplorer",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname140C\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/MimeSniffingSafetyFeatureInternetExplorerProcesses",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-MimeSniffingSafetyFeatureInternetExplorerProcesses",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/MimeSniffingSafetyFeatureInternetExplorerProcesses",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DoNotAllowUsersToChangePolicies",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DoNotAllowUsersToChangePolicies",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DoNotAllowUsersToChangePolicies",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2708\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/IntranetZoneInitializeAndScriptActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-IntranetZoneInitializeAndScriptActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/IntranetZoneInitializeAndScriptActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1201\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/NotificationBarInternetExplorerProcesses",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-NotificationBarInternetExplorerProcesses",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/NotificationBarInternetExplorerProcesses",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowBinaryAndScriptBehaviors",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowBinaryAndScriptBehaviors",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowBinaryAndScriptBehaviors",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2000\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowCopyPasteViaScript",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowCopyPasteViaScript",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowCopyPasteViaScript",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1407\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowOnlyApprovedDomainsToUseActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowOnlyApprovedDomainsToUseActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowOnlyApprovedDomainsToUseActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname120b\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowSmartScreenIE",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowSmartScreenIE",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowSmartScreenIE",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2301\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/ProtectionFromZoneElevationInternetExplorerProcesses",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-ProtectionFromZoneElevationInternetExplorerProcesses",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/ProtectionFromZoneElevationInternetExplorerProcesses",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/AllowCertificateAddressMismatchWarning",
       "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-AllowCertificateAddressMismatchWarning",
+      "displayName": "InternetExplorer/AllowCertificateAddressMismatchWarning",
+      "isEncrypted": false,
       "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/AllowCertificateAddressMismatchWarning",
       "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
+      "value": "<enabled />"
     },
     {
       "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowLessPrivilegedSites",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowLessPrivilegedSites",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowLessPrivilegedSites",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-AllowEnhancedProtectedMode",
+      "displayName": "InternetExplorer/AllowEnhancedProtectedMode",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/AllowEnhancedProtectedMode",
       "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2101\" value=\"3\" /\u003e"
+      "value": "<enabled />"
     },
     {
       "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2001\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowAccessToDataSources",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowAccessToDataSources",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowAccessToDataSources",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1406\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowUserDataPersistence",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowUserDataPersistence",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowUserDataPersistence",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1606\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/AllowFallbackToSSL3",
       "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-AllowFallbackToSSL3",
+      "displayName": "InternetExplorer/AllowFallbackToSSL3",
+      "isEncrypted": false,
       "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/AllowFallbackToSSL3",
       "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"Advanced_EnableSSL3FallbackOptions\" value=\"0\" /\u003e"
+      "value": "<enabled /><data id=\"Advanced_EnableSSL3FallbackOptions\" value=\"0\" />"
     },
     {
       "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneInitializeAndScriptActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneInitializeAndScriptActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneInitializeAndScriptActiveXControls",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-AllowSoftwareWhenSignatureIsInvalid",
+      "displayName": "InternetExplorer/AllowSoftwareWhenSignatureIsInvalid",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/AllowSoftwareWhenSignatureIsInvalid",
       "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1201\" value=\"3\" /\u003e"
+      "value": "<disabled />"
     },
     {
       "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowAutomaticPromptingForFileDownloads",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowAutomaticPromptingForFileDownloads",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowAutomaticPromptingForFileDownloads",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2200\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/IncludeAllNetworkPaths",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-IncludeAllNetworkPaths",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/IncludeAllNetworkPaths",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cdisabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneUsePopupBlocker",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneUsePopupBlocker",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneUsePopupBlocker",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1809\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DoNotBlockOutdatedActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DoNotBlockOutdatedActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DoNotBlockOutdatedActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cdisabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneIncludeLocalPathWhenUploadingFilesToServer",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneIncludeLocalPathWhenUploadingFilesToServer",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneIncludeLocalPathWhenUploadingFilesToServer",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname160A\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneScriptingOfJavaApplets",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneScriptingOfJavaApplets",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneScriptingOfJavaApplets",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1402\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/TrustedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-TrustedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/TrustedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname270C\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DisableCrashDetection",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableCrashDetection",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableCrashDetection",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowUpdatesToStatusBarViaScript",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowUpdatesToStatusBarViaScript",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowUpdatesToStatusBarViaScript",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2103\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/LockedDownLocalMachineZoneJavaPermissions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownLocalMachineZoneJavaPermissions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownLocalMachineZoneJavaPermissions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1C00\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneLaunchingApplicationsAndFilesInIFRAME",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneLaunchingApplicationsAndFilesInIFRAME",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneLaunchingApplicationsAndFilesInIFRAME",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1804\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneNavigateWindowsAndFrames",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneNavigateWindowsAndFrames",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneNavigateWindowsAndFrames",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1607\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowFileDownloads",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowFileDownloads",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowFileDownloads",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1803\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneScriptActiveXControlsMarkedSafeForScripting",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneScriptActiveXControlsMarkedSafeForScripting",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneScriptActiveXControlsMarkedSafeForScripting",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1405\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowSmartScreenIE",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowSmartScreenIE",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowSmartScreenIE",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2301\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneTurnOnProtectedMode",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneTurnOnProtectedMode",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneTurnOnProtectedMode",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2500\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneShowSecurityWarningForPotentiallyUnsafeFiles",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneShowSecurityWarningForPotentiallyUnsafeFiles",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneShowSecurityWarningForPotentiallyUnsafeFiles",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1806\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/PreventManagingSmartScreenFilter",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-PreventManagingSmartScreenFilter",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/PreventManagingSmartScreenFilter",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IE9SafetyFilterOptions\" value=\"1\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowScriptlets",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowScriptlets",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowScriptlets",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1209\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneRunActiveXControlsAndPlugins",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneRunActiveXControlsAndPlugins",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneRunActiveXControlsAndPlugins",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1200\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowAccessToDataSources",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowAccessToDataSources",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowAccessToDataSources",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1406\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowUserDataPersistence",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowUserDataPersistence",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowUserDataPersistence",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1606\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowLessPrivilegedSites",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowLessPrivilegedSites",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowLessPrivilegedSites",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2101\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneLaunchingApplicationsAndFilesInIFRAME",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneLaunchingApplicationsAndFilesInIFRAME",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneLaunchingApplicationsAndFilesInIFRAME",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1804\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DisableProcessesInEnhancedProtectedMode",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableProcessesInEnhancedProtectedMode",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableProcessesInEnhancedProtectedMode",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowScriptingOfInternetExplorerWebBrowserControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowScriptingOfInternetExplorerWebBrowserControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowScriptingOfInternetExplorerWebBrowserControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1206\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneDownloadUnsignedActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneDownloadUnsignedActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneDownloadUnsignedActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1004\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/PreventPerUserInstallationOfActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-PreventPerUserInstallationOfActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/PreventPerUserInstallationOfActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowLoadingOfXAMLFiles",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowLoadingOfXAMLFiles",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowLoadingOfXAMLFiles",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2402\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowScriptingOfInternetExplorerWebBrowserControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowScriptingOfInternetExplorerWebBrowserControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowScriptingOfInternetExplorerWebBrowserControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1206\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DisableEnclosureDownloading",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableEnclosureDownloading",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableEnclosureDownloading",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneUsePopupBlocker",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneUsePopupBlocker",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneUsePopupBlocker",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1809\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/IntranetZoneJavaPermissions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-IntranetZoneJavaPermissions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/IntranetZoneJavaPermissions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1C00\" value=\"65536\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowDragAndDropCopyAndPasteFiles",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowDragAndDropCopyAndPasteFiles",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowDragAndDropCopyAndPasteFiles",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1802\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/LockedDownRestrictedSitesZoneAllowSmartScreenIE",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownRestrictedSitesZoneAllowSmartScreenIE",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownRestrictedSitesZoneAllowSmartScreenIE",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2301\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowActiveScripting",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowActiveScripting",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowActiveScripting",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1400\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/SpecifyUseOfActiveXInstallerService",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-SpecifyUseOfActiveXInstallerService",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/SpecifyUseOfActiveXInstallerService",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowLoadingOfXAMLFiles",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowLoadingOfXAMLFiles",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowLoadingOfXAMLFiles",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2402\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/ConsistentMimeHandlingInternetExplorerProcesses",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-ConsistentMimeHandlingInternetExplorerProcesses",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/ConsistentMimeHandlingInternetExplorerProcesses",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname270C\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictActiveXInstallInternetExplorerProcesses",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictActiveXInstallInternetExplorerProcesses",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictActiveXInstallInternetExplorerProcesses",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DisableIgnoringCertificateErrors",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableIgnoringCertificateErrors",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableIgnoringCertificateErrors",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowNETFrameworkReliantComponents",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowNETFrameworkReliantComponents",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowNETFrameworkReliantComponents",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2004\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowNETFrameworkReliantComponents",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowNETFrameworkReliantComponents",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowNETFrameworkReliantComponents",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2004\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneLogonOptions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneLogonOptions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneLogonOptions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1A00\" value=\"196608\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DisableEncryptionSupport",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableEncryptionSupport",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableEncryptionSupport",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"Advanced_WinInetProtocolOptions\" value=\"2560\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowAutomaticPromptingForFileDownloads",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowAutomaticPromptingForFileDownloads",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowAutomaticPromptingForFileDownloads",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2200\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/CheckSignaturesOnDownloadedPrograms",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-CheckSignaturesOnDownloadedPrograms",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/CheckSignaturesOnDownloadedPrograms",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowScriptInitiatedWindows",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowScriptInitiatedWindows",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowScriptInitiatedWindows",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2102\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneEnableCrossSiteScriptingFilter",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneEnableCrossSiteScriptingFilter",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneEnableCrossSiteScriptingFilter",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1409\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneAllowScriptInitiatedWindows",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowScriptInitiatedWindows",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowScriptInitiatedWindows",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2102\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneJavaPermissions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneJavaPermissions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneJavaPermissions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1C00\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2708\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname270C\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneDownloadUnsignedActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneDownloadUnsignedActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneDownloadUnsignedActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1004\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/DisableSecuritySettingsCheck",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableSecuritySettingsCheck",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableSecuritySettingsCheck",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cdisabled /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneJavaPermissions",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneJavaPermissions",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneJavaPermissions",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1C00\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/LocalMachineZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LocalMachineZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LocalMachineZoneDoNotRunAntimalwareAgainstActiveXControls",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname270C\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/InternetZoneEnableProtectedMode",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneEnableProtectedMode",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneEnableProtectedMode",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2500\" value=\"0\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/RestrictedSitesZoneAllowMETAREFRESH",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowMETAREFRESH",
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowMETAREFRESH",
-      "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname1608\" value=\"3\" /\u003e"
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/CheckServerCertificateRevocation",
       "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-CheckServerCertificateRevocation",
+      "displayName": "InternetExplorer/CheckServerCertificateRevocation",
+      "isEncrypted": false,
       "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/CheckServerCertificateRevocation",
       "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
+      "value": "<enabled />"
     },
     {
       "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/LockedDownInternetZoneAllowSmartScreenIE",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-CheckSignaturesOnDownloadedPrograms",
+      "displayName": "InternetExplorer/CheckSignaturesOnDownloadedPrograms",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/CheckSignaturesOnDownloadedPrograms",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-ConsistentMimeHandlingInternetExplorerProcesses",
+      "displayName": "InternetExplorer/ConsistentMimeHandlingInternetExplorerProcesses",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/ConsistentMimeHandlingInternetExplorerProcesses",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableBypassOfSmartScreenWarnings",
+      "displayName": "InternetExplorer/DisableBypassOfSmartScreenWarnings",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableBypassOfSmartScreenWarnings",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableBypassOfSmartScreenWarningsAboutUncommonFiles",
+      "displayName": "InternetExplorer/DisableBypassOfSmartScreenWarningsAboutUncommonFiles",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableBypassOfSmartScreenWarningsAboutUncommonFiles",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableCrashDetection",
+      "displayName": "InternetExplorer/DisableCrashDetection",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableCrashDetection",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableEnclosureDownloading",
+      "displayName": "InternetExplorer/DisableEnclosureDownloading",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableEnclosureDownloading",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableEncryptionSupport",
+      "displayName": "InternetExplorer/DisableEncryptionSupport",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableEncryptionSupport",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"Advanced_WinInetProtocolOptions\" value=\"2560\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableIgnoringCertificateErrors",
+      "displayName": "InternetExplorer/DisableIgnoringCertificateErrors",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableIgnoringCertificateErrors",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableProcessesInEnhancedProtectedMode",
+      "displayName": "InternetExplorer/DisableProcessesInEnhancedProtectedMode",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableProcessesInEnhancedProtectedMode",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DisableSecuritySettingsCheck",
+      "displayName": "InternetExplorer/DisableSecuritySettingsCheck",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DisableSecuritySettingsCheck",
+      "secretReferenceValueId": null,
+      "value": "<disabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DoNotAllowActiveXControlsInProtectedMode",
+      "displayName": "InternetExplorer/DoNotAllowActiveXControlsInProtectedMode",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DoNotAllowActiveXControlsInProtectedMode",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DoNotAllowUsersToAddSites",
+      "displayName": "InternetExplorer/DoNotAllowUsersToAddSites",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DoNotAllowUsersToAddSites",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DoNotAllowUsersToChangePolicies",
+      "displayName": "InternetExplorer/DoNotAllowUsersToChangePolicies",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DoNotAllowUsersToChangePolicies",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-DoNotBlockOutdatedActiveXControls",
+      "displayName": "InternetExplorer/DoNotBlockOutdatedActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/DoNotBlockOutdatedActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<disabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-IncludeAllNetworkPaths",
+      "displayName": "InternetExplorer/IncludeAllNetworkPaths",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/IncludeAllNetworkPaths",
+      "secretReferenceValueId": null,
+      "value": "<disabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowAccessToDataSources",
+      "displayName": "InternetExplorer/InternetZoneAllowAccessToDataSources",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowAccessToDataSources",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1406\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowAutomaticPromptingForFileDownloads",
+      "displayName": "InternetExplorer/InternetZoneAllowAutomaticPromptingForFileDownloads",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowAutomaticPromptingForFileDownloads",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2200\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowCopyPasteViaScript",
+      "displayName": "InternetExplorer/InternetZoneAllowCopyPasteViaScript",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowCopyPasteViaScript",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1407\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowDragAndDropCopyAndPasteFiles",
+      "displayName": "InternetExplorer/InternetZoneAllowDragAndDropCopyAndPasteFiles",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowDragAndDropCopyAndPasteFiles",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1802\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowLessPrivilegedSites",
+      "displayName": "InternetExplorer/InternetZoneAllowLessPrivilegedSites",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowLessPrivilegedSites",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2101\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowLoadingOfXAMLFiles",
+      "displayName": "InternetExplorer/InternetZoneAllowLoadingOfXAMLFiles",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowLoadingOfXAMLFiles",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2402\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowNETFrameworkReliantComponents",
+      "displayName": "InternetExplorer/InternetZoneAllowNETFrameworkReliantComponents",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowNETFrameworkReliantComponents",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2004\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowOnlyApprovedDomainsToUseActiveXControls",
+      "displayName": "InternetExplorer/InternetZoneAllowOnlyApprovedDomainsToUseActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowOnlyApprovedDomainsToUseActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname120b\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
+      "displayName": "InternetExplorer/InternetZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname120c\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowScriptInitiatedWindows",
+      "displayName": "InternetExplorer/InternetZoneAllowScriptInitiatedWindows",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowScriptInitiatedWindows",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2102\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowScriptingOfInternetExplorerWebBrowserControls",
+      "displayName": "InternetExplorer/InternetZoneAllowScriptingOfInternetExplorerWebBrowserControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowScriptingOfInternetExplorerWebBrowserControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1206\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowScriptlets",
+      "displayName": "InternetExplorer/InternetZoneAllowScriptlets",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowScriptlets",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1209\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowSmartScreenIE",
+      "displayName": "InternetExplorer/InternetZoneAllowSmartScreenIE",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowSmartScreenIE",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2301\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowUpdatesToStatusBarViaScript",
+      "displayName": "InternetExplorer/InternetZoneAllowUpdatesToStatusBarViaScript",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowUpdatesToStatusBarViaScript",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2103\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowUserDataPersistence",
+      "displayName": "InternetExplorer/InternetZoneAllowUserDataPersistence",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowUserDataPersistence",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1606\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneAllowVBScriptToRunInInternetExplorer",
+      "displayName": "InternetExplorer/InternetZoneAllowVBScriptToRunInInternetExplorer",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneAllowVBScriptToRunInInternetExplorer",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname140C\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "displayName": "InternetExplorer/InternetZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname270C\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneDownloadSignedActiveXControls",
+      "displayName": "InternetExplorer/InternetZoneDownloadSignedActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneDownloadSignedActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1001\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneDownloadUnsignedActiveXControls",
+      "displayName": "InternetExplorer/InternetZoneDownloadUnsignedActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneDownloadUnsignedActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1004\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneEnableCrossSiteScriptingFilter",
+      "displayName": "InternetExplorer/InternetZoneEnableCrossSiteScriptingFilter",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneEnableCrossSiteScriptingFilter",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1409\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
+      "displayName": "InternetExplorer/InternetZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2709\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
+      "displayName": "InternetExplorer/InternetZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2708\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneEnableProtectedMode",
+      "displayName": "InternetExplorer/InternetZoneEnableProtectedMode",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneEnableProtectedMode",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2500\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneIncludeLocalPathWhenUploadingFilesToServer",
+      "displayName": "InternetExplorer/InternetZoneIncludeLocalPathWhenUploadingFilesToServer",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneIncludeLocalPathWhenUploadingFilesToServer",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname160A\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneInitializeAndScriptActiveXControls",
+      "displayName": "InternetExplorer/InternetZoneInitializeAndScriptActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneInitializeAndScriptActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1201\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneJavaPermissions",
+      "displayName": "InternetExplorer/InternetZoneJavaPermissions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneJavaPermissions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneLaunchingApplicationsAndFilesInIFRAME",
+      "displayName": "InternetExplorer/InternetZoneLaunchingApplicationsAndFilesInIFRAME",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneLaunchingApplicationsAndFilesInIFRAME",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1804\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneLogonOptions",
+      "displayName": "InternetExplorer/InternetZoneLogonOptions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneLogonOptions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1A00\" value=\"65536\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneNavigateWindowsAndFrames",
+      "displayName": "InternetExplorer/InternetZoneNavigateWindowsAndFrames",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneNavigateWindowsAndFrames",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1607\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
+      "displayName": "InternetExplorer/InternetZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2001\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneShowSecurityWarningForPotentiallyUnsafeFiles",
+      "displayName": "InternetExplorer/InternetZoneShowSecurityWarningForPotentiallyUnsafeFiles",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneShowSecurityWarningForPotentiallyUnsafeFiles",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1806\" value=\"1\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-InternetZoneUsePopupBlocker",
+      "displayName": "InternetExplorer/InternetZoneUsePopupBlocker",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/InternetZoneUsePopupBlocker",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1809\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-IntranetZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "displayName": "InternetExplorer/IntranetZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/IntranetZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname270C\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-IntranetZoneInitializeAndScriptActiveXControls",
+      "displayName": "InternetExplorer/IntranetZoneInitializeAndScriptActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/IntranetZoneInitializeAndScriptActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1201\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-IntranetZoneJavaPermissions",
+      "displayName": "InternetExplorer/IntranetZoneJavaPermissions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/IntranetZoneJavaPermissions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"65536\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LocalMachineZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "displayName": "InternetExplorer/LocalMachineZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LocalMachineZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname270C\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LocalMachineZoneJavaPermissions",
+      "displayName": "InternetExplorer/LocalMachineZoneJavaPermissions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LocalMachineZoneJavaPermissions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
       "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownInternetZoneAllowSmartScreenIE",
+      "displayName": "InternetExplorer/LockedDownInternetZoneAllowSmartScreenIE",
+      "isEncrypted": false,
       "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownInternetZoneAllowSmartScreenIE",
       "secretReferenceValueId": null,
-      "isEncrypted": false,
-      "value": "\u003cenabled /\u003e\u003cdata id=\"IZ_Partname2301\" value=\"0\" /\u003e"
+      "value": "<enabled /><data id=\"IZ_Partname2301\" value=\"0\" />"
     },
     {
       "@odata.type": "#microsoft.graph.omaSettingString",
-      "displayName": "InternetExplorer/SecurityZonesUseOnlyMachineSettings",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownIntranetJavaPermissions",
+      "displayName": "InternetExplorer/LockedDownIntranetJavaPermissions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownIntranetJavaPermissions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownLocalMachineZoneJavaPermissions",
+      "displayName": "InternetExplorer/LockedDownLocalMachineZoneJavaPermissions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownLocalMachineZoneJavaPermissions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownRestrictedSitesZoneAllowSmartScreenIE",
+      "displayName": "InternetExplorer/LockedDownRestrictedSitesZoneAllowSmartScreenIE",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownRestrictedSitesZoneAllowSmartScreenIE",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2301\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownRestrictedSitesZoneJavaPermissions",
+      "displayName": "InternetExplorer/LockedDownRestrictedSitesZoneJavaPermissions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownRestrictedSitesZoneJavaPermissions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-LockedDownTrustedSitesZoneJavaPermissions",
+      "displayName": "InternetExplorer/LockedDownTrustedSitesZoneJavaPermissions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/LockedDownTrustedSitesZoneJavaPermissions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-MKProtocolSecurityRestrictionInternetExplorerProcesses",
+      "displayName": "InternetExplorer/MKProtocolSecurityRestrictionInternetExplorerProcesses",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/MKProtocolSecurityRestrictionInternetExplorerProcesses",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-MimeSniffingSafetyFeatureInternetExplorerProcesses",
+      "displayName": "InternetExplorer/MimeSniffingSafetyFeatureInternetExplorerProcesses",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/MimeSniffingSafetyFeatureInternetExplorerProcesses",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-NotificationBarInternetExplorerProcesses",
+      "displayName": "InternetExplorer/NotificationBarInternetExplorerProcesses",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/NotificationBarInternetExplorerProcesses",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-PreventManagingSmartScreenFilter",
+      "displayName": "InternetExplorer/PreventManagingSmartScreenFilter",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/PreventManagingSmartScreenFilter",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IE9SafetyFilterOptions\" value=\"1\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-PreventPerUserInstallationOfActiveXControls",
+      "displayName": "InternetExplorer/PreventPerUserInstallationOfActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/PreventPerUserInstallationOfActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-ProtectionFromZoneElevationInternetExplorerProcesses",
+      "displayName": "InternetExplorer/ProtectionFromZoneElevationInternetExplorerProcesses",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/ProtectionFromZoneElevationInternetExplorerProcesses",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RemoveRunThisTimeButtonForOutdatedActiveXControls",
+      "displayName": "InternetExplorer/RemoveRunThisTimeButtonForOutdatedActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RemoveRunThisTimeButtonForOutdatedActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictActiveXInstallInternetExplorerProcesses",
+      "displayName": "InternetExplorer/RestrictActiveXInstallInternetExplorerProcesses",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictActiveXInstallInternetExplorerProcesses",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictFileDownloadInternetExplorerProcesses",
+      "displayName": "InternetExplorer/RestrictFileDownloadInternetExplorerProcesses",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictFileDownloadInternetExplorerProcesses",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowAccessToDataSources",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowAccessToDataSources",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowAccessToDataSources",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1406\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowActiveScripting",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowActiveScripting",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowActiveScripting",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1400\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowAutomaticPromptingForFileDownloads",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowAutomaticPromptingForFileDownloads",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowAutomaticPromptingForFileDownloads",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2200\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowBinaryAndScriptBehaviors",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowBinaryAndScriptBehaviors",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowBinaryAndScriptBehaviors",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2000\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowCopyPasteViaScript",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowCopyPasteViaScript",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowCopyPasteViaScript",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1407\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowDragAndDropCopyAndPasteFiles",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowDragAndDropCopyAndPasteFiles",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowDragAndDropCopyAndPasteFiles",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1802\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowFileDownloads",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowFileDownloads",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowFileDownloads",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1803\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowLessPrivilegedSites",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowLessPrivilegedSites",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowLessPrivilegedSites",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2101\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowLoadingOfXAMLFiles",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowLoadingOfXAMLFiles",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowLoadingOfXAMLFiles",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2402\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowMETAREFRESH",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowMETAREFRESH",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowMETAREFRESH",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1608\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowNETFrameworkReliantComponents",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowNETFrameworkReliantComponents",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowNETFrameworkReliantComponents",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2004\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowOnlyApprovedDomainsToUseActiveXControls",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowOnlyApprovedDomainsToUseActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowOnlyApprovedDomainsToUseActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname120b\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowOnlyApprovedDomainsToUseTDCActiveXControl",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname120c\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowScriptInitiatedWindows",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowScriptInitiatedWindows",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowScriptInitiatedWindows",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2102\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowScriptingOfInternetExplorerWebBrowserControls",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowScriptingOfInternetExplorerWebBrowserControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowScriptingOfInternetExplorerWebBrowserControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1206\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowScriptlets",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowScriptlets",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowScriptlets",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1209\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowSmartScreenIE",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowSmartScreenIE",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowSmartScreenIE",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2301\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowUpdatesToStatusBarViaScript",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowUpdatesToStatusBarViaScript",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowUpdatesToStatusBarViaScript",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2103\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowUserDataPersistence",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowUserDataPersistence",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowUserDataPersistence",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1606\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneAllowVBScriptToRunInInternetExplorer",
+      "displayName": "InternetExplorer/RestrictedSitesZoneAllowVBScriptToRunInInternetExplorer",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneAllowVBScriptToRunInInternetExplorer",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname140C\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "displayName": "InternetExplorer/RestrictedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname270C\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneDownloadSignedActiveXControls",
+      "displayName": "InternetExplorer/RestrictedSitesZoneDownloadSignedActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneDownloadSignedActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1001\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneDownloadUnsignedActiveXControls",
+      "displayName": "InternetExplorer/RestrictedSitesZoneDownloadUnsignedActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneDownloadUnsignedActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1004\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneEnableCrossSiteScriptingFilter",
+      "displayName": "InternetExplorer/RestrictedSitesZoneEnableCrossSiteScriptingFilter",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneEnableCrossSiteScriptingFilter",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1409\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
+      "displayName": "InternetExplorer/RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsAcrossWindows",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2709\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
+      "displayName": "InternetExplorer/RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneEnableDraggingOfContentFromDifferentDomainsWithinWindows",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2708\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneIncludeLocalPathWhenUploadingFilesToServer",
+      "displayName": "InternetExplorer/RestrictedSitesZoneIncludeLocalPathWhenUploadingFilesToServer",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneIncludeLocalPathWhenUploadingFilesToServer",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname160A\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneInitializeAndScriptActiveXControls",
+      "displayName": "InternetExplorer/RestrictedSitesZoneInitializeAndScriptActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneInitializeAndScriptActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1201\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneJavaPermissions",
+      "displayName": "InternetExplorer/RestrictedSitesZoneJavaPermissions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneJavaPermissions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneLaunchingApplicationsAndFilesInIFRAME",
+      "displayName": "InternetExplorer/RestrictedSitesZoneLaunchingApplicationsAndFilesInIFRAME",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneLaunchingApplicationsAndFilesInIFRAME",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1804\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneLogonOptions",
+      "displayName": "InternetExplorer/RestrictedSitesZoneLogonOptions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneLogonOptions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1A00\" value=\"196608\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneNavigateWindowsAndFrames",
+      "displayName": "InternetExplorer/RestrictedSitesZoneNavigateWindowsAndFrames",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneNavigateWindowsAndFrames",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1607\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneRunActiveXControlsAndPlugins",
+      "displayName": "InternetExplorer/RestrictedSitesZoneRunActiveXControlsAndPlugins",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneRunActiveXControlsAndPlugins",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1200\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
+      "displayName": "InternetExplorer/RestrictedSitesZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneRunNETFrameworkReliantComponentsSignedWithAuthenticode",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2001\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneScriptActiveXControlsMarkedSafeForScripting",
+      "displayName": "InternetExplorer/RestrictedSitesZoneScriptActiveXControlsMarkedSafeForScripting",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneScriptActiveXControlsMarkedSafeForScripting",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1405\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneScriptingOfJavaApplets",
+      "displayName": "InternetExplorer/RestrictedSitesZoneScriptingOfJavaApplets",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneScriptingOfJavaApplets",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1402\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneShowSecurityWarningForPotentiallyUnsafeFiles",
+      "displayName": "InternetExplorer/RestrictedSitesZoneShowSecurityWarningForPotentiallyUnsafeFiles",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneShowSecurityWarningForPotentiallyUnsafeFiles",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1806\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneTurnOnProtectedMode",
+      "displayName": "InternetExplorer/RestrictedSitesZoneTurnOnProtectedMode",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneTurnOnProtectedMode",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname2500\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-RestrictedSitesZoneUsePopupBlocker",
+      "displayName": "InternetExplorer/RestrictedSitesZoneUsePopupBlocker",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/RestrictedSitesZoneUsePopupBlocker",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1809\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-ScriptedWindowSecurityRestrictionsInternetExplorerProcesses",
+      "displayName": "InternetExplorer/ScriptedWindowSecurityRestrictionsInternetExplorerProcesses",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/ScriptedWindowSecurityRestrictionsInternetExplorerProcesses",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
       "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-SecurityZonesUseOnlyMachineSettings",
+      "displayName": "InternetExplorer/SecurityZonesUseOnlyMachineSettings",
+      "isEncrypted": false,
       "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/SecurityZonesUseOnlyMachineSettings",
       "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-SpecifyUseOfActiveXInstallerService",
+      "displayName": "InternetExplorer/SpecifyUseOfActiveXInstallerService",
       "isEncrypted": false,
-      "value": "\u003cenabled /\u003e"
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/SpecifyUseOfActiveXInstallerService",
+      "secretReferenceValueId": null,
+      "value": "<enabled />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-TrustedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "displayName": "InternetExplorer/TrustedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/TrustedSitesZoneDoNotRunAntimalwareAgainstActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname270C\" value=\"0\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-TrustedSitesZoneInitializeAndScriptActiveXControls",
+      "displayName": "InternetExplorer/TrustedSitesZoneInitializeAndScriptActiveXControls",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/TrustedSitesZoneInitializeAndScriptActiveXControls",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1201\" value=\"3\" />"
+    },
+    {
+      "@odata.type": "#microsoft.graph.omaSettingString",
+      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-internetexplorer#InternetExplorer-TrustedSitesZoneJavaPermissions",
+      "displayName": "InternetExplorer/TrustedSitesZoneJavaPermissions",
+      "isEncrypted": false,
+      "omaUri": "./Device/Vendor/MSFT/Policy/Config/InternetExplorer/TrustedSitesZoneJavaPermissions",
+      "secretReferenceValueId": null,
+      "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"65536\" />"
     }
-  ]
+  ],
+  "supportsScopeTags": true
 }
