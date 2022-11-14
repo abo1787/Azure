@@ -210,7 +210,7 @@
   "localSecurityOptionsMinimumSessionSecurityForNtlmSspBasedServers": "none",
   "localSecurityOptionsOnlyElevateSignedExecutables": false,
   "localSecurityOptionsRestrictAnonymousAccessToNamedPipesAndShares": false,
-  "localSecurityOptionsSmartCardRemovalBehavior": "lockWorkstation",
+  "localSecurityOptionsSmartCardRemovalBehavior": "noAction",
   "localSecurityOptionsStandardUserElevationPromptBehavior": "notConfigured",
   "localSecurityOptionsSwitchToSecureDesktopWhenPromptingForElevation": false,
   "localSecurityOptionsUseAdminApprovalMode": false,
