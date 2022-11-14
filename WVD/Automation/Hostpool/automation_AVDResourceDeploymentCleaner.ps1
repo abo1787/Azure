@@ -9,7 +9,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 1.0.0
+    Version : 1.0.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -54,8 +54,13 @@ else {
 #endregion
 
 #region Cleanup old Resource Group Deployments
-Write-Output "Removing previous resource group deployments in '$resourceGroupName'..."
+Write-Output "Checking previous resource group deployments in '$resourceGroupName'..."
 $deploymentsToDelete = Get-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName | Where-Object { ($_.DeploymentName -notlike "HostPool*") -and ($_.Timestamp -lt ((Get-Date).AddDays(-1))) }
+if (!$deploymentsToDelete) {
+  Write-Output "There are no eligible deployments to be cleaned up"
+  exit
+}
+Write-Output "Removing previous resource group deployments in '$resourceGroupName'..."
 foreach ($deployment in $deploymentsToDelete) {
   try {
     Remove-AzResourceGroupDeployment -ResourceGroupName $resourceGroupName -Name $deployment.DeploymentName | Out-Null
@@ -65,4 +70,5 @@ foreach ($deployment in $deploymentsToDelete) {
     Write-Error "Error deleting resource group deployment '$($deployment.DeploymentName)'" 
   }
 }
+Write-Output "All eligible deployments have been removed"
 #endregion
