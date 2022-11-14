@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.0.0
+    Version : 2.0.1
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -69,7 +69,6 @@ $rollbackTriggered = $false
 $gpuNVidia = $false
 $gpuAMD = $false
 $acceleratedNetworkingEnabled = $false
-$poolUpgradeSuccessful = $false
 
 # Setting ErrorActionPreference to stop script execution when error occurs
 $ErrorActionPreference = "Stop"
@@ -168,9 +167,6 @@ if ($acceleratedNetworkingCapable -eq 'True') {
 else { 
   $acceleratedNetworkingCapable = $false 
 }
-
-# Get the agent version of current hosts
-$agentVersion = $sessionHosts | Sort-Object LastUpdateTime -Descending | Select-Object -First 1 | Select-Object -ExpandProperty AgentVersion
 
 # Calculate number of hosts to deploy
 [int]$vmNumberOfInstances = $sessionHosts.Count
@@ -560,62 +556,8 @@ if ($poolAvailable -eq $true) {
 }
 #endregion
 
-#region Upgrade
-if ($poolAvailable -eq $true) {
-  # Wait for all new session hosts to upgrade
-  Write-Output "Waiting for new hosts to upgrade..."
-  [int]$upgradedHosts = 0
-  $upgradeStartTime = Get-Date
-  $upgradeTimeoutTime = $upgradeStartTime.AddMinutes(20)
-  foreach ($newSessionHost in $newSessionHosts) {
-    $hasUpgraded = $false
-    while ($(Get-Date) -le $upgradeTimeoutTime -and $hasUpgraded -eq $false) {
-      $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost
-      if ($newVMStatus.Status -eq "Available" -and $newVMStatus.AgentVersion -eq $agentVersion) {
-        $hasUpgraded = $true
-        $upgradedHosts = $upgradedHosts + 1
-      }
-    }
-  }
-
-  # If all hosts haven't upgraded then reboot hosts that haven't upgraded to try again
-  if ($upgradedHosts -lt $vmNumberOfInstances) {
-    $avdNewSessionHosts = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name | Where-Object { $avdSessionHostNames -contains $_.Name }
-    $failedUpgradeHosts = $avdNewSessionHosts | Where-Object { $_.AgentVersion -ne $agentVersion }
-    foreach ($failedUpgradeHost in $failedUpgradeHosts) {
-      $failedVMName = $failedUpgradeHost.Name.Split("/")[1]
-      $failedVMName = $failedVMName.Split(".")[0]
-      $vm = Get-AzVM | Where-Object { $_.Name -eq $failedVMName }
-      Restart-AzVM -Name $failedVMName -ResourceGroupName $vm.ResourceGroupName -NoWait | Out-Null
-      Write-Output "Host '$failedVMName' has been rebooted to re-attempt upgrade"
-    }
-  }
-
-  # Wait for all failed upgrade session hosts to upgrade
-  [int]$upgradedHosts = 0
-  $upgradeStartTime = Get-Date
-  $upgradeTimeoutTime = $upgradeStartTime.AddMinutes(20)
-  foreach ($newSessionHost in $newSessionHosts) {
-    $hasUpgraded = $false
-    while ($(Get-Date) -le $upgradeTimeoutTime -and $hasUpgraded -eq $false) {
-      $newVMStatus = Get-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost
-      if ($newVMStatus.Status -eq "Available" -and $newVMStatus.AgentVersion -eq $agentVersion) {
-        $hasUpgraded = $true
-        $upgradedHosts = $upgradedHosts + 1
-      }
-    }
-  }
-
-  # Check to see if all hosts upgraded successfully, if not call rollback
-  if ($upgradedHosts -eq $vmNumberOfInstances) {
-    $poolUpgradeSuccessful = $true
-    Write-Output "All new hosts have now upgraded"
-  }
-}
-#endregion
-
 #region Accelerated Networking
-if ($poolUpgradeSuccessful -eq $true) {
+if ($poolAvailable -eq $true) {
   # Enable Accelerated Networking if SKU supports it
   if ($acceleratedNetworkingCapable -eq $true) {
     foreach ($newSessionHost in $newSessionHosts) {
@@ -646,7 +588,7 @@ if ($poolUpgradeSuccessful -eq $true) {
 #endregion
 
 #region Enable new hosts
-if ($poolUpgradeSuccessful -eq $true) {
+if ($poolAvailable -eq $true) {
   Write-Output "Allowing sessions to connect to new hosts"
   foreach ($newSessionHost in $newSessionHosts) {
     $newVMName = $newSessionHost.Split(".")[0]
@@ -660,73 +602,8 @@ if ($poolUpgradeSuccessful -eq $true) {
 }
 #endregion
 
-#region Roll-Back on upgrade failure
-if ($poolAvailable -eq $true -and $poolDeploymentSuccessful -eq $true -and $poolUpgradeSuccessful -eq $false) {
-  Write-Warning "One or more session hosts failed to upgrade before the timeout period expired. The host pool upgrade process will now be rolled back"
-  $rollbackTriggered = $true
-
-  # Get reqs for domain removal
-  $domainPass = ConvertTo-SecureString -String $domainJoinPlain -AsPlainText -Force
-
-  # Remove failed session hosts from host pool & domain
-  Write-Output "Starting removal of all newly deployed session hosts..."
-  $domainRemovalSuccess = $false
-  foreach ($newSessionHost in $newSessionHosts) {
-    $newVMName = $newSessionHost.Split(".")[0]
- 
-    # Remove session host from domain
-    Write-Output "Removing host '$newVMName' from domain..."
-    $deploymentName = ($newVMName + '-RemoveFromDomain-' + (Get-Date -Format FileDateTimeUniversal))
-    New-AzResourceGroupDeployment `
-      -Name $deploymentName `
-      -ResourceGroupName $resourceGroupName `
-      -TemplateUri https://raw.githubusercontent.com/Bistech/Azure/master/WVD/Hostpool/removeVMsFromDomain.json `
-      -VMName $newVMName `
-      -Location $originalHostpoolDeployment.Parameters.vmLocation.Value `
-      -DomainUser $originalHostpoolDeployment.Parameters.administratorAccountUsername.Value `
-      -DomainPass $domainPass `
-      -AsJob | Out-Null
-  }
-
-  Write-Output "Waiting for all domain removal jobs to complete..."
-  Get-Job | Wait-Job | Out-Null
-  Write-Output "All newly deployed hosts have been successfully removed from the domain"
-  $domainRemovalSuccess = $true
-
-  Write-Output "Removing newly deployed hosts from Azure..."
-  $azureRemovalSuccess = $false
-  foreach ($newSessionHost in $newSessionHosts) {
-    $newVMName = $newSessionHost.Split(".")[0]
-
-    # Remove session host
-    Remove-AzWvdSessionHost -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -Name $newSessionHost -Force | Out-Null
-
-    # Get the VM
-    $vm = Get-AzVM -Name $newVMName -ResourceGroupName $resourceGroupName
-
-    # Delete the VM
-    Remove-AzVM -ResourceGroupName $resourceGroupName -Name $newVMName -Force | Out-Null
-        
-    # Delete VM NIC
-    Get-AzNetworkInterface -ResourceId $vm.NetworkProfile.NetworkInterfaces.Id | Remove-AzNetworkInterface -Force | Out-Null
-
-    # Delete VM OS Disk
-    Remove-AzDisk -ResourceGroupName $resourceGroupName -DiskName $vm.StorageProfile.OsDisk.Name -Force | Out-Null
-
-    Write-Output "Host '$newVMName' has successfully been removed from Azure"
-  }
-  Write-Output "All newly deployed hosts have been successfully removed from Azure"
-  $azureRemovalSuccess = $true
-  Write-Output "Host pool '$($hostpool.Name)' rollback has been completed successfully"
-  Write-Error "Update failed for host pool '$($hostpool.Name)' and the deployment was rolled back" -ErrorAction Continue
-
-  # Remove template parameter file
-  Remove-Item $updateHostpoolParametersFilePath
-}
-#endregion
-
 #region Old Hosts
-if ($poolUpgradeSuccessful -eq $true) {
+if ($poolAvailable -eq $true) {
   # Remove template parameter file
   Remove-Item $updateHostpoolParametersFilePath
 
@@ -918,7 +795,7 @@ if ($poolUpgradeSuccessful -eq $true) {
 #region Output results
 # Convert boolean values to json
 $poolDeploymentSuccessful = $poolDeploymentSuccessful | ConvertTo-Json
-$poolUpgradeSuccessful = $poolUpgradeSuccessful | ConvertTo-Json
+$poolAvailable = $poolAvailable | ConvertTo-Json
 $gpuNVidia = $gpuNVidia | ConvertTo-Json
 $gpuAMD = $gpuAMD | ConvertTo-Json
 $acceleratedNetworkingEnabled = $acceleratedNetworkingEnabled | ConvertTo-Json
@@ -934,7 +811,7 @@ $logMessage = @{
   resourceGroupName_s            = $resourceGroupName;
   updateType_s                   = $updateType;  
   hostsDeployedSuccess_b         = $poolDeploymentSuccessful;
-  hostsUpgradedSuccess_b         = $poolUpgradeSuccessful;
+  hostsAvailableSuccess_b        = $poolAvailable;
   gpuNVidiaDeployed_b            = $gpuNVidia;
   gpuAMDDeployed_b               = $gpuAMD;
   acceleratedNetworkingEnabled_b = $acceleratedNetworkingEnabled;
