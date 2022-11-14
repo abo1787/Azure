@@ -1060,6 +1060,5 @@
       "secretReferenceValueId": null,
       "value": "<enabled /><data id=\"IZ_Partname1C00\" value=\"65536\" />"
     }
-  ],
-  "supportsScopeTags": true
+  ]
 }

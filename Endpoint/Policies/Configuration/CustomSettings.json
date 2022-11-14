@@ -502,6 +502,5 @@
       "secretReferenceValueId": null,
       "value": "<enabled/><data id=\"EnableScriptBlockInvocationLogging\" value=\"false\" />"
     }
-  ],
-  "supportsScopeTags": true
+  ]
 }

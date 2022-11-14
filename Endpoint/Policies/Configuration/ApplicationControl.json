@@ -218,7 +218,6 @@
   "localSecurityOptionsVirtualizeFileAndRegistryWriteFailuresToPerUserLocations": false,
   "smartScreenBlockOverrideForFiles": true,
   "smartScreenEnableInShell": true,
-  "supportsScopeTags": true,
   "userRightsAccessCredentialManagerAsTrustedCaller": null,
   "userRightsActAsPartOfTheOperatingSystem": null,
   "userRightsAllowAccessFromNetwork": null,

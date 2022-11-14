@@ -16,7 +16,6 @@
   "pinSpecialCharactersUsage": "allowed",
   "pinUppercaseCharactersUsage": "allowed",
   "securityDeviceRequired": true,
-  "supportsScopeTags": true,
   "unlockWithBiometricsEnabled": true,
   "useCertificatesForOnPremisesAuthEnabled": false,
   "useSecurityKeyForSignin": false,

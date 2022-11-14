@@ -294,7 +294,6 @@
   "storageRequireMobileDeviceEncryption": false,
   "storageRestrictAppDataToSystemVolume": false,
   "storageRestrictAppInstallToSystemVolume": false,
-  "supportsScopeTags": true,
   "systemTelemetryProxyServer": null,
   "taskManagerBlockEndTask": false,
   "tenantLockdownRequireNetworkDuringOutOfBoxExperience": false,
