@@ -211,7 +211,7 @@
   "localSecurityOptionsOnlyElevateSignedExecutables": false,
   "localSecurityOptionsRestrictAnonymousAccessToNamedPipesAndShares": true,
   "localSecurityOptionsSmartCardRemovalBehavior": "lockWorkstation",
-  "localSecurityOptionsStandardUserElevationPromptBehavior": "automaticallyDenyElevationRequests",
+  "localSecurityOptionsStandardUserElevationPromptBehavior": "promptForCredentialsOnTheSecureDesktop",
   "localSecurityOptionsSwitchToSecureDesktopWhenPromptingForElevation": false,
   "localSecurityOptionsUseAdminApprovalMode": true,
   "localSecurityOptionsUseAdminApprovalModeForAdministrators": true,
