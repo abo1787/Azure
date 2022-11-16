@@ -1,0 +1,64 @@
+{
+   "DisplayName": "GLOBAL - REGISTRATION - Require MFA",
+   "State": "enabledForReportingButNotEnforced",
+   "Conditions": {
+      "Applications": {
+         "ExcludeApplications": [],
+         "IncludeApplications": [],
+         "IncludeAuthenticationContextClassReferences": [],
+         "IncludeUserActions": [
+            "urn:user:registerdevice"
+         ]
+      },
+      "ClientAppTypes": [
+         "all"
+      ],
+      "ClientApplications": {
+         "ExcludeServicePrincipals": null,
+         "IncludeServicePrincipals": null
+      },
+      "Devices": {
+         "DeviceFilter": null
+      },
+      "Locations": {
+         "ExcludeLocations": [],
+         "IncludeLocations": []
+      },
+      "Platforms": {
+         "ExcludePlatforms": [],
+         "IncludePlatforms": []
+      },
+      "ServicePrincipalRiskLevels": [],
+      "SignInRiskLevels": [],
+      "UserRiskLevels": [],
+      "Users": {
+         "ExcludeGroups": [],
+         "ExcludeRoles": [
+            "d29b2b05-8046-44ba-8758-1e26182fcf32"
+         ],
+         "ExcludeUsers": [],
+         "IncludeGroups": [],
+         "IncludeRoles": [],
+         "IncludeUsers": [
+            "All"
+         ]
+      },
+      "AdditionalProperties": {}
+   },
+   "GrantControls": {
+      "BuiltInControls": [
+         "mfa"
+      ],
+      "CustomAuthenticationFactors": [],
+      "Operator": "OR",
+      "TermsOfUse": [],
+      "AdditionalProperties": {}
+   },
+   "SessionControls": {
+      "ApplicationEnforcedRestrictions": null,
+      "CloudAppSecurity": null,
+      "PersistentBrowser": null,
+      "SignInFrequency": null
+   },
+   "AdditionalProperties": {}
+}
