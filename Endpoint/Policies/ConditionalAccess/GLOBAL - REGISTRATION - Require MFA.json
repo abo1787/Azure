@@ -13,10 +13,6 @@
       "ClientAppTypes": [
          "all"
       ],
-      "ClientApplications": {
-         "ExcludeServicePrincipals": null,
-         "IncludeServicePrincipals": null
-      },
       "Devices": {
          "DeviceFilter": null
       },
@@ -28,7 +24,6 @@
          "ExcludePlatforms": [],
          "IncludePlatforms": []
       },
-      "ServicePrincipalRiskLevels": [],
       "SignInRiskLevels": [],
       "UserRiskLevels": [],
       "Users": {
