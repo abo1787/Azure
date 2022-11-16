@@ -10,9 +10,7 @@
             "urn:user:registerdevice"
          ]
       },
-      "ClientAppTypes": [
-         "all"
-      ],
+      "ClientAppTypes": null,
       "Devices": {
          "DeviceFilter": null
       },
