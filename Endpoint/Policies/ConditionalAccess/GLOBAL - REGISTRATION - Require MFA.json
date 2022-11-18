@@ -1,59 +1,57 @@
 {
-   "DisplayName": "GLOBAL - REGISTRATION - Require MFA",
-   "State": "enabledForReportingButNotEnforced",
-   "Conditions": {
-      "Applications": {
-         "ExcludeApplications": [],
-         "IncludeApplications": [],
-         "IncludeAuthenticationContextClassReferences": [],
-         "IncludeUserActions": [
-            "urn:user:registerdevice"
-         ]
-      },
-      "ClientAppTypes": [
-         "all"
+  "DisplayName": "GLOBAL - REGISTRATION - Require MFA",
+  "State": "enabledForReportingButNotEnforced",
+  "Conditions": {
+    "Applications": {
+      "ExcludeApplications": [],
+      "IncludeApplications": [],
+      "IncludeAuthenticationContextClassReferences": [],
+      "IncludeUserActions": [
+        "urn:user:registerdevice"
+      ]
+    },
+    "ClientAppTypes": [
+      "all"
+    ],
+    "Devices": {
+      "DeviceFilter": null
+    },
+    "Locations": {
+      "ExcludeLocations": null,
+      "IncludeLocations": null
+    },
+    "Platforms": {
+      "ExcludePlatforms": null,
+      "IncludePlatforms": null
+    },
+    "SignInRiskLevels": [],
+    "UserRiskLevels": [],
+    "Users": {
+      "ExcludeGroups": [],
+      "ExcludeRoles": [
+        "d29b2b05-8046-44ba-8758-1e26182fcf32"
       ],
-      "Devices": {
-         "DeviceFilter": null
-      },
-      "Locations": {
-         "ExcludeLocations": [],
-         "IncludeLocations": []
-      },
-      "Platforms": {
-         "ExcludePlatforms": [],
-         "IncludePlatforms": []
-      },
-      "SignInRiskLevels": [],
-      "UserRiskLevels": [],
-      "Users": {
-         "ExcludeGroups": [],
-         "ExcludeRoles": [
-            "d29b2b05-8046-44ba-8758-1e26182fcf32"
-         ],
-         "ExcludeUsers": [],
-         "IncludeGroups": [],
-         "IncludeRoles": [],
-         "IncludeUsers": [
-            "All"
-         ]
-      },
-      "AdditionalProperties": {}
-   },
-   "GrantControls": {
-      "BuiltInControls": [
-         "mfa"
-      ],
-      "CustomAuthenticationFactors": [],
-      "Operator": "OR",
-      "TermsOfUse": [],
-      "AdditionalProperties": {}
-   },
-   "SessionControls": {
-      "ApplicationEnforcedRestrictions": null,
-      "CloudAppSecurity": null,
-      "PersistentBrowser": null,
-      "SignInFrequency": null
-   },
-   "AdditionalProperties": {}
+      "ExcludeUsers": [],
+      "IncludeGroups": [],
+      "IncludeRoles": [],
+      "IncludeUsers": [
+        "All"
+      ]
+    }
+  },
+  "GrantControls": {
+    "BuiltInControls": [
+      "mfa"
+    ],
+    "CustomAuthenticationFactors": [],
+    "Operator": "OR",
+    "TermsOfUse": []
+  },
+  "SessionControls": {
+    "ApplicationEnforcedRestrictions": null,
+    "CloudAppSecurity": null,
+    "PersistentBrowser": null,
+    "SignInFrequency": null
+  },
+  "AdditionalProperties": {}
 }

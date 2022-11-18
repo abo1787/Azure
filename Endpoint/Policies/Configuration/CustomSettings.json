@@ -24,15 +24,6 @@
       "omaUri": "./Vendor/MSFT/DMClient/Provider/MS DM Server/FirstSyncStatus/SkipUserStatusPage",
       "secretReferenceValueId": null,
       "value": true
-    },
-    {
-      "@odata.type": "#microsoft.graph.omaSettingString",
-      "description": "https://docs.microsoft.com/en-us/windows/client-management/mdm/policy-csp-connectivity#connectivity-hardeneduncpaths",
-      "displayName": "Connectivity/HardenedUNCPaths",
-      "isEncrypted": false,
-      "omaUri": "./Device/Vendor/MSFT/Policy/Config/Connectivity/HardenedUNCPaths",
-      "secretReferenceValueId": null,
-      "value": "<enabled /><data id=\"Pol_HardenedPaths\" value=\"\\\\*\\SYSVOL&#xF000;RequireMutualAuthentication=1,RequireIntegrity=1&#xF000;\\\\*\\NETLOGON&#xF000;RequireMutualAuthentication=1,RequireIntegrity=1\" />"
     }
   ]
 }
