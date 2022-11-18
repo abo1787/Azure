@@ -3,7 +3,6 @@
   "State": "enabledForReportingButNotEnforced",
   "Conditions": {
     "Applications": {
-      "ApplicationFilter": null,
       "ExcludeApplications": [],
       "IncludeApplications": [],
       "IncludeAuthenticationContextClassReferences": [],
@@ -14,11 +13,17 @@
     "ClientAppTypes": [
       "all"
     ],
-    "ClientApplications": null,
-    "DeviceStates": null,
-    "Devices": null,
-    "Locations": null,
-    "Platforms": null,
+    "Devices": {
+      "DeviceFilter": null
+    },
+    "Locations": {
+      "ExcludeLocations": null,
+      "IncludeLocations": null
+    },
+    "Platforms": {
+      "ExcludePlatforms": null,
+      "IncludePlatforms": null
+    },
     "SignInRiskLevels": [],
     "UserRiskLevels": [],
     "Users": {
@@ -32,8 +37,7 @@
       "IncludeUsers": [
         "All"
       ]
-    },
-    "AdditionalProperties": {}
+    }
   },
   "GrantControls": {
     "BuiltInControls": [
