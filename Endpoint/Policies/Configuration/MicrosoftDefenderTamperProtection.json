@@ -1,0 +1,7 @@
+{
+  "@odata.type": "#microsoft.graph.windows10EndpointProtectionConfiguration",
+  "displayName": "Microsoft Defender Firewall Rules",
+  "description": null,
+  "version": 1,
+  "windowsDefenderTamperProtection": "enable"
+}

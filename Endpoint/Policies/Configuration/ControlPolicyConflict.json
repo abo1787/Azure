@@ -1,0 +1,20 @@
+{
+  "name": "Control Policy Conflict",
+  "description": "Controls the winner of MDM vs Group Policy",
+  "platforms": "windows10",
+  "technologies": "mdm",
+  "settings": [
+    {
+      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "device_vendor_msft_policy_config_controlpolicyconflict_mdmwinsovergp",
+        "choiceSettingValue": {
+          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "value": "device_vendor_msft_policy_config_controlpolicyconflict_mdmwinsovergp_1",
+          "children": []
+        }
+      }
+    }
+  ]
+}

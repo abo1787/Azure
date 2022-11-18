@@ -1,6 +1,6 @@
 {
   "@odata.type": "#microsoft.graph.windowsHealthMonitoringConfiguration",
-  "displayName": "Intune Data Collection Policy",
+  "displayName": "Data Collection",
   "description": null,
   "version": 1,
   "allowDeviceHealthMonitoring": "enabled",
