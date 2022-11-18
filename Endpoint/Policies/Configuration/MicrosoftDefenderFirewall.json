@@ -1,5 +1,5 @@
 {
-  "name": "Microsoft Defender Firewall - Settings Catalog",
+  "name": "Microsoft Defender Firewall",
   "description": "",
   "platforms": "windows10",
   "technologies": "mdm",
