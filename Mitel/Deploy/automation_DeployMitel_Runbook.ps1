@@ -28,7 +28,7 @@
 
 .NOTES
     Author   Dave Pierson
-    Version  1.0.0
+    Version  1.0.1
 
     # THIS SOFTWARE IS PROVIDED AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES 
     # INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -741,7 +741,7 @@ if ($deployMivb -eq $true) {
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $mivbOsDiskName `
-      -StorageAccountType StandardSSD_LRS `
+      -StorageAccountType Standard_LRS `
       -DiskSizeInGB $mivbOSDiskSize `
       -CreateOption FromImage `
       -Caching ReadWrite `
@@ -809,7 +809,7 @@ if ($deployMicollab -eq $true) {
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $micollabOsDiskName `
-      -StorageAccountType StandardSSD_LRS `
+      -StorageAccountType Standard_LRS `
       -DiskSizeInGB $micollabOSDiskSize `
       -CreateOption FromImage `
       -Caching ReadWrite `
@@ -876,7 +876,7 @@ if ($deployMicc -eq $true) {
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $miccOsDiskName `
-      -StorageAccountType StandardSSD_LRS `
+      -StorageAccountType Premium_LRS `
       -DiskSizeInGB $miccOSDiskSize `
       -CreateOption FromImage `
       -Caching ReadWrite `
@@ -953,7 +953,7 @@ if ($deploySQL -eq $true) {
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $sqlOsDiskName `
-      -StorageAccountType StandardSSD_LRS `
+      -StorageAccountType Premium_LRS `
       -DiskSizeInGB $sqlOSDiskSize `
       -CreateOption FromImage `
       -Caching ReadWrite `
@@ -1026,7 +1026,7 @@ if ($deployIVR -eq $true) {
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $ivrOsDiskName `
-      -StorageAccountType StandardSSD_LRS `
+      -StorageAccountType Premium_LRS `
       -DiskSizeInGB $ivrOSDiskSize `
       -CreateOption FromImage `
       -Caching ReadWrite `
@@ -1093,7 +1093,7 @@ if ($deployMivcr -eq $true) {
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $mivcrOsDiskName `
-      -StorageAccountType StandardSSD_LRS `
+      -StorageAccountType Premium_LRS `
       -DiskSizeInGB $mivcrOSDiskSize `
       -CreateOption FromImage `
       -Caching ReadWrite `
@@ -1194,7 +1194,7 @@ if ($deployTeleworkerMBG -eq $true) {
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $teleworkerMBGOsDiskName `
-      -StorageAccountType StandardSSD_LRS `
+      -StorageAccountType Standard_LRS `
       -DiskSizeInGB $teleworkerMBGOSDiskSize `
       -CreateOption FromImage `
       -Caching ReadWrite `
@@ -1291,7 +1291,7 @@ if ($deploySIPMBG -eq $true) {
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $sipMBGOsDiskName `
-      -StorageAccountType StandardSSD_LRS `
+      -StorageAccountType Standard_LRS `
       -DiskSizeInGB $sipMBGOSDiskSize `
       -CreateOption FromImage `
       -Caching ReadWrite `
