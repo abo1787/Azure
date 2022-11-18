@@ -35,7 +35,7 @@
         "settingDefinitionId": "device_vendor_msft_passportforwork_{tenantid}",
         "groupSettingCollectionValue": [
           {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+            "@odata.type": "microsoft.graph.deviceManagementConfigurationGroupSettingValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
