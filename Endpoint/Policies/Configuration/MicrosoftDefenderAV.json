@@ -167,7 +167,7 @@
         "settingDefinitionId": "device_vendor_msft_policy_config_defender_attacksurfacereductionrules",
         "groupSettingCollectionValue": [
           {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+            "@odata.type": "microsoft.graph.deviceManagementConfigurationGroupSettingValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
@@ -486,6 +486,7 @@
         "settingDefinitionId": "device_vendor_msft_policy_config_defender_threatseveritydefaultaction",
         "groupSettingCollectionValue": [
           {
+            "@odata.type": "microsoft.graph.deviceManagementConfigurationGroupSettingValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
