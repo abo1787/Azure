@@ -1,0 +1,3010 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "customerPrefix": {
+      "type": "string",
+      "minLength": 3,
+      "maxLength": 3,
+      "metadata": {
+        "description": "The 3 character Azure prefix for the customer for all resources"
+      }
+    },
+    "customerInternetIp": {
+      "type": "string",
+      "metadata": {
+        "description": "The customers overload IP address to whitelist for access"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The location for all existing and new resources"
+      },
+      "defaultValue": "uksouth",
+      "allowedValues": [
+        "australiacentral",
+        "australiacentral2",
+        "australiaeast",
+        "australiasoutheast",
+        "brazilsouth",
+        "brazilsoutheast",
+        "canadacentral",
+        "canadaeast",
+        "centralindia",
+        "centralus",
+        "centraluseuap",
+        "eastasia",
+        "eastus",
+        "eastus2",
+        "eastus2euap",
+        "francecentral",
+        "francesouth",
+        "germanynorth",
+        "germanywestcentral",
+        "japaneast",
+        "japanwest",
+        "koreacentral",
+        "koreasouth",
+        "northcentralus",
+        "northeurope",
+        "norwayeast",
+        "norwaywest",
+        "southafricanorth",
+        "southafricawest",
+        "southcentralus",
+        "southeastasia",
+        "southindia",
+        "swedencentral",
+        "switzerlandnorth",
+        "switzerlandwest",
+        "uaecentral",
+        "uaenorth",
+        "uksouth",
+        "ukwest",
+        "westcentralus",
+        "westeurope",
+        "westindia",
+        "westus",
+        "westus2",
+        "westus3"
+      ]
+    },
+    "resilientCustomer": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' if the customer has MiVB/MBGs in different locations for resiliency"
+      }
+    },
+    "useExistingVnet": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use existing Virtual Network"
+      }
+    },
+    "useExistingVnetResourceGroup": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use existing Virtual Network resource group"
+      }
+    },
+    "existingVirtualNetworkResourceGroup": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'useExistingVnetResourceGroup' is true specify the name of the resource group to deploy the virtual network into"
+      }
+    },
+    "vnetAddressSpace": {
+      "type": "string",
+      "defaultValue": "10.200.0.0/16",
+      "metadata": {
+        "description": "If 'existingVnet' is false specify the address space to use for the virtual network"
+      }
+    },
+    "intAddressSubnet": {
+      "type": "string",
+      "defaultValue": "10.200.0.0/24",
+      "metadata": {
+        "description": "If 'existingVnet' is false specify the address space to use for the application/internal server subnet"
+      }
+    },
+    "dmzAddressSubnet": {
+      "type": "string",
+      "defaultValue": "10.200.200.0/24",
+      "metadata": {
+        "description": "If 'existingVnet' is false specify the address space to use for the DMZ server subnet"
+      }
+    },
+    "gatewayAddressSubnet": {
+      "type": "string",
+      "defaultValue": "10.200.255.0/24",
+      "metadata": {
+        "description": "If 'existingVnet' is false specify the address space to use for the gateway subnet"
+      }
+    },
+    "existingVirtualNetworkName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'existingVnet' is true specify the name of the virtual network"
+      }
+    },
+    "existingIntSubnetName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'existingVnet' is true specify the name of the existing internal subnet"
+      }
+    },
+    "existingDMZSubnetName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'existingVnet' is true specify the name of the existing DMZ subnet"
+      }
+    },
+    "useExistingNSG": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use existing Network Security Groups"
+      }
+    },
+    "existingIntNSGName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'existingNSG' is true specify the name of the existing internal network security group"
+      }
+    },
+    "existingDmzNSGName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'existingNSG' is true specify the name of the existing DMZ network security group"
+      }
+    },
+    "useExistingVNG": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use an existing Virtual Network Gateway"
+      }
+    },
+    "existingVNGName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'useExistingVNG' is true specify the name of the existing virtual network gateway"
+      }
+    },
+    "fortigatePeering": {
+      "type": "string",
+      "allowedValues": [
+        "bn-fg01-lon",
+        "bn-fg02-lon",
+        "bn-fg03-lon"
+      ],
+      "metadata": {
+        "description": "Choose the FortiGate where the customer VPN gateway will terminate"
+      }
+    },
+    "privateDNSZoneName": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the Private DNS Zone that either already exists or is to be created"
+      }
+    },
+    "useExistingStorageAccount": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to use an existing storage account"
+      }
+    },
+    "existingStorageAccountName": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "If 'useExistingStorageAccount' is true specify the name of the storage account"
+      }
+    },
+    "MSLTimezone": {
+      "type": "string",
+      "defaultValue": "Europe/London",
+      "allowedValues": [
+        "Africa/Abidjan",
+        "Africa/Accra",
+        "Africa/Addis_Ababa",
+        "Africa/Algiers",
+        "Africa/Asmara",
+        "Africa/Asmera",
+        "Africa/Bamako",
+        "Africa/Bangui",
+        "Africa/Banjul",
+        "Africa/Bissau",
+        "Africa/Blantyre",
+        "Africa/Brazzaville",
+        "Africa/Bujumbura",
+        "Africa/Cairo",
+        "Africa/Casablanca",
+        "Africa/Ceuta",
+        "Africa/Conakry",
+        "Africa/Dakar",
+        "Africa/Dar_es_Salaam",
+        "Africa/Djibouti",
+        "Africa/Douala",
+        "Africa/El_Aaiun",
+        "Africa/Freetown",
+        "Africa/Gaborone",
+        "Africa/Harare",
+        "Africa/Johannesburg",
+        "Africa/Juba",
+        "Africa/Kampala",
+        "Africa/Khartoum",
+        "Africa/Kigali",
+        "Africa/Kinshasa",
+        "Africa/Lagos",
+        "Africa/Libreville",
+        "Africa/Lome",
+        "Africa/Luanda",
+        "Africa/Lubumbashi",
+        "Africa/Lusaka",
+        "Africa/Malabo",
+        "Africa/Maputo",
+        "Africa/Maseru",
+        "Africa/Mbabane",
+        "Africa/Mogadishu",
+        "Africa/Monrovia",
+        "Africa/Nairobi",
+        "Africa/Ndjamena",
+        "Africa/Niamey",
+        "Africa/Nouakchott",
+        "Africa/Ouagadougou",
+        "Africa/Porto-Novo",
+        "Africa/Sao_Tome",
+        "Africa/Timbuktu",
+        "Africa/Tripoli",
+        "Africa/Tunis",
+        "Africa/Windhoek",
+        "America/Adak",
+        "America/Anchorage",
+        "America/Anguilla",
+        "America/Antigua",
+        "America/Araguaina",
+        "America/Argentina/Buenos_Aires",
+        "America/Argentina/Catamarca",
+        "America/Argentina/ComodRivadavia",
+        "America/Argentina/Cordoba",
+        "America/Argentina/Jujuy",
+        "America/Argentina/La_Rioja",
+        "America/Argentina/Mendoza",
+        "America/Argentina/Rio_Gallegos",
+        "America/Argentina/Salta",
+        "America/Argentina/San_Juan",
+        "America/Argentina/San_Luis",
+        "America/Argentina/Tucuman",
+        "America/Argentina/Ushuaia",
+        "America/Aruba",
+        "America/Asuncion",
+        "America/Atikokan",
+        "America/Atka",
+        "America/Bahia",
+        "America/Bahia_Banderas",
+        "America/Barbados",
+        "America/Belem",
+        "America/Belize",
+        "America/Blanc-Sablon",
+        "America/Boa_Vista",
+        "America/Bogota",
+        "America/Boise",
+        "America/Buenos_Aires",
+        "America/Cambridge_Bay",
+        "America/Campo_Grande",
+        "America/Cancun",
+        "America/Caracas",
+        "America/Catamarca",
+        "America/Cayenne",
+        "America/Cayman",
+        "America/Chicago",
+        "America/Chihuahua",
+        "America/Coral_Harbour",
+        "America/Cordoba",
+        "America/Costa_Rica",
+        "America/Creston",
+        "America/Cuiaba",
+        "America/Curacao",
+        "America/Danmarkshavn",
+        "America/Dawson",
+        "America/Dawson_Creek",
+        "America/Denver",
+        "America/Detroit",
+        "America/Dominica",
+        "America/Edmonton",
+        "America/Eirunepe",
+        "America/El_Salvador",
+        "America/Ensenada",
+        "America/Fort_Nelson",
+        "America/Fort_Wayne",
+        "America/Fortaleza",
+        "America/Glace_Bay",
+        "America/Godthab",
+        "America/Goose_Bay",
+        "America/Grand_Turk",
+        "America/Grenada",
+        "America/Guadeloupe",
+        "America/Guatemala",
+        "America/Guayaquil",
+        "America/Guyana",
+        "America/Halifax",
+        "America/Havana",
+        "America/Hermosillo",
+        "America/Indiana/Indianapolis",
+        "America/Indiana/Knox",
+        "America/Indiana/Marengo",
+        "America/Indiana/Petersburg",
+        "America/Indiana/Tell_City",
+        "America/Indiana/Vevay",
+        "America/Indiana/Vincennes",
+        "America/Indiana/Winamac",
+        "America/Indianapolis",
+        "America/Inuvik",
+        "America/Iqaluit",
+        "America/Jamaica",
+        "America/Jujuy",
+        "America/Juneau",
+        "America/Kentucky/Louisville",
+        "America/Kentucky/Monticello",
+        "America/Knox_IN",
+        "America/Kralendijk",
+        "America/La_Paz",
+        "America/Lima",
+        "America/Los_Angeles",
+        "America/Louisville",
+        "America/Lower_Princes",
+        "America/Maceio",
+        "America/Managua",
+        "America/Manaus",
+        "America/Marigot",
+        "America/Martinique",
+        "America/Matamoros",
+        "America/Mazatlan",
+        "America/Mendoza",
+        "America/Menominee",
+        "America/Merida",
+        "America/Metlakatla",
+        "America/Mexico_City",
+        "America/Miquelon",
+        "America/Moncton",
+        "America/Monterrey",
+        "America/Montevideo",
+        "America/Montreal",
+        "America/Montserrat",
+        "America/Nassau",
+        "America/New_York",
+        "America/Nipigon",
+        "America/Nome",
+        "America/Noronha",
+        "America/North_Dakota/Beulah",
+        "America/North_Dakota/Center",
+        "America/North_Dakota/New_Salem",
+        "America/Ojinaga",
+        "America/Panama",
+        "America/Pangnirtung",
+        "America/Paramaribo",
+        "America/Phoenix",
+        "America/Port-au-Prince",
+        "America/Port_of_Spain",
+        "America/Porto_Acre",
+        "America/Porto_Velho",
+        "America/Puerto_Rico",
+        "America/Punta_Arenas",
+        "America/Rainy_River",
+        "America/Rankin_Inlet",
+        "America/Recife",
+        "America/Regina",
+        "America/Resolute",
+        "America/Rio_Branco",
+        "America/Rosario",
+        "America/Santa_Isabel",
+        "America/Santarem",
+        "America/Santiago",
+        "America/Santo_Domingo",
+        "America/Sao_Paulo",
+        "America/Scoresbysund",
+        "America/Shiprock",
+        "America/Sitka",
+        "America/St_Barthelemy",
+        "America/St_Johns",
+        "America/St_Kitts",
+        "America/St_Lucia",
+        "America/St_Thomas",
+        "America/St_Vincent",
+        "America/Swift_Current",
+        "America/Tegucigalpa",
+        "America/Thule",
+        "America/Thunder_Bay",
+        "America/Tijuana",
+        "America/Toronto",
+        "America/Tortola",
+        "America/Vancouver",
+        "America/Virgin",
+        "America/Whitehorse",
+        "America/Winnipeg",
+        "America/Yakutat",
+        "America/Yellowknife",
+        "Antarctica/Casey",
+        "Antarctica/Davis",
+        "Antarctica/DumontDUrville",
+        "Antarctica/Macquarie",
+        "Antarctica/Mawson",
+        "Antarctica/McMurdo",
+        "Antarctica/Palmer",
+        "Antarctica/Rothera",
+        "Antarctica/South_Pole",
+        "Antarctica/Syowa",
+        "Antarctica/Troll",
+        "Antarctica/Vostok",
+        "Arctic/Longyearbyen",
+        "Asia/Aden",
+        "Asia/Almaty",
+        "Asia/Amman",
+        "Asia/Anadyr",
+        "Asia/Aqtau",
+        "Asia/Aqtobe",
+        "Asia/Ashgabat",
+        "Asia/Ashkhabad",
+        "Asia/Atyrau",
+        "Asia/Baghdad",
+        "Asia/Bahrain",
+        "Asia/Baku",
+        "Asia/Bangkok",
+        "Asia/Barnaul",
+        "Asia/Beirut",
+        "Asia/Bishkek",
+        "Asia/Brunei",
+        "Asia/Calcutta",
+        "Asia/Chita",
+        "Asia/Choibalsan",
+        "Asia/Chongqing",
+        "Asia/Chungking",
+        "Asia/Colombo",
+        "Asia/Dacca",
+        "Asia/Damascus",
+        "Asia/Dhaka",
+        "Asia/Dili",
+        "Asia/Dubai",
+        "Asia/Dushanbe",
+        "Asia/Famagusta",
+        "Asia/Gaza",
+        "Asia/Harbin",
+        "Asia/Hebron",
+        "Asia/Ho_Chi_Minh",
+        "Asia/Hong_Kong",
+        "Asia/Hovd",
+        "Asia/Irkutsk",
+        "Asia/Istanbul",
+        "Asia/Jakarta",
+        "Asia/Jayapura",
+        "Asia/Jerusalem",
+        "Asia/Kabul",
+        "Asia/Kamchatka",
+        "Asia/Karachi",
+        "Asia/Kashgar",
+        "Asia/Kathmandu",
+        "Asia/Katmandu",
+        "Asia/Khandyga",
+        "Asia/Kolkata",
+        "Asia/Krasnoyarsk",
+        "Asia/Kuala_Lumpur",
+        "Asia/Kuching",
+        "Asia/Kuwait",
+        "Asia/Macao",
+        "Asia/Macau",
+        "Asia/Magadan",
+        "Asia/Makassar",
+        "Asia/Manila",
+        "Asia/Muscat",
+        "Asia/Nicosia",
+        "Asia/Novokuznetsk",
+        "Asia/Novosibirsk",
+        "Asia/Omsk",
+        "Asia/Oral",
+        "Asia/Phnom_Penh",
+        "Asia/Pontianak",
+        "Asia/Pyongyang",
+        "Asia/Qatar",
+        "Asia/Qostanay",
+        "Asia/Qyzylorda",
+        "Asia/Rangoon",
+        "Asia/Riyadh",
+        "Asia/Saigon",
+        "Asia/Sakhalin",
+        "Asia/Samarkand",
+        "Asia/Seoul",
+        "Asia/Shanghai",
+        "Asia/Singapore",
+        "Asia/Srednekolymsk",
+        "Asia/Taipei",
+        "Asia/Tashkent",
+        "Asia/Tbilisi",
+        "Asia/Tehran",
+        "Asia/Tel_Aviv",
+        "Asia/Thimbu",
+        "Asia/Thimphu",
+        "Asia/Tokyo",
+        "Asia/Tomsk",
+        "Asia/Ujung_Pandang",
+        "Asia/Ulaanbaatar",
+        "Asia/Ulan_Bator",
+        "Asia/Urumqi",
+        "Asia/Ust-Nera",
+        "Asia/Vientiane",
+        "Asia/Vladivostok",
+        "Asia/Yakutsk",
+        "Asia/Yangon",
+        "Asia/Yekaterinburg",
+        "Asia/Yerevan",
+        "Atlantic/Azores",
+        "Atlantic/Bermuda",
+        "Atlantic/Canary",
+        "Atlantic/Cape_Verde",
+        "Atlantic/Faeroe",
+        "Atlantic/Faroe",
+        "Atlantic/Jan_Mayen",
+        "Atlantic/Madeira",
+        "Atlantic/Reykjavik",
+        "Atlantic/South_Georgia",
+        "Atlantic/St_Helena",
+        "Atlantic/Stanley",
+        "Australia/ACT",
+        "Australia/Adelaide",
+        "Australia/Brisbane",
+        "Australia/Broken_Hill",
+        "Australia/Canberra",
+        "Australia/Currie",
+        "Australia/Darwin",
+        "Australia/Eucla",
+        "Australia/Hobart",
+        "Australia/LHI",
+        "Australia/Lindeman",
+        "Australia/Lord_Howe",
+        "Australia/Melbourne",
+        "Australia/NSW",
+        "Australia/North",
+        "Australia/Perth",
+        "Australia/Queensland",
+        "Australia/South",
+        "Australia/Sydney",
+        "Australia/Tasmania",
+        "Australia/Victoria",
+        "Australia/West",
+        "Australia/Yancowinna",
+        "Brazil/Acre",
+        "Brazil/DeNoronha",
+        "Brazil/East",
+        "Brazil/West",
+        "CET",
+        "CST6CDT",
+        "Canada/Atlantic",
+        "Canada/Central",
+        "Canada/Eastern",
+        "Canada/Mountain",
+        "Canada/Newfoundland",
+        "Canada/Pacific",
+        "Canada/Saskatchewan",
+        "Canada/Yukon",
+        "Chile/Continental",
+        "Chile/EasterIsland",
+        "Cuba",
+        "EET",
+        "EST",
+        "EST5EDT",
+        "Egypt",
+        "Eire",
+        "Europe/Amsterdam",
+        "Europe/Andorra",
+        "Europe/Astrakhan",
+        "Europe/Athens",
+        "Europe/Belfast",
+        "Europe/Belgrade",
+        "Europe/Berlin",
+        "Europe/Bratislava",
+        "Europe/Brussels",
+        "Europe/Bucharest",
+        "Europe/Budapest",
+        "Europe/Busingen",
+        "Europe/Chisinau",
+        "Europe/Copenhagen",
+        "Europe/Dublin",
+        "Europe/Gibraltar",
+        "Europe/Guernsey",
+        "Europe/Helsinki",
+        "Europe/Isle_of_Man",
+        "Europe/Istanbul",
+        "Europe/Jersey",
+        "Europe/Kaliningrad",
+        "Europe/Kiev",
+        "Europe/Kirov",
+        "Europe/Lisbon",
+        "Europe/Ljubljana",
+        "Europe/London",
+        "Europe/Luxembourg",
+        "Europe/Madrid",
+        "Europe/Malta",
+        "Europe/Mariehamn",
+        "Europe/Minsk",
+        "Europe/Monaco",
+        "Europe/Moscow",
+        "Europe/Nicosia",
+        "Europe/Oslo",
+        "Europe/Paris",
+        "Europe/Podgorica",
+        "Europe/Prague",
+        "Europe/Riga",
+        "Europe/Rome",
+        "Europe/Samara",
+        "Europe/San_Marino",
+        "Europe/Sarajevo",
+        "Europe/Saratov",
+        "Europe/Simferopol",
+        "Europe/Skopje",
+        "Europe/Sofia",
+        "Europe/Stockholm",
+        "Europe/Tallinn",
+        "Europe/Tirane",
+        "Europe/Tiraspol",
+        "Europe/Ulyanovsk",
+        "Europe/Uzhgorod",
+        "Europe/Vaduz",
+        "Europe/Vatican",
+        "Europe/Vienna",
+        "Europe/Vilnius",
+        "Europe/Volgograd",
+        "Europe/Warsaw",
+        "Europe/Zagreb",
+        "Europe/Zaporozhye",
+        "Europe/Zurich",
+        "GB",
+        "GB-Eire",
+        "GMT",
+        "GMT+0",
+        "GMT-0",
+        "GMT0",
+        "Greenwich",
+        "HST",
+        "Hongkong",
+        "Iceland",
+        "Indian/Antananarivo",
+        "Indian/Chagos",
+        "Indian/Christmas",
+        "Indian/Cocos",
+        "Indian/Comoro",
+        "Indian/Kerguelen",
+        "Indian/Mahe",
+        "Indian/Maldives",
+        "Indian/Mauritius",
+        "Indian/Mayotte",
+        "Indian/Reunion",
+        "Iran",
+        "Israel",
+        "Jamaica",
+        "Japan",
+        "Kwajalein",
+        "Libya",
+        "MET",
+        "MST",
+        "MST7MDT",
+        "Mexico/BajaNorte",
+        "Mexico/BajaSur",
+        "Mexico/General",
+        "NZ",
+        "NZ-CHAT",
+        "Navajo",
+        "PRC",
+        "PST8PDT",
+        "Pacific/Apia",
+        "Pacific/Auckland",
+        "Pacific/Bougainville",
+        "Pacific/Chatham",
+        "Pacific/Chuuk",
+        "Pacific/Easter",
+        "Pacific/Efate",
+        "Pacific/Enderbury",
+        "Pacific/Fakaofo",
+        "Pacific/Fiji",
+        "Pacific/Funafuti",
+        "Pacific/Galapagos",
+        "Pacific/Gambier",
+        "Pacific/Guadalcanal",
+        "Pacific/Guam",
+        "Pacific/Honolulu",
+        "Pacific/Johnston",
+        "Pacific/Kiritimati",
+        "Pacific/Kosrae",
+        "Pacific/Kwajalein",
+        "Pacific/Majuro",
+        "Pacific/Marquesas",
+        "Pacific/Midway",
+        "Pacific/Nauru",
+        "Pacific/Niue",
+        "Pacific/Norfolk",
+        "Pacific/Noumea",
+        "Pacific/Pago_Pago",
+        "Pacific/Palau",
+        "Pacific/Pitcairn",
+        "Pacific/Pohnpei",
+        "Pacific/Ponape",
+        "Pacific/Port_Moresby",
+        "Pacific/Rarotonga",
+        "Pacific/Saipan",
+        "Pacific/Samoa",
+        "Pacific/Tahiti",
+        "Pacific/Tarawa",
+        "Pacific/Tongatapu",
+        "Pacific/Truk",
+        "Pacific/Wake",
+        "Pacific/Wallis",
+        "Pacific/Yap",
+        "Poland",
+        "Portugal",
+        "ROC",
+        "ROK",
+        "Singapore",
+        "Turkey",
+        "UCT",
+        "US/Alaska",
+        "US/Aleutian",
+        "US/Arizona",
+        "US/Central",
+        "US/East-Indiana",
+        "US/Eastern",
+        "US/Hawaii",
+        "US/Indiana-Starke",
+        "US/Michigan",
+        "US/Mountain",
+        "US/Pacific",
+        "US/Pacific-New",
+        "US/Samoa",
+        "UTC",
+        "Universal",
+        "W-SU",
+        "WET",
+        "Zulu"
+      ],
+      "metadata": {
+        "description": "Choose the timezone for the MSL machines"
+      }
+    },
+    "MSLPassword": {
+      "type": "securestring",
+      "minLength": 8,
+      "maxLength": 41,
+      "metadata": {
+        "description": "The MSL initial password. Minimum length of 8 characters with alphanumeric characters only"
+      }
+    },
+    "MSLRemoteNetworks": {
+      "type": "string",
+      "minLength": 9,
+      "maxLength": 256,
+      "metadata": {
+        "description": "A comma-delimited list of remote networks wrapped with \"\" allowed to access the servers (eg. \"1.2.3.4/32\", \"5.6.7.8/32\")"
+      }
+    },
+    "windowsPassword": {
+      "type": "securestring",
+      "minLength": 12,
+      "maxLength": 72,
+      "metadata": {
+        "description": "Password for the Virtual Machine. Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character. The value must be between 12 and 72 characters long."
+      }
+    },
+    "deployMivb": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy a MiVoice Business server"
+      }
+    },
+    "numberOfMivbs": {
+      "type": "int",
+      "defaultValue": 1,
+      "allowedValues": [
+        1,
+        2,
+        4
+      ],
+      "metadata": {
+        "description": "The amount of Mivoice Business Servers to deploy"
+      }
+    },
+    "MivbVersion": {
+      "type": "string",
+      "defaultValue": "9.4 SP1",
+      "allowedValues": [
+        "9.4 SP1",
+        "9.4",
+        "9.3.0.19"
+      ],
+      "metadata": {
+        "description": "Specify the version of MiVoice Business to deploy"
+      }
+    },
+    "MivbSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "MIVB250",
+        "vmSize": "Standard_F2s_v2",
+        "diskSizeGB": 32
+      },
+      "allowedValues": [
+        {
+          "name": "MIVB250",
+          "vmSize": "Standard_F2s_v2",
+          "diskSizeGB": 32
+        },
+        {
+          "name": "MiVB1500",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 32
+        },
+        {
+          "name": "MiVB2500",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 32
+        },
+        {
+          "name": "MiVB5000",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 32
+        }
+      ],
+      "metadata": {
+        "description": "Choose the size of the MiVB to deploy"
+      }
+    },
+    "mivbIpAddressAssignment": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Choose the IP address assignment type for the MiVoice Business server(s)"
+      }
+    },
+    "mivb01IpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the MiVoice Business 01 server"
+      }
+    },
+    "mivb02IpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the MiVoice Business 02 server"
+      }
+    },
+    "mivb03IpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the MiVoice Business 03 server"
+      }
+    },
+    "mivb04IpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the MiVoice Business 04 server"
+      }
+    },
+    "deployMicollab": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy a MiCollab server"
+      }
+    },
+    "micollabVersion": {
+      "type": "string",
+      "defaultValue": "9.6.0.105",
+      "allowedValues": [
+        "9.6.0.105",
+        "9.6.0.13",
+        "9.5.0.101"
+      ],
+      "metadata": {
+        "description": "Specify the version of MiCollab to deploy"
+      }
+    },
+    "micollabSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "MiCollab250",
+        "vmSize": "Standard_D2s_v4",
+        "diskSizeGB": 64
+      },
+      "allowedValues": [
+        {
+          "name": "MiCollab250",
+          "vmSize": "Standard_D2s_v4",
+          "diskSizeGB": 64
+        },
+        {
+          "name": "MiCollab1500",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MiCollab2500",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MiCollab5000",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 128
+        }
+      ],
+      "metadata": {
+        "description": "Choose the size of the MiCollab to deploy"
+      }
+    },
+    "micollabIpAddressAssignment": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Choose the IP address assignment type for the MiCollab server"
+      }
+    },
+    "micollabIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the MiCollab server"
+      }
+    },
+    "deployMicc": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy a MiContact Centre server"
+      }
+    },
+    "miccVersion": {
+      "type": "string",
+      "defaultValue": "Server 2022",
+      "allowedValues": [
+        "Server 2022",
+        "Server 2022 Small-Disk",
+        "Server 2019",
+        "Server 2019 Small-Disk"
+      ],
+      "metadata": {
+        "description": "The Windows Server version for the VM. This will pick the latest Gen2 image of this given Windows version."
+      }
+    },
+    "miccSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "MiCCSmall",
+        "vmSize": "Standard_D2s_v4",
+        "diskSizeGB": 256
+      },
+      "allowedValues": [
+        {
+          "name": "MiCCSmall",
+          "vmSize": "Standard_D2s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MiCCMedium",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 512
+        },
+        {
+          "name": "MiCCLarge",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 1024
+        },
+        {
+          "name": "MiCCXLarge",
+          "vmSize": "Standard_D16s_v4",
+          "diskSizeGB": 1024
+        }
+      ],
+      "metadata": {
+        "description": "Choose MiCC system size."
+      }
+    },
+    "miccIpAddressAssignment": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Choose the IP address assignment type for the MiCC server"
+      }
+    },
+    "miccIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the MiCC server"
+      }
+    },
+    "deploySQL": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy a SQL server"
+      }
+    },
+    "sqlVersion": {
+      "type": "string",
+      "defaultValue": "SQL Server 2019 Standard on Windows Server 2022",
+      "allowedValues": [
+        "SQL Server 2022 Enterprise on Windows Server 2022",
+        "SQL Server 2022 Standard on Windows Server 2022",
+        "SQL Server 2019 Enterprise on Windows Server 2022",
+        "SQL Server 2019 Standard on Windows Server 2022",
+        "SQL Server 2019 Enterprise on Windows Server 2019",
+        "SQL Server 2019 Standard on Windows Server 2019",
+        "SQL Server 2017 Enterprise on Windows Server 2019",
+        "SQL Server 2017 Standard on Windows Server 2019",
+        "SQL Server 2017 Enterprise on Windows Server 2016",
+        "SQL Server 2017 Standard on Windows Server 2016"
+      ],
+      "metadata": {
+        "description": "The SQL and Windows Server versions for the VM. This will pick the latest Gen2 image of this given SQL/Windows version."
+      }
+    },
+    "sqlSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "SQLSmall",
+        "vmSize": "Standard_D4s_v4",
+        "diskSizeGB": 128,
+        "secondDiskSizeGB": 256
+      },
+      "allowedValues": [
+        {
+          "name": "SQLSmall",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 128,
+          "secondDiskSizeGB": 256
+        },
+        {
+          "name": "SQLMedium",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 128,
+          "secondDiskSizeGB": 512
+        },
+        {
+          "name": "SQLLarge",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 128,
+          "secondDiskSizeGB": 512
+        }
+      ],
+      "metadata": {
+        "description": "Choose SQL system size."
+      }
+    },
+    "sqlIpAddressAssignment": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Choose the IP address assignment type for the SQL server"
+      }
+    },
+    "sqlIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the SQL server"
+      }
+    },
+    "deployIVR": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy an IVR server"
+      }
+    },
+    "IVRVersion": {
+      "type": "string",
+      "defaultValue": "Server 2022",
+      "allowedValues": [
+        "Server 2022",
+        "Server 2022 Small-Disk",
+        "Server 2019",
+        "Server 2019 Small-Disk"
+      ],
+      "metadata": {
+        "description": "The Windows Server version for the VM. This will pick the latest Gen2 image of this given Windows version."
+      }
+    },
+    "IVRIpAddressAssignment": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Choose the IP address assignment type for the IVR server"
+      }
+    },
+    "IVRIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the IVR server"
+      }
+    },
+    "deployMivcr": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy a MiVCR server"
+      }
+    },
+    "mivcrVersion": {
+      "type": "string",
+      "defaultValue": "Server 2022",
+      "allowedValues": [
+        "Server 2022",
+        "Server 2022 Small-Disk",
+        "Server 2019",
+        "Server 2019 Small-Disk"
+      ],
+      "metadata": {
+        "description": "The Windows Server version for the VM. This will pick the latest Gen2 image of this given Windows version."
+      }
+    },
+    "mivcrSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "MIRServerASmall",
+        "vmSize": "Standard_D4s_v4",
+        "diskSizeGB": 256
+      },
+      "allowedValues": [
+        {
+          "name": "MIRServerASmall",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerAMedium",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerALarge",
+          "vmSize": "Standard_D16s_v4",
+          "diskSizeGB": 512
+        },
+        {
+          "name": "MIRServerBAudioSmall",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerBAudioMedium",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerBAudioLarge",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerCSmall",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerCMedium",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerCLarge",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerDSmall",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerDMedium",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerDLarge",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerESmall",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "MIRServerEMedium",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerELarge",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerHSmall",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerHMedium",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRServerHLarge",
+          "vmSize": "Standard_D8s_v4",
+          "diskSizeGB": 256
+        },
+        {
+          "name": "MIRArchiveNAS",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "SATranscriptionCore",
+          "vmSize": "Standard_D2s_v4",
+          "diskSizeGB": 128
+        },
+        {
+          "name": "SATranscriptionDecoder",
+          "vmSize": "Standard_E8s_v4",
+          "diskSizeGB": 128
+        }
+      ],
+      "metadata": {
+        "description": "Choose MiVCR system size."
+      }
+    },
+    "mivcrIpAddressAssignment": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Choose the IP address assignment type for the MiVCR server"
+      }
+    },
+    "mivcrIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the MiVCR server"
+      }
+    },
+    "deployTeleworkerMBG": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy an MBG server in the DMZ to be used for Teleworker"
+      }
+    },
+    "teleworkerMBGVersion": {
+      "type": "string",
+      "defaultValue": "11.4.0.227",
+      "allowedValues": [
+        "11.4.0.227",
+        "11.3.0.68"
+      ],
+      "metadata": {
+        "description": "Specify the version of MBG to deploy"
+      }
+    },
+    "teleworkerMBGSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "MBG250",
+        "vmSize": "Standard_F2s_v2",
+        "diskSizeGB": 32
+      },
+      "allowedValues": [
+        {
+          "name": "MBG250",
+          "vmSize": "Standard_F2s_v2",
+          "diskSizeGB": 32
+        },
+        {
+          "name": "MBG2500",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 64
+        },
+        {
+          "name": "MBG2500WebPlus",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 64
+        },
+        {
+          "name": "MBG5000",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 64
+        },
+        {
+          "name": "MBG5000WebPlus",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 64
+        }
+      ],
+      "metadata": {
+        "description": "Choose the size of the Teleworker MBG to deploy"
+      }
+    },
+    "teleworkerMBGIpAddressAssignment": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Choose the IP address assignment type for the Teleworker MBG server"
+      }
+    },
+    "teleworkerMBGIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the Teleworker MBG server"
+      }
+    },
+    "DeploySipMBG": {
+      "type": "string",
+      "defaultValue": "true",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' to deploy an MBG server in the DMZ to be used for SIP Trunks/SRC"
+      }
+    },
+    "sipMBGVersion": {
+      "type": "string",
+      "defaultValue": "11.4.0.227",
+      "allowedValues": [
+        "11.4.0.227",
+        "11.3.0.68"
+      ],
+      "metadata": {
+        "description": "Specify the version of MBG to deploy"
+      }
+    },
+    "sipMBGSize": {
+      "type": "object",
+      "defaultValue": {
+        "name": "MBG250",
+        "vmSize": "Standard_F2s_v2",
+        "diskSizeGB": 32
+      },
+      "allowedValues": [
+        {
+          "name": "MBG250",
+          "vmSize": "Standard_F2s_v2",
+          "diskSizeGB": 32
+        },
+        {
+          "name": "MBG2500",
+          "vmSize": "Standard_F4s_v2",
+          "diskSizeGB": 64
+        },
+        {
+          "name": "MBG2500WebPlus",
+          "vmSize": "Standard_D4s_v4",
+          "diskSizeGB": 64
+        },
+        {
+          "name": "MBG5000",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 64
+        },
+        {
+          "name": "MBG5000WebPlus",
+          "vmSize": "Standard_F8s_v2",
+          "diskSizeGB": 64
+        }
+      ],
+      "metadata": {
+        "description": "Choose the size of the SIP Trunk/SRC MBG to deploy"
+      }
+    },
+    "sipMBGIpAddressAssignment": {
+      "type": "string",
+      "defaultValue": "Dynamic",
+      "allowedValues": [
+        "Dynamic",
+        "Static"
+      ],
+      "metadata": {
+        "description": "Choose the IP address assignment type for the SIP MBG server"
+      }
+    },
+    "sipMBGIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static IP address for the SIP MBG server"
+      }
+    }
+  },
+  "variables": {
+    "azureADTenantId": "865e6b39-cc48-411c-a19c-8073d2c2e024",
+    "prefix": "[concat(parameters('customerPrefix'), '-')]",
+    "locationShorten": {
+      "australiacentral": "acl",
+      "australiacentral2": "acl2",
+      "australiaeast": "ae",
+      "australiasoutheast": "ase",
+      "brazilsouth": "brs",
+      "brazilsoutheast": "bse",
+      "canadacentral": "cnc",
+      "canadaeast": "cne",
+      "centralindia": "inc",
+      "centralus": "cus",
+      "centraluseuap": "ccy",
+      "eastasia": "ea",
+      "eastus": "eus",
+      "eastus2": "eus2",
+      "eastus2euap": "ecy",
+      "francecentral": "frc",
+      "francesouth": "frs",
+      "germanynorth": "gn",
+      "germanywestcentral": "gwc",
+      "japaneast": "jpe",
+      "japanwest": "jpw",
+      "koreacentral": "krc",
+      "koreasouth": "krs",
+      "northcentralus": "ncus",
+      "northeurope": "ne",
+      "norwayeast": "nwe",
+      "norwaywest": "nww",
+      "southafricanorth": "san",
+      "southafricawest": "saw",
+      "southcentralus": "scus",
+      "southeastasia": "sea",
+      "southindia": "ins",
+      "swedencentral": "sdc",
+      "switzerlandnorth": "szn",
+      "switzerlandwest": "szw",
+      "uaecentral": "uac",
+      "uaenorth": "uan",
+      "uksouth": "uks",
+      "ukwest": "ukw",
+      "westcentralus": "wcus",
+      "westeurope": "we",
+      "westindia": "inw",
+      "westus": "wus",
+      "westus2": "wus2",
+      "westus3": "wus3"
+    },
+    "locationShortName": "[variables('locationShorten')[parameters('location')]]",
+    "applicationResourceGroupName": "[concat(variables('prefix'), 'mit-app-', variables('locationShortName'), '-rg')]",
+    "DMZResourceGroupName": "[concat(variables('prefix'), 'mit-dmz-', variables('locationShortName'), '-rg')]",
+    "mivbName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb-01')]",
+    "mivbLanNicName": "[concat(variables('mivbName'), '-nic')]",
+    "mivbOsDiskName": "[concat(variables('mivbName'), '-disk-os')]",
+    "mivb02Name": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb-02')]",
+    "mivb02LanNicName": "[concat(variables('mivb02Name'), '-nic')]",
+    "mivb02OsDiskName": "[concat(variables('mivb02Name'), '-disk-os')]",
+    "mivb03Name": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb-03')]",
+    "mivb03LanNicName": "[concat(variables('mivb03Name'), '-nic')]",
+    "mivb03OsDiskName": "[concat(variables('mivb03Name'), '-disk-os')]",
+    "mivb04Name": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb-04')]",
+    "mivb04LanNicName": "[concat(variables('mivb04Name'), '-nic')]",
+    "mivb04OsDiskName": "[concat(variables('mivb04Name'), '-disk-os')]",
+    "micollabName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-micollab')]",
+    "micollabImageName": "[concat(variables('micollabName'), '-image')]",
+    "micollabLanNicName": "[concat(variables('micollabName'), '-nic')]",
+    "micollabOsDiskName": "[concat(variables('micollabName'), '-disk-os')]",
+    "osVersions": {
+      "Server 2022": "2022-datacenter-g2",
+      "Server 2022 Small-Disk": "2022-datacenter-smalldisk-g2",
+      "Server 2019": "2019-datacenter-gensecond",
+      "Server 2019 Small-Disk": "2019-datacenter-smalldisk-g2"
+    },
+    "miccOsVersion": "[variables('osVersions')[parameters('miccVersion')]]",
+    "miccName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-micc')]",
+    "miccLanNicName": "[concat(variables('miccName'), '-nic')]",
+    "miccOsDiskName": "[concat(variables('miccName'), '-disk-os')]",
+    "sqlOsVersion": "[variables('osVersions')[parameters('sqlVersion')]]",
+    "sqlName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-sql')]",
+    "sqlLanNicName": "[concat(variables('sqlName'), '-nic')]",
+    "sqlOsDiskName": "[concat(variables('sqlName'), '-disk-os')]",
+    "sqlDataDiskName": "[concat(variables('sqlName'), '-disk-data')]",
+    "ivrOsVersion": "[variables('osVersions')[parameters('ivrVersion')]]",
+    "ivrName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-ivr-01')]",
+    "ivrLanNicName": "[concat(variables('ivrName'), '-nic')]",
+    "ivrOsDiskName": "[concat(variables('ivrName'), '-disk-os')]",
+    "ivrSize": {
+      "name": "MiCCIVR",
+      "vmSize": "Standard_F4s_v2",
+      "diskSizeGB": 128
+    },
+    "mivcrOsVersion": "[variables('osVersions')[parameters('mivcrVersion')]]",
+    "mivcrName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivcr')]",
+    "mivcrLanNicName": "[concat(variables('mivcrName'), '-nic')]",
+    "mivcrOsDiskName": "[concat(variables('mivcrName'), '-disk-os')]",
+    "teleworkerMBGName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mbg-01')]",
+    "teleworkerMBGImageName": "[concat(variables('teleworkerMBGName'), '-image')]",
+    "teleworkerMBGLanNicName": "[concat(variables('teleworkerMBGName'), '-nic-lan')]",
+    "teleworkerMBGDMZNicName": "[concat(variables('teleworkerMBGName'), '-nic-dmz')]",
+    "teleworkerMBGOsDiskName": "[concat(variables('teleworkerMBGName'), '-disk-os')]",
+    "teleworkerMBGDMZPublicIPAddressName": "[concat(variables('teleworkerMBGName'), '-pip')]",
+    "sipMBGName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mbg-02')]",
+    "sipMBGImageName": "[concat(variables('sipMBGName'), '-image')]",
+    "sipMBGLanNicName": "[concat(variables('sipMBGName'), '-nic-lan')]",
+    "sipMBGDMZNicName": "[concat(variables('sipMBGName'), '-nic-dmz')]",
+    "sipMBGOsDiskName": "[concat(variables('sipMBGName'), '-disk-os')]",
+    "sipMBGDMZPublicIPAddressName": "[concat(variables('sipMBGName'), '-pip')]",
+    "newVnetResourceGroup": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-rg')]",
+    "vnetResourceGroupName": "[if(equals(parameters('useExistingVnetResourceGroup'), 'true'), parameters('existingVirtualNetworkResourceGroup'), variables('newVnetResourceGroup'))]",
+    "newVnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-vnet')]",
+    "vnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingVirtualNetworkName'), variables('newVnetName'))]",
+    "newIntSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-snet')]",
+    "intSubnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingIntSubnetName'), variables('newIntSubnetName'))]",
+    "newDmzSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-snet')]",
+    "dmzSubnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingDMZSubnetName'), variables('newDmzSubnetName'))]",
+    "newIntNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-nsg')]",
+    "intNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingIntNSGName'), variables('newIntNSGName'))]",
+    "newDmzNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-nsg')]",
+    "dmzNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingDmzNSGName'), variables('newDmzNSGName'))]",
+    "newStorageAccountName": "[concat(parameters('customerPrefix'), 'mitelsa')]",
+    "storageAccountName": "[if(equals(parameters('useExistingStorageAccount'), 'true'), parameters('existingStorageAccountName'), variables('newStorageAccountName'))]",
+    "keyVaultName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-kvt')]",
+    "customData": "[base64(concat('{\"domain-name\": \"', parameters('privateDnsZoneName'), '\", \"system-password\": \"', parameters('MSLPassword'), '\", \"remote-networks\": [',  parameters('MSLRemoteNetworks'), ']}'))]",
+    "newVngName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-vng-vpn')]",
+    "vngName": "[if(equals(parameters('useExistingVNG'), 'true'), parameters('existingVNGName'), variables('newVngName'))]"
+  },
+  "functions": [],
+  "resources": [
+    {
+      "type": "Microsoft.KeyVault/vaults",
+      "apiVersion": "2022-07-01",
+      "name": "[variables('keyVaultName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "enabledForDeployment": false,
+        "enabledForDiskEncryption": false,
+        "enabledForTemplateDeployment": false,
+        "tenantId": "[variables('azureADTenantId')]",
+        "accessPolicies": [],
+        "sku": {
+          "name": "standard",
+          "family": "A"
+        },
+        "networkAcls": {
+          "defaultAction": "Allow",
+          "bypass": "AzureServices"
+        }
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/accessPolicies",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), '/add')]",
+      "properties": {
+        "accessPolicies": [
+          {
+            "tenantId": "[variables('azureADTenantId')]",
+            "objectId": "6e1919d8-576f-4a7f-be10-5e1f20c75f64",
+            "permissions": {
+              "certificates": [],
+              "keys": [],
+              "secrets": [ "All" ],
+              "storage": []
+            }
+          }
+        ]
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'customerPrefix')]",
+      "properties": {
+        "value": "[parameters('customerPrefix')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'customerInternetIp')]",
+      "properties": {
+        "value": "[parameters('customerInternetIp')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'location')]",
+      "properties": {
+        "value": "[parameters('location')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetResourceGroupName')]",
+      "properties": {
+        "value": "[variables('vnetResourceGroupName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'applicationResourceGroupName')]",
+      "properties": {
+        "value": "[variables('applicationResourceGroupName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'DMZResourceGroupName')]",
+      "properties": {
+        "value": "[variables('DMZResourceGroupName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetAddressSpace')]",
+      "properties": {
+        "value": "[parameters('vnetAddressSpace')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'intAddressSubnet')]",
+      "properties": {
+        "value": "[parameters('intAddressSubnet')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzAddressSubnet')]",
+      "properties": {
+        "value": "[parameters('dmzAddressSubnet')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetName')]",
+      "properties": {
+        "value": "[variables('vnetName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'intSubnetName')]",
+      "properties": {
+        "value": "[variables('intSubnetName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzSubnetName')]",
+      "properties": {
+        "value": "[variables('dmzSubnetName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'intNSGName')]",
+      "properties": {
+        "value": "[variables('intNSGName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzNSGName')]",
+      "properties": {
+        "value": "[variables('dmzNSGName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'storageAccountName')]",
+      "properties": {
+        "value": "[variables('storageAccountName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'privateDNSZoneName')]",
+      "properties": {
+        "value": "[parameters('privateDNSZoneName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'MSLTimezone')]",
+      "properties": {
+        "value": "[parameters('MSLTimezone')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'MSLPassword')]",
+      "properties": {
+        "value": "[parameters('MSLPassword')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'windowsPassword')]",
+      "properties": {
+        "value": "[parameters('windowsPassword')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'MSLRemoteNetworks')]",
+      "properties": {
+        "value": "[parameters('MSLRemoteNetworks')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMivb')]",
+      "properties": {
+        "value": "[parameters('deployMivb')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbVersion')]",
+      "properties": {
+        "value": "[parameters('MivbVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbVMSize')]",
+      "properties": {
+        "value": "[parameters('MivbSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('MivbSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbName')]",
+      "properties": {
+        "value": "[variables('mivbName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbLanNicName')]",
+      "properties": {
+        "value": "[variables('mivbLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbOsDiskName')]",
+      "properties": {
+        "value": "[variables('mivbOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb02Name')]",
+      "properties": {
+        "value": "[variables('mivb02Name')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb02LanNicName')]",
+      "properties": {
+        "value": "[variables('mivb02LanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb02OsDiskName')]",
+      "properties": {
+        "value": "[variables('mivb02OsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb03Name')]",
+      "properties": {
+        "value": "[variables('mivb03Name')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb03LanNicName')]",
+      "properties": {
+        "value": "[variables('mivb03LanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb03OsDiskName')]",
+      "properties": {
+        "value": "[variables('mivb03OsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb04Name')]",
+      "properties": {
+        "value": "[variables('mivb04Name')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb04LanNicName')]",
+      "properties": {
+        "value": "[variables('mivb04LanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb04OsDiskName')]",
+      "properties": {
+        "value": "[variables('mivb04OsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMicollab')]",
+      "properties": {
+        "value": "[parameters('deployMicollab')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabVersion')]",
+      "properties": {
+        "value": "[parameters('micollabVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabVMSize')]",
+      "properties": {
+        "value": "[parameters('micollabSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('micollabSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabName')]",
+      "properties": {
+        "value": "[variables('micollabName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabImageName')]",
+      "properties": {
+        "value": "[variables('micollabImageName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabLanNicName')]",
+      "properties": {
+        "value": "[variables('micollabLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabOsDiskName')]",
+      "properties": {
+        "value": "[variables('micollabOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMicc')]",
+      "properties": {
+        "value": "[parameters('deployMicc')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccVersion')]",
+      "properties": {
+        "value": "[variables('miccOsVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccVMSize')]",
+      "properties": {
+        "value": "[parameters('miccSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('miccSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccName')]",
+      "properties": {
+        "value": "[variables('miccName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccLanNicName')]",
+      "properties": {
+        "value": "[variables('miccLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccOsDiskName')]",
+      "properties": {
+        "value": "[variables('miccOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deploySQL')]",
+      "properties": {
+        "value": "[parameters('deploySQL')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlVersion')]",
+      "properties": {
+        "value": "[variables('sqlOsVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlVMSize')]",
+      "properties": {
+        "value": "[parameters('sqlSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('sqlSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlDataDiskSize')]",
+      "properties": {
+        "value": "[parameters('sqlSize').secondDiskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlName')]",
+      "properties": {
+        "value": "[variables('sqlName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlLanNicName')]",
+      "properties": {
+        "value": "[variables('sqlLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlOsDiskName')]",
+      "properties": {
+        "value": "[variables('sqlOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlDataDiskName')]",
+      "properties": {
+        "value": "[variables('sqlDataDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployIVR')]",
+      "properties": {
+        "value": "[parameters('deployIVR')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrVersion')]",
+      "properties": {
+        "value": "[variables('ivrOsVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrVMSize')]",
+      "properties": {
+        "value": "[variables('ivrSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrOSDiskSize')]",
+      "properties": {
+        "value": "[variables('ivrSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrName')]",
+      "properties": {
+        "value": "[variables('ivrName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrLanNicName')]",
+      "properties": {
+        "value": "[variables('ivrLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'ivrOsDiskName')]",
+      "properties": {
+        "value": "[variables('ivrOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployMivcr')]",
+      "properties": {
+        "value": "[parameters('deployMivcr')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrVersion')]",
+      "properties": {
+        "value": "[variables('mivcrOsVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrVMSize')]",
+      "properties": {
+        "value": "[parameters('mivcrSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('mivcrSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrName')]",
+      "properties": {
+        "value": "[variables('mivcrName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrLanNicName')]",
+      "properties": {
+        "value": "[variables('mivcrLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrOsDiskName')]",
+      "properties": {
+        "value": "[variables('mivcrOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deployTeleworkerMBG')]",
+      "properties": {
+        "value": "[parameters('deployTeleworkerMBG')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGVersion')]",
+      "properties": {
+        "value": "[parameters('teleworkerMBGVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGVMSize')]",
+      "properties": {
+        "value": "[parameters('teleworkerMBGSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('teleworkerMBGSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGImageName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGImageName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGLanNicName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGDMZNicName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGDMZNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGDMZPublicIPAddressName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGDMZPublicIPAddressName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGOsDiskName')]",
+      "properties": {
+        "value": "[variables('teleworkerMBGOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'deploySipMBG')]",
+      "properties": {
+        "value": "[parameters('deploySipMBG')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGVersion')]",
+      "properties": {
+        "value": "[parameters('sipMBGVersion')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGVMSize')]",
+      "properties": {
+        "value": "[parameters('sipMBGSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGOSDiskSize')]",
+      "properties": {
+        "value": "[parameters('sipMBGSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGName')]",
+      "properties": {
+        "value": "[variables('sipMBGName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGImageName')]",
+      "properties": {
+        "value": "[variables('sipMBGImageName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGLanNicName')]",
+      "properties": {
+        "value": "[variables('sipMBGLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGDMZNicName')]",
+      "properties": {
+        "value": "[variables('sipMBGDMZNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGDMZPublicIPAddressName')]",
+      "properties": {
+        "value": "[variables('sipMBGDMZPublicIPAddressName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGOsDiskName')]",
+      "properties": {
+        "value": "[variables('sipMBGOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'customData')]",
+      "properties": {
+        "value": "[variables('customData')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'vngName')]",
+      "properties": {
+        "value": "[variables('vngName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'gatewayAddressSubnet')]",
+      "properties": {
+        "value": "[parameters('gatewayAddressSubnet')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'resilientCustomer')]",
+      "properties": {
+        "value": "[parameters('resilientCustomer')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'numberOfMivbs')]",
+      "properties": {
+        "value": "[parameters('numberOfMivbs')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'fortigatePeering')]",
+      "properties": {
+        "value": "[parameters('fortigatePeering')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivbIpAddressAssignment')]",
+      "properties": {
+        "value": "[parameters('mivbIpAddressAssignment')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb01IpAddress')]",
+      "properties": {
+        "value": "[parameters('mivb01IpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb02IpAddress')]",
+      "properties": {
+        "value": "[parameters('mivb02IpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb03IpAddress')]",
+      "properties": {
+        "value": "[parameters('mivb03IpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivb04IpAddress')]",
+      "properties": {
+        "value": "[parameters('mivb04IpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabIpAddressAssignment')]",
+      "properties": {
+        "value": "[parameters('micollabIpAddressAssignment')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'micollabIpAddress')]",
+      "properties": {
+        "value": "[parameters('micollabIpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccIpAddressAssignment')]",
+      "properties": {
+        "value": "[parameters('miccIpAddressAssignment')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'miccIpAddress')]",
+      "properties": {
+        "value": "[parameters('miccIpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlIpAddressAssignment')]",
+      "properties": {
+        "value": "[parameters('sqlIpAddressAssignment')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlIpAddress')]",
+      "properties": {
+        "value": "[parameters('sqlIpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'IVRIpAddressAssignment')]",
+      "properties": {
+        "value": "[parameters('IVRIpAddressAssignment')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'IVRIpAddress')]",
+      "properties": {
+        "value": "[parameters('IVRIpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrIpAddressAssignment')]",
+      "properties": {
+        "value": "[parameters('mivcrIpAddressAssignment')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'mivcrIpAddress')]",
+      "properties": {
+        "value": "[parameters('mivcrIpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGIpAddressAssignment')]",
+      "properties": {
+        "value": "[parameters('teleworkerMBGIpAddressAssignment')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGIpAddress')]",
+      "properties": {
+        "value": "[parameters('teleworkerMBGIpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGIpAddressAssignment')]",
+      "properties": {
+        "value": "[parameters('sipMBGIpAddressAssignment')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGIpAddress')]",
+      "properties": {
+        "value": "[parameters('sipMBGIpAddress')]"
+      }
+    }
+  ],
+  "outputs": {}
+}

@@ -3,7 +3,7 @@
     This script automates the deployment of Mitel resources 
 
 .DESCRIPTION
-    This script is designed to automate the deployment of Mitel resources into a subscription. It will deploy
+    This script is designed to automate the deployment of Mitel resources into the Bistech IaaS tenant. It will deploy
     the following based on the parameters it is given
 
     * Resource Groups
@@ -28,7 +28,7 @@
 
 .NOTES
     Author   Dave Pierson
-    Version  1.0.1
+    Version  1.0.0
 
     # THIS SOFTWARE IS PROVIDED AS IS AND ANY EXPRESS OR IMPLIED WARRANTIES 
     # INCLUDING BUT NOT LIMITED TO THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -45,6 +45,8 @@
 #region Parameters
 
 Param(
+  [Parameter(mandatory)]
+  [string]$subscriptionID,
 
   [Parameter(mandatory)]
   [string]$vaultName
@@ -71,6 +73,16 @@ if (!$azAuthentication) {
 else {
   Write-Output "Successfully authenticated to Azure using the Automation Account"
 }
+
+# Set the Azure context with Subscription
+$azContext = Set-AzContext -SubscriptionId $subscriptionID
+if (!$azContext) {
+  Write-Error "Subscription '$subscriptionID' does not exist. Ensure that you have entered the correct values"
+  exit
+} 
+else {
+  Write-Output "Set the Azure context to the subscription named '$($azContext.Subscription.Name)' with Id '$($azContext.Subscription.Id)'"
+}
 #endregion
 
 #region Retrieve Secrets
@@ -82,6 +94,9 @@ $windowsPassword = ConvertTo-SecureString -String $windowsPassword -AsPlainText 
 Write-Output "All secrets retrieved"
 
 # Set values
+$deploySubscription = ''
+$deployImageResourceGroup = ''
+$deployImageGallery = ''
 $prefixCaps = $customerPrefix.ToUpper()
 $privateDNSLinkName = $vnetName + '-link'
 switch ($mivbVersion) {
@@ -97,10 +112,33 @@ switch ($sipMBGVersion) {
   "11.4.0.227" { $sipMBGMSLVersion = "11.0-97.0" }
   "11.3.0.68" { $sipMBGMSLVersion = "11.0-90.0" }
 }
+switch ($sqlVersion) {
+  "SQL Server 2022 Enterprise on Windows Server 2022" { $sqlOffer = "sql2022-ws2022" }
+  "SQL Server 2022 Standard on Windows Server 2022" { $sqlOffer = "sql2022-ws2022" }
+  "SQL Server 2019 Enterprise on Windows Server 2022" { $sqlOffer = "sql2019-ws2022" }
+  "SQL Server 2019 Standard on Windows Server 2022" { $sqlOffer = "sql2019-ws2022" }
+  "SQL Server 2019 Enterprise on Windows Server 2019" { $sqlOffer = "sql2019-ws2019" }
+  "SQL Server 2019 Standard on Windows Server 2019" { $sqlOffer = "sql2019-ws2019" }
+  "SQL Server 2017 Enterprise on Windows Server 2019" { $sqlOffer = "sql2017-ws2019" }
+  "SQL Server 2017 Standard on Windows Server 2019" { $sqlOffer = "sql2017-ws2019" }
+  "SQL Server 2017 Enterprise on Windows Server 2016" { $sqlOffer = "sql2017-ws2016" }
+  "SQL Server 2017 Standard on Windows Server 2016" { $sqlOffer = "sql2017-ws2016" }
+}
+switch ($sqlVersion) {
+  "SQL Server 2022 Enterprise on Windows Server 2022" { $sqlSku = "enterprise-gen2" }
+  "SQL Server 2022 Standard on Windows Server 2022" { $sqlSku = "standard-gen2" }
+  "SQL Server 2019 Enterprise on Windows Server 2022" { $sqlSku = "enterprise-gen2" }
+  "SQL Server 2019 Standard on Windows Server 2022" { $sqlSku = "standard-gen2" }
+  "SQL Server 2019 Enterprise on Windows Server 2019" { $sqlSku = "enterprise-gen2" }
+  "SQL Server 2019 Standard on Windows Server 2019" { $sqlSku = "standard-gen2" }
+  "SQL Server 2017 Enterprise on Windows Server 2019" { $sqlSku = "enterprise-gen2" }
+  "SQL Server 2017 Standard on Windows Server 2019" { $sqlSku = "standard-gen2" }
+  "SQL Server 2017 Enterprise on Windows Server 2016" { $sqlSku = "enterprise-gen2" }
+  "SQL Server 2017 Standard on Windows Server 2016" { $sqlSku = "standard-gen2" }
+}
 [string]$username = "AzureAdmin"
 $mslCreds = New-Object System.Management.Automation.PSCredential ($username, $mslPassword);
 $windowsCreds = New-Object System.Management.Automation.PSCredential ($username, $windowsPassword);
-$jobTimeout = 420
 #endregion
 
 #region Resource Groups
@@ -138,8 +176,6 @@ if (!$storageAccount) {
   Write-Output "Storage account '$storageAccountName' created"
   $storageAccount = Get-AzStorageAccount | Where-Object { $_.StorageAccountName -eq $storageAccountName }
 }
-$storageKey = (Get-AzStorageAccountKey -ResourceGroupName $vnetResourceGroup.ResourceGroupName -Name $storageAccount.StorageAccountName)[0].Value
-$context = New-AzStorageContext -StorageAccountName $storageAccount.StorageAccountName -StorageAccountKey $storageKey
 #endregion
 
 #region Network Security Groups
@@ -544,18 +580,23 @@ if (!$vnet) {
     -AddressPrefix $dmzAddressSubnet `
     -NetworkSecurityGroupId $dmzNSG.Id -WarningAction Ignore
 
+  $gatewaySubnet = New-AzVirtualNetworkSubnetConfig `
+    -Name 'GatewaySubnet' `
+    -AddressPrefix $gatewayAddressSubnet -WarningAction Ignore
+
   New-AzVirtualNetwork `
     -Name $vnetName `
     -ResourceGroupName $vnetResourceGroupName `
     -Location $location `
     -AddressPrefix $vnetAddressSpace `
-    -Subnet $intSubnet, $dmzSubnet | Out-Null
+    -Subnet $intSubnet, $dmzSubnet, $gatewaySubnet | Out-Null
 
   Write-Output "Virtual network '$vnetName' created"
   $vnet = Get-AzVirtualNetwork -Name $vnetName -ResourceGroupName $vnetResourceGroupName
 }
 $intSubnetId = ($vnet.Subnets | Where-Object { $_.Name -eq $intSubnetName }).Id
 $dmzSubnetId = ($vnet.Subnets | Where-Object { $_.Name -eq $dmzSubnetName }).Id
+$gatewaySubnetId = ($vnet.Subnets | Where-Object { $_.Name -eq 'GatewaySubnet' }).Id
 #endregion
 
 #region Private DNS Zone
@@ -581,116 +622,39 @@ if (!$privateDNSZone) {
 }
 #endregion
 
-#region Transfer VHDs
-
-#region MSL
-
-# Create container
-$container = Get-AzStorageContainer -Name "msl" -Context $context -ErrorAction SilentlyContinue
-if (!$container) {
-  New-AzStorageContainer -Name "msl" -Context $context | Out-Null
-  Write-Output "Created container 'msl' in storage account '$storageAccountName'"
+#region VPN Gateway
+if ($resilientCustomer -eq $true) {
+  $gatewaySku = 'VpnGw1AZ'
 }
-
-# Check existing container for VHDs
-$mslVersionsTransferred = @()
-$mslVersionsTransferredSanitized = @()
-Get-AzStorageBlob -Container 'msl' -Context $context | ForEach-Object { $mslVersionsTransferred += $_.Name }
-foreach ($version in $mslVersionsTransferred) {
-  $versionName = $version -Replace '-1.vhd'
-  $versionName = $versionName -Replace 'msl-'
-  $mslVersionsTransferredSanitized += $versionName
+else {
+  $gatewaySku = 'VpnGw1'
 }
+$vng = Get-AzVirtualNetworkGateway -Name $vngName -ResourceGroupName $vnetResourceGroupName -ErrorAction SilentlyContinue
+if (!$vng) {
 
-# MiVB
-if ($deployMivb -eq $true) {
-  Write-Output "MSL version '$mivbMSLVersion' required for MiVB version '$mivbVersion'"
-  if ($mslVersionsTransferredSanitized -notcontains $mivbMSLVersion) {
-    $deployMSLUri = $deployUri + '/msl/msl-' + $mivbMSLVersion + '-1.vhd' + $deployUriSAS
-    Write-Output "Copying MSL version '$mivbMSLVersion' to storage account now..."
-    $destBlob = Start-AzStorageBlobCopy -AbsoluteUri $deployMSLUri -DestContainer "msl" -DestBlob ('msl-' + $mivbMSLVersion + '-1.vhd') -DestContext $context
-    $destBlob | Get-AzStorageBlobCopyState -WaitForComplete | Out-Null
-    $mslVersionsTransferredSanitized += $mivbMSLVersion
-    Write-Output "Finished copying MSL version '$mivbMSLVersion' to storage account"
-  }
-  else {
-    Write-Output "MSL version '$mivbMSLVersion' is already present in the storage account. Skipping download"
-  }
-  $mivbUri = $storageAccount.PrimaryEndpoints.Blob + 'msl/msl-' + $mivbMSLVersion + '-1.vhd'
+  $vngIpName = $vngName + '-pip'
+  $vngIp = New-AzPublicIpAddress `
+    -Name $vngIpName `
+    -ResourceGroupName $vnet.ResourceGroupName `
+    -Location $location `
+    -AllocationMethod Dynamic
+
+  $vngIpConfig = New-AzVirtualNetworkGatewayIpConfig `
+    -Name 'vngIpConfig' `
+    -SubnetId $gatewaySubnetId `
+    -PublicIpAddressId $vngIp.Id
+
+  New-AzVirtualNetworkGateway `
+    -Name $vngName `
+    -ResourceGroupName $vnet.ResourceGroupName `
+    -Location $location `
+    -GatewayType Vpn `
+    -VpnType RouteBased `
+    -GatewaySku $gatewaySku `
+    -IpConfigurations $vngIpConfig | Out-Null
+
+  Write-Output "Virtual Network Gateway '$vngName' created"
 }
-
-# Teleworker MBG
-if ($deployTeleworkerMBG -eq $true) {
-  Write-Output "MSL version '$teleworkerMBGMSLVersion' required for Teleworker MBG version '$teleworkerMBGVersion'"
-  if ($mslVersionsTransferredSanitized -notcontains $teleworkerMBGMSLVersion) {
-    $deployMSLUri = $deployUri + '/msl/msl-' + $teleworkerMBGMSLVersion + '-1.vhd' + $deployUriSAS
-    Write-Output "Copying MSL version '$teleworkerMBGMSLVersion' to storage account now..."
-    $destBlob = Start-AzStorageBlobCopy -AbsoluteUri $deployMSLUri -DestContainer "msl" -DestBlob ('msl-' + $teleworkerMBGMSLVersion + '-1.vhd') -DestContext $context
-    $destBlob | Get-AzStorageBlobCopyState -WaitForComplete | Out-Null
-    $mslVersionsTransferredSanitized += $teleworkerMBGMSLVersion
-    Write-Output "Finished copying MSL version '$teleworkerMBGMSLVersion' to storage account"
-  }
-  else {
-    Write-Output "MSL version '$teleworkerMBGMSLVersion' is already present in the storage account. Skipping download"
-  }
-  $teleworkerMBGUri = $storageAccount.PrimaryEndpoints.Blob + 'msl/msl-' + $teleworkerMBGMSLVersion + '-1.vhd'
-}
-
-# SIP MBG
-if ($deploySIPMBG -eq $true) {
-  Write-Output "MSL version '$sipMBGMSLVersion' required for SIP MBG version '$sipMBGVersion'"
-  if ($mslVersionsTransferredSanitized -notcontains $sipMBGMSLVersion) {
-    $deployMSLUri = $deployUri + '/msl/msl-' + $sipMBGMSLVersion + '-1.vhd' + $deployUriSAS
-    Write-Output "Copying MSL version '$sipMBGMSLVersion' to storage account now..."
-    $destBlob = Start-AzStorageBlobCopy -AbsoluteUri $deployMSLUri -DestContainer "msl" -DestBlob ('msl-' + $sipMBGMSLVersion + '-1.vhd') -DestContext $context
-    $destBlob | Get-AzStorageBlobCopyState -WaitForComplete | Out-Null
-    $mslVersionsTransferredSanitized += $sipMBGMSLVersion
-    Write-Output "Finished copying MSL version '$sipMBGMSLVersion' to storage account"
-  }
-  else {
-    Write-Output "MSL version '$sipMBGMSLVersion' is already present in the storage account. Skipping download"
-  }
-  $sipMBGUri = $storageAccount.PrimaryEndpoints.Blob + 'msl/msl-' + $sipMBGMSLVersion + '-1.vhd'
-}
-#endregion
-
-#region MiCollab
-
-# Create container
-$container = Get-AzStorageContainer -Name "micollab" -Context $context -ErrorAction SilentlyContinue
-if (!$container) {
-  New-AzStorageContainer -Name "micollab" -Context $context | Out-Null
-  Write-Output "Created container 'micollab' in storage account '$storageAccountName'"
-}
-
-# Check existing container for VHDs
-$micollabVersionsTransferred = @()
-$micollabVersionsTransferredSanitized = @()
-Get-AzStorageBlob -Container 'micollab' -Context $context | ForEach-Object { $micollabVersionsTransferred += $_.Name }
-foreach ($version in $micollabVersionsTransferred) {
-  $versionName = $version -Replace '-01.vhd'
-  $versionName = $versionName -Replace 'micollab-'
-  $micollabVersionsTransferredSanitized += $versionName
-}
-
-# MiCollab
-if ($deployMicollab -eq $true) {
-  Write-Output "MiCollab version '$micollabVersion' required"
-  if ($micollabVersionsTransferredSanitized -notcontains $micollabVersion) {
-    $deployMicollabUri = $deployUri + '/micollab/micollab-' + $micollabVersion + '-01.vhd' + $deployUriSAS
-    Write-Output "Copying MiCollab version '$micollabVersion' to storage account now..."
-    $destBlob = Start-AzStorageBlobCopy -AbsoluteUri $deployMicollabUri -DestContainer "micollab" -DestBlob ('micollab-' + $micollabVersion + '-01.vhd') -DestContext $context
-    $destBlob | Get-AzStorageBlobCopyState -WaitForComplete | Out-Null
-    $micollabVersionsTransferredSanitized += $micollabVersion
-    Write-Output "Finished copying MiCollab version '$micollabVersion' to storage account"
-  }
-  else {
-    Write-Output "MiCollab version '$micollabVersion' is already present in the storage account. Skipping download"
-  }
-  $micollabUri = $storageAccount.PrimaryEndpoints.Blob + 'micollab/micollab-' + $micollabVersion + '-01.vhd'
-}
-#endregion
-
 #endregion
 
 #region Application
@@ -701,35 +665,35 @@ if ($deployMivb -eq $true) {
   # Create NIC
   $mivbLanNic = Get-AzNetworkInterface -Name $mivbLanNicName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
   if (!$mivbLanNic) {
+    if ($mivbIpAddressAssignment -eq 'Static') {
+      $interfaceConfig = New-AzNetworkInterfaceIpConfig `
+        -Name "ipconfig1" `
+        -PrivateIpAddress $mivb01IpAddress `
+        -SubnetId $intSubnetId
+    }
+    else {
+      $interfaceConfig = New-AzNetworkInterfaceIpConfig `
+        -Name "ipconfig1" `
+        -SubnetId $intSubnetId
+    }
     $mivbLanNic = New-AzNetworkInterface `
       -Name $mivbLanNicName `
       -ResourceGroupName $applicationResourceGroup.ResourceGroupName `
       -Location $location `
-      -SubnetId $intSubnetId `
+      -IpConfiguration $interfaceConfig `
       -NetworkSecurityGroupId $intNSG.Id `
-      -IpConfigurationName "ipconfig1" `
       -EnableAcceleratedNetworking
 
     Write-Output "MiVoice Business network interface '$mivbLanNicName' created"
   }
 
-  # Create Image
-  $image = Get-AzImage -Name $mivbImageName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
-  if (!$image) {
-    $imageConfig = New-AzImageConfig -Location $location
-    Set-AzImageOsDisk -Image $imageConfig -OsType Linux -OsState Generalized -BlobUri $mivbUri -DiskSizeGB $mivbOSDiskSize | Out-Null
-    $image = New-AzImage `
-      -ImageName $mivbImageName `
-      -Image $imageConfig `
-      -ResourceGroupName $applicationResourceGroup.ResourceGroupName
-
-    Write-Output "MiVoice Business image '$mivbImageName' created"
-  }
+  # Set Image Id
+  $imageId = '/subscriptions/' + $deploySubscription + '/resourceGroups/' + $deployImageResourceGroup + '/providers/Microsoft.Compute/galleries/' + $deployImageGallery + '/images/MSL/versions/' + $mivbMSLVersion
 
   # Create VM Config
   $vm = Get-AzVM -Name $mivbName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
   if (!$vm) {
-    $vmConfig = New-AzVMConfig -VMName $mivbName -VMSize $mivbVMSize
+    $vmConfig = New-AzVMConfig -VMName $mivbName -VMSize $mivbVMSize -Zone 1
     $vmConfig = Set-AzVMOperatingSystem `
       -VM $vmConfig `
       -Linux `
@@ -737,7 +701,7 @@ if ($deployMivb -eq $true) {
       -Credential $mslCreds `
       -CustomData $customData
     $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $mivbLanNic.Id -DeleteOption Detach
-    $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $image.Id
+    $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $imageId
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $mivbOsDiskName `
@@ -760,6 +724,193 @@ if ($deployMivb -eq $true) {
 
     Write-Output "MiVoice Business VM '$mivbName' created"
   }
+
+  # Create resilient MiVB if required
+  if ($numberOfMivbs -ge 2) {
+
+    # Create NIC
+    $mivbLanNic = Get-AzNetworkInterface -Name $mivb02LanNicName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
+    if (!$mivbLanNic) { 
+      if ($mivbIpAddressAssignment -eq 'Static') {
+        $interfaceConfig = New-AzNetworkInterfaceIpConfig `
+          -Name "ipconfig1" `
+          -PrivateIpAddress $mivb02IpAddress `
+          -SubnetId $intSubnetId
+      }
+      else {
+        $interfaceConfig = New-AzNetworkInterfaceIpConfig `
+          -Name "ipconfig1" `
+          -SubnetId $intSubnetId
+      }
+      $mivbLanNic = New-AzNetworkInterface `
+        -Name $mivb02LanNicName `
+        -ResourceGroupName $applicationResourceGroup.ResourceGroupName `
+        -Location $location `
+        -IpConfiguration $interfaceConfig `
+        -NetworkSecurityGroupId $intNSG.Id `
+        -EnableAcceleratedNetworking
+
+      Write-Output "MiVoice Business network interface '$mivb02LanNicName' created"
+    }
+
+    # Create VM Config
+    $vm = Get-AzVM -Name $mivb02Name -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
+    if (!$vm) {
+      $vmConfig = New-AzVMConfig -VMName $mivb02Name -VMSize $mivbVMSize -Zone 2
+      $vmConfig = Set-AzVMOperatingSystem `
+        -VM $vmConfig `
+        -Linux `
+        -ComputerName $mivb02Name `
+        -Credential $mslCreds `
+        -CustomData $customData
+      $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $mivbLanNic.Id -DeleteOption Detach
+      $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $imageId
+      $vmConfig = Set-AzVMOSDisk `
+        -VM $vmConfig `
+        -Name $mivb02OsDiskName `
+        -StorageAccountType Standard_LRS `
+        -DiskSizeInGB $mivbOSDiskSize `
+        -CreateOption FromImage `
+        -Caching ReadWrite `
+        -DeleteOption Detach
+      $vmConfig = Set-AzVMBootDiagnostic `
+        -VM $vmConfig `
+        -Enable `
+        -ResourceGroupName $vnet.ResourceGroupName `
+        -StorageAccountName $storageAccount.StorageAccountName
+
+      # Create VM
+      $vm = New-AzVM `
+        -ResourceGroupName $applicationResourceGroup.ResourceGroupName `
+        -Location $location `
+        -VM $vmConfig
+
+      Write-Output "MiVoice Business VM '$mivb02Name' created"
+    }
+  }
+
+  # Create additional resilient MiVBs if required
+  if ($numberOfMivbs -eq 4) {
+    # Create NIC
+    $mivbLanNic = Get-AzNetworkInterface -Name $mivb03LanNicName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
+    if (!$mivbLanNic) {
+      if ($mivbIpAddressAssignment -eq 'Static') {
+        $interfaceConfig = New-AzNetworkInterfaceIpConfig `
+          -Name "ipconfig1" `
+          -PrivateIpAddress $mivb03IpAddress `
+          -SubnetId $intSubnetId
+      }
+      else {
+        $interfaceConfig = New-AzNetworkInterfaceIpConfig `
+          -Name "ipconfig1" `
+          -SubnetId $intSubnetId
+      }
+      $mivbLanNic = New-AzNetworkInterface `
+        -Name $mivb03LanNicName `
+        -ResourceGroupName $applicationResourceGroup.ResourceGroupName `
+        -Location $location `
+        -IpConfiguration $interfaceConfig `
+        -NetworkSecurityGroupId $intNSG.Id `
+        -EnableAcceleratedNetworking
+
+      Write-Output "MiVoice Business network interface '$mivb03LanNicName' created"
+    }
+
+    # Create VM Config
+    $vm = Get-AzVM -Name $mivb02Name -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
+    if (!$vm) {
+      $vmConfig = New-AzVMConfig -VMName $mivb03Name -VMSize $mivbVMSize -Zone 1
+      $vmConfig = Set-AzVMOperatingSystem `
+        -VM $vmConfig `
+        -Linux `
+        -ComputerName $mivb03Name `
+        -Credential $mslCreds `
+        -CustomData $customData
+      $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $mivbLanNic.Id -DeleteOption Detach
+      $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $imageId
+      $vmConfig = Set-AzVMOSDisk `
+        -VM $vmConfig `
+        -Name $mivb03OsDiskName `
+        -StorageAccountType Standard_LRS `
+        -DiskSizeInGB $mivbOSDiskSize `
+        -CreateOption FromImage `
+        -Caching ReadWrite `
+        -DeleteOption Detach
+      $vmConfig = Set-AzVMBootDiagnostic `
+        -VM $vmConfig `
+        -Enable `
+        -ResourceGroupName $vnet.ResourceGroupName `
+        -StorageAccountName $storageAccount.StorageAccountName
+
+      # Create VM
+      $vm = New-AzVM `
+        -ResourceGroupName $applicationResourceGroup.ResourceGroupName `
+        -Location $location `
+        -VM $vmConfig
+
+      Write-Output "MiVoice Business VM '$mivb03Name' created"
+    }
+
+    # Create NIC
+    $mivbLanNic = Get-AzNetworkInterface -Name $mivb04LanNicName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
+    if (!$mivbLanNic) {
+      if ($mivbIpAddressAssignment -eq 'Static') {
+        $interfaceConfig = New-AzNetworkInterfaceIpConfig `
+          -Name "ipconfig1" `
+          -PrivateIpAddress $mivb04IpAddress `
+          -SubnetId $intSubnetId
+      }
+      else {
+        $interfaceConfig = New-AzNetworkInterfaceIpConfig `
+          -Name "ipconfig1" `
+          -SubnetId $intSubnetId
+      }
+      $mivbLanNic = New-AzNetworkInterface `
+        -Name $mivb04LanNicName `
+        -ResourceGroupName $applicationResourceGroup.ResourceGroupName `
+        -Location $location `
+        -IpConfiguration $interfaceConfig `
+        -NetworkSecurityGroupId $intNSG.Id `
+        -EnableAcceleratedNetworking
+
+      Write-Output "MiVoice Business network interface '$mivb04LanNicName' created"
+    }
+
+    # Create VM Config
+    $vm = Get-AzVM -Name $mivb02Name -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
+    if (!$vm) {
+      $vmConfig = New-AzVMConfig -VMName $mivb04Name -VMSize $mivbVMSize -Zone 2
+      $vmConfig = Set-AzVMOperatingSystem `
+        -VM $vmConfig `
+        -Linux `
+        -ComputerName $mivb04Name `
+        -Credential $mslCreds `
+        -CustomData $customData
+      $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $mivbLanNic.Id -DeleteOption Detach
+      $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $imageId
+      $vmConfig = Set-AzVMOSDisk `
+        -VM $vmConfig `
+        -Name $mivb04OsDiskName `
+        -StorageAccountType Standard_LRS `
+        -DiskSizeInGB $mivbOSDiskSize `
+        -CreateOption FromImage `
+        -Caching ReadWrite `
+        -DeleteOption Detach
+      $vmConfig = Set-AzVMBootDiagnostic `
+        -VM $vmConfig `
+        -Enable `
+        -ResourceGroupName $vnet.ResourceGroupName `
+        -StorageAccountName $storageAccount.StorageAccountName
+
+      # Create VM
+      $vm = New-AzVM `
+        -ResourceGroupName $applicationResourceGroup.ResourceGroupName `
+        -Location $location `
+        -VM $vmConfig
+
+      Write-Output "MiVoice Business VM '$mivb04Name' created"
+    }
+  }
 }
 #endregion
 
@@ -781,23 +932,13 @@ if ($deployMicollab -eq $true) {
     Write-Output "MiCollab network interface '$micollabLanNicName' created"
   }
 
-  # Create Image
-  $image = Get-AzImage -Name $micollabImageName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
-  if (!$image) {
-    $imageConfig = New-AzImageConfig -Location $location
-    Set-AzImageOsDisk -Image $imageConfig -OsType Linux -OsState Generalized -BlobUri $micollabUri -DiskSizeGB $micollabOSDiskSize | Out-Null
-    $image = New-AzImage `
-      -ImageName $micollabImageName `
-      -Image $imageConfig `
-      -ResourceGroupName $applicationResourceGroup.ResourceGroupName
-
-    Write-Output "MiCollab image '$micollabImageName' created"
-  }
+  # Set Image Id
+  $imageId = '/subscriptions/' + $deploySubscription + '/resourceGroups/' + $deployImageResourceGroup + '/providers/Microsoft.Compute/galleries/' + $deployImageGallery + '/images/MiCollab/versions/' + $micollabVersion
 
   # Create VM Config
   $vm = Get-AzVM -Name $micollabName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
   if (!$vm) {
-    $vmConfig = New-AzVMConfig -VMName $micollabName -VMSize $micollabVMSize
+    $vmConfig = New-AzVMConfig -VMName $micollabName -VMSize $micollabVMSize -Zone 3
     $vmConfig = Set-AzVMOperatingSystem `
       -VM $vmConfig `
       -Linux `
@@ -805,7 +946,7 @@ if ($deployMicollab -eq $true) {
       -Credential $mslCreds `
       -CustomData $customData
     $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $micollabLanNic.Id -DeleteOption Detach
-    $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $image.Id
+    $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $imageId
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $micollabOsDiskName `
@@ -852,7 +993,7 @@ if ($deployMicc -eq $true) {
   # Create VM Config
   $vm = Get-AzVM -Name $miccName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
   if (!$vm) {
-    $vmConfig = New-AzVMConfig -VMName $miccName -VMSize $miccVMSize
+    $vmConfig = New-AzVMConfig -VMName $miccName -VMSize $miccVMSize -Zone 1
     $vmConfig = Set-AzVMOperatingSystem `
       -VM $vmConfig `
       -Windows `
@@ -919,9 +1060,9 @@ if ($deploySQL -eq $true) {
   # Create VM Config
   $vm = Get-AzVM -Name $sqlName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
   if (!$vm) {
-    $vmConfig = New-AzVMConfig -VMName $sqlName -VMSize $sqlVMSize
+    $vmConfig = New-AzVMConfig -VMName $sqlName -VMSize $sqlVMSize -Zone 2
     $dataDiskConfig = New-AzDiskConfig `
-      -SkuName StandardSSD_LRS `
+      -SkuName Premium_LRS `
       -Location $location `
       -CreateOption Empty `
       -DiskSizeGB $sqlDataDiskSize
@@ -939,9 +1080,9 @@ if ($deploySQL -eq $true) {
     $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $sqlLanNic.Id -DeleteOption Detach
     $vmConfig = Set-AzVMSourceImage `
       -VM $vmConfig `
-      -PublisherName "MicrosoftWindowsServer" `
-      -Offer "WindowsServer" `
-      -Skus $sqlVersion `
+      -PublisherName "MicrosoftSQLServer" `
+      -Offer $sqlOffer `
+      -Skus $sqlSku `
       -Version "latest"
     $vmConfig = Set-AzVMSecurityProfile `
       -VM $vmConfig `
@@ -971,10 +1112,12 @@ if ($deploySQL -eq $true) {
       -StorageAccountName $storageAccount.StorageAccountName
 
     # Create VM
-    $vm = New-AzVM `
+    $vm = New-AzSqlVM `
       -ResourceGroupName $applicationResourceGroup.ResourceGroupName `
       -Location $location `
-      -VM $vmConfig
+      -LicenseType PAYG `
+      -SqlManagementType Full `
+      -SqlVM $vmConfig
 
     Write-Output "SQL Server VM '$sqlName' created"
   }
@@ -1002,7 +1145,7 @@ if ($deployIVR -eq $true) {
   # Create VM Config
   $vm = Get-AzVM -Name $ivrName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
   if (!$vm) {
-    $vmConfig = New-AzVMConfig -VMName $ivrName -VMSize $ivrVMSize
+    $vmConfig = New-AzVMConfig -VMName $ivrName -VMSize $ivrVMSize -Zone 2
     $vmConfig = Set-AzVMOperatingSystem `
       -VM $vmConfig `
       -Windows `
@@ -1069,7 +1212,7 @@ if ($deployMivcr -eq $true) {
   # Create VM Config
   $vm = Get-AzVM -Name $mivcrName -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
   if (!$vm) {
-    $vmConfig = New-AzVMConfig -VMName $mivcrName -VMSize $mivcrVMSize
+    $vmConfig = New-AzVMConfig -VMName $mivcrName -VMSize $mivcrVMSize -Zone 1
     $vmConfig = Set-AzVMOperatingSystem `
       -VM $vmConfig `
       -Windows `
@@ -1144,6 +1287,7 @@ if ($deployTeleworkerMBG -eq $true) {
       -Name $teleworkerMBGDMZPublicIPAddressName `
       -ResourceGroupName $dmzResourceGroup.ResourceGroupName `
       -Location $location `
+      -Zone 3 `
       -AllocationMethod Static `
       -IpAddressVersion IPv4 `
       -Sku Basic `
@@ -1165,23 +1309,13 @@ if ($deployTeleworkerMBG -eq $true) {
     Write-Output "Teleworker MiVoice Border Gateway DMZ network interface '$teleworkerMBGDMZNicName' created"
   }
 
-  # Create Image
-  $image = Get-AzImage -Name $teleworkerMBGImageName -ResourceGroupName $dmzResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
-  if (!$image) {
-    $imageConfig = New-AzImageConfig -Location $location
-    Set-AzImageOsDisk -Image $imageConfig -OsType Linux -OsState Generalized -BlobUri $teleworkerMBGUri -DiskSizeGB $teleworkerMBGOSDiskSize | Out-Null
-    $image = New-AzImage `
-      -ImageName $teleworkerMBGImageName `
-      -Image $imageConfig `
-      -ResourceGroupName $dmzResourceGroup.ResourceGroupName
-
-    Write-Output "Teleworker MiVoice Border Gateway image '$teleworkerMBGImageName' created"
-  }
+  # Set Image Id
+  $imageId = '/subscriptions/' + $deploySubscription + '/resourceGroups/' + $deployImageResourceGroup + '/providers/Microsoft.Compute/galleries/' + $deployImageGallery + '/images/MSL/versions/' + $teleworkerMBGMSLVersion
 
   # Create VM Config
   $vm = Get-AzVM -Name $teleworkerMBGName -ResourceGroupName $dmzResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
   if (!$vm) {
-    $vmConfig = New-AzVMConfig -VMName $teleworkerMBGName -VMSize $teleworkerMBGVMSize
+    $vmConfig = New-AzVMConfig -VMName $teleworkerMBGName -VMSize $teleworkerMBGVMSize -Zone 3
     $vmConfig = Set-AzVMOperatingSystem `
       -VM $vmConfig `
       -Linux `
@@ -1190,7 +1324,7 @@ if ($deployTeleworkerMBG -eq $true) {
       -CustomData $customData
     $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $teleworkerMBGLanNic.Id -DeleteOption Detach -Primary
     $vmConfig = Add-AzVMNetworkInterface -VM $vmConfig -Id $teleworkerMBGDMZNic.Id -DeleteOption Detach
-    $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $image.Id
+    $vmConfig = Set-AzVMSourceImage -VM $vmConfig -Id $imageId
     $vmConfig = Set-AzVMOSDisk `
       -VM $vmConfig `
       -Name $teleworkerMBGOsDiskName `
@@ -1241,6 +1375,7 @@ if ($deploySIPMBG -eq $true) {
       -Name $sipMBGDMZPublicIPAddressName `
       -ResourceGroupName $dmzResourceGroup.ResourceGroupName `
       -Location $location `
+      -Zone 2 `
       -AllocationMethod Static `
       -IpAddressVersion IPv4 `
       -Sku Basic `
@@ -1262,23 +1397,13 @@ if ($deploySIPMBG -eq $true) {
     Write-Output "SIP MiVoice Border Gateway DMZ network interface '$sipMBGDMZNicName' created"
   }
 
-  # Create Image
-  $image = Get-AzImage -Name $sipMBGImageName -ResourceGroupName $dmzResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
-  if (!$image) {
-    $imageConfig = New-AzImageConfig -Location $location
-    Set-AzImageOsDisk -Image $imageConfig -OsType Linux -OsState Generalized -BlobUri $sipMBGUri -DiskSizeGB $sipMBGOSDiskSize | Out-Null
-    $image = New-AzImage `
-      -ImageName $sipMBGImageName `
-      -Image $imageConfig `
-      -ResourceGroupName $dmzResourceGroup.ResourceGroupName
-
-    Write-Output "SIP MiVoice Border Gateway image '$sipMBGImageName' created"
-  }
+  # Set Image Id
+  $imageId = '/subscriptions/' + $deploySubscription + '/resourceGroups/' + $deployImageResourceGroup + '/providers/Microsoft.Compute/galleries/' + $deployImageGallery + '/images/MSL/versions/' + $sipMBGMSLVersion
 
   # Create VM Config
   $vm = Get-AzVM -Name $sipMBGName -ResourceGroupName $dmzResourceGroup.ResourceGroupName -ErrorAction SilentlyContinue
   if (!$vm) {
-    $vmConfig = New-AzVMConfig -VMName $sipMBGName -VMSize $sipMBGVMSize
+    $vmConfig = New-AzVMConfig -VMName $sipMBGName -VMSize $sipMBGVMSize -Zone 2
     $vmConfig = Set-AzVMOperatingSystem `
       -VM $vmConfig `
       -Linux `
@@ -1315,20 +1440,6 @@ if ($deploySIPMBG -eq $true) {
 
 #endregion
 
-#region Cleanup
-Write-Output "Cleaning up images..."
-if ($deployMivb -eq $true) {
-  Remove-AzImage -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ImageName $mivbImageName -Force -AsJob
-}
-if ($deployMicollab -eq $true) {
-  Remove-AzImage -ResourceGroupName $applicationResourceGroup.ResourceGroupName -ImageName $micollabImageName -Force -AsJob
-}
-if ($deployTeleworkerMBG -eq $true) {
-  Remove-AzImage -ResourceGroupName $dmzResourceGroup.ResourceGroupName -ImageName $teleworkerMBGImageName -Force -AsJob
-}
-if ($deploySIPMBG -eq $true) {
-  Remove-AzImage -ResourceGroupName $dmzResourceGroup.ResourceGroupName -ImageName $sipMBGImageName -Force -AsJob
-}
-Get-Job | Wait-Job -Timeout $jobTimeout | Out-Null
+#region Output
 Write-Output "Deployment complete"
 #endregion
