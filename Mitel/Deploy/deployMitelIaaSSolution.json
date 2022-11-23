@@ -1602,7 +1602,6 @@
     "miccName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-micc')]",
     "miccLanNicName": "[concat(variables('miccName'), '-nic')]",
     "miccOsDiskName": "[concat(variables('miccName'), '-disk-os')]",
-    "sqlOsVersion": "[variables('osVersions')[parameters('sqlVersion')]]",
     "sqlName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-sql')]",
     "sqlLanNicName": "[concat(variables('sqlName'), '-nic')]",
     "sqlOsDiskName": "[concat(variables('sqlName'), '-disk-os')]",
@@ -2276,7 +2275,7 @@
       "apiVersion": "2022-07-01",
       "name": "[format('{0}/{1}', variables('keyVaultName'), 'sqlVersion')]",
       "properties": {
-        "value": "[variables('sqlOsVersion')]"
+        "value": "[parameters('sqlVersion')]"
       }
     },
     {
