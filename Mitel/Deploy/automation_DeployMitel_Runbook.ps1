@@ -1216,7 +1216,7 @@ if ($deployTeleworkerMBG -eq $true) {
 }
 #endregion
 
-#region MBG - Teleworker
+#region MBG - SIP
 if ($deploySIPMBG -eq $true) {
 
   # Create NIC - LAN
