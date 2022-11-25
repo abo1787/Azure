@@ -1445,11 +1445,18 @@
         "description": "Choose the IP address assignment type for the Teleworker MBG server"
       }
     },
-    "teleworkerMBGIpAddress": {
+    "teleworkerMBGLanIpAddress": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Enter the static IP address for the Teleworker MBG server"
+        "description": "Enter the static LAN IP address for the Teleworker MBG server"
+      }
+    },
+    "teleworkerMBGDMZIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static DMZ IP address for the Teleworker MBG server"
       }
     },
     "DeploySipMBG": {
@@ -2997,9 +3004,20 @@
       ],
       "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2022-07-01",
-      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGIpAddress')]",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGLanIpAddress')]",
       "properties": {
-        "value": "[parameters('teleworkerMBGIpAddress')]"
+        "value": "[parameters('teleworkerMBGLanIpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'teleworkerMBGDMZIpAddress')]",
+      "properties": {
+        "value": "[parameters('teleworkerMBGDMZIpAddress')]"
       }
     },
     {
