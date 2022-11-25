@@ -830,7 +830,7 @@
     },
     "deployMivb": {
       "type": "string",
-      "defaultValue": "true",
+      "defaultValue": "false",
       "allowedValues": [
         "true",
         "false"
@@ -937,7 +937,7 @@
     },
     "deployMicollab": {
       "type": "string",
-      "defaultValue": "true",
+      "defaultValue": "false",
       "allowedValues": [
         "true",
         "false"
@@ -1011,7 +1011,7 @@
     },
     "deployMicc": {
       "type": "string",
-      "defaultValue": "true",
+      "defaultValue": "false",
       "allowedValues": [
         "true",
         "false"
@@ -1086,7 +1086,7 @@
     },
     "deploySQL": {
       "type": "string",
-      "defaultValue": "true",
+      "defaultValue": "false",
       "allowedValues": [
         "true",
         "false"
@@ -1166,7 +1166,7 @@
     },
     "deployIVR": {
       "type": "string",
-      "defaultValue": "true",
+      "defaultValue": "false",
       "allowedValues": [
         "true",
         "false"
@@ -1208,7 +1208,7 @@
     },
     "deployMivcr": {
       "type": "string",
-      "defaultValue": "true",
+      "defaultValue": "false",
       "allowedValues": [
         "true",
         "false"
@@ -1368,7 +1368,7 @@
     },
     "deployTeleworkerMBG": {
       "type": "string",
-      "defaultValue": "true",
+      "defaultValue": "false",
       "allowedValues": [
         "true",
         "false"
@@ -1446,7 +1446,7 @@
     },
     "DeploySipMBG": {
       "type": "string",
-      "defaultValue": "true",
+      "defaultValue": "false",
       "allowedValues": [
         "true",
         "false"
@@ -1524,7 +1524,7 @@
     },
     "deployOIG": {
       "type": "string",
-      "defaultValue": "true",
+      "defaultValue": "false",
       "allowedValues": [
         "true",
         "false"
