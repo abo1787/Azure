@@ -10,6 +10,14 @@
         "description": "The 3 character Azure prefix for the customer for all resources"
       }
     },
+    "customerNumber": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 3,
+      "metadata": {
+        "description": "The Bistech customer number"
+      }
+    },
     "customerInternetIp": {
       "type": "string",
       "metadata": {
@@ -3113,6 +3121,17 @@
       "name": "[format('{0}/{1}', variables('keyVaultName'), 'oigIpAddress')]",
       "properties": {
         "value": "[parameters('oigIpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'customerNumber')]",
+      "properties": {
+        "value": "[parameters('customerNumber')]"
       }
     }
   ],
