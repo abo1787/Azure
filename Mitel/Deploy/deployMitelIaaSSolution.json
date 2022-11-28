@@ -1530,11 +1530,18 @@
         "description": "Choose the IP address assignment type for the SIP MBG server"
       }
     },
-    "sipMBGIpAddress": {
+    "sipMBGLanIpAddress": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "Enter the static IP address for the SIP MBG server"
+        "description": "Enter the static LAN IP address for the SIP MBG server"
+      }
+    },
+    "sipMBGDMZIpAddress": {
+      "type": "string",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Enter the static DMZ IP address for the SIP MBG server"
       }
     },
     "deployOIG": {
@@ -3037,9 +3044,20 @@
       ],
       "type": "Microsoft.KeyVault/vaults/secrets",
       "apiVersion": "2022-07-01",
-      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGIpAddress')]",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGLanIpAddress')]",
       "properties": {
-        "value": "[parameters('sipMBGIpAddress')]"
+        "value": "[parameters('sipMBGLanIpAddress')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'sipMBGDMZIpAddress')]",
+      "properties": {
+        "value": "[parameters('sipMBGDMZIpAddress')]"
       }
     },
     {
