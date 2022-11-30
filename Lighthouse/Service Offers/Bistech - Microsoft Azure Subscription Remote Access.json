@@ -47,7 +47,7 @@
    {
     "justInTimeAccessPolicy": {
      "multiFactorAuthProvider": "Azure",
-     "maximumActivationDuration": "PT2H",
+     "maximumActivationDuration": "PT4H",
      "managedByTenantApprovers": []
     },
     "principalId": "a7b519ff-44f7-4c82-8ddf-d6153fa6d7be",
@@ -57,7 +57,7 @@
    {
     "justInTimeAccessPolicy": {
      "multiFactorAuthProvider": "Azure",
-     "maximumActivationDuration": "PT2H",
+     "maximumActivationDuration": "PT4H",
      "managedByTenantApprovers": []
     },
     "principalId": "fa82b6b7-a83c-4486-9fb2-0d76a57080b0",
