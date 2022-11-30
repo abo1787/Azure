@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.0.1
+    Version : 2.0.2
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -207,6 +207,10 @@ $vTPM = $originalHostpoolDeployment.Parameters.vTPM.Value | ConvertTo-Json
 $hostpoolToken = New-AzWvdRegistrationInfo -ResourceGroupName $resourceGroupName -HostPoolName $hostpool.Name -ExpirationTime $((get-date).ToUniversalTime().AddDays(1).ToString('yyyy-MM-ddTHH:mm:ss.fffffffZ'))
 $domainJoinPassword = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'avd-domain-join'
 $domainJoinPlain = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'avd-domain-join' -AsPlainText
+$dfeAutoOffboard = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'dfe-auto-offboard' -AsPlainText -ErrorAction SilentlyContinue | ConvertFrom-Json
+$dfeTenantId = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'dfe-tenant-id' -AsPlainText -ErrorAction SilentlyContinue
+$dfeAppId = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'dfe-app-id' -AsPlainText -ErrorAction SilentlyContinue
+$dfeAppSecret = Get-AzKeyVaultSecret -VaultName $keyVaultName -Name 'dfe-app-secret' -AsPlainText -ErrorAction SilentlyContinue
 $deploymentId = [guid]::NewGuid()
 $deploymentId = $deploymentId.Guid
 $imageVersions = Get-AzGalleryImageVersion -ResourceGroupName $imageResourceGroupName -GalleryName $imageACGName -GalleryImageDefinitionName $imageACGDefintionName | Where-Object { $_.PublishingProfile.ExcludeFromLatest -eq $false } | Select-Object Id
@@ -737,6 +741,53 @@ if ($poolAvailable -eq $true) {
     # Check all original hosts are now powered on
     Get-Job | Wait-Job | Out-Null
     Write-Output "All original hosts to remove are running"
+
+    # Offboard original hosts from Defender for Endpoint if required
+    if ($dfeAutoOffboard -eq $true) {
+
+      # Get bearer token
+      $dfeApi = 'https://api.securitycenter.microsoft.com'
+      $oAuthUri = "https://login.microsoftonline.com/$dfeTenantId/oauth2/token"
+      $authBody = [Ordered] @{
+        resource      = "$dfeApi"
+        client_id     = "$dfeAppId"
+        client_secret = "$dfeAppSecret"
+        grant_type    = 'client_credentials'
+      }
+      $authResponse = Invoke-RestMethod -Method Post -Uri $oAuthUri -Body $authBody -ErrorAction Stop
+      $token = $authResponse.access_token
+
+      # Create Offboarding headers
+      $offboardheaders = @{
+        "Authorization" = "Bearer $token"
+        "Content-Type"  = "application/json"
+      }
+      $offboardBody = @{ "Comment" = "automation_AVDUpdateHostPool_Runbook automated offboarding" } | ConvertTo-Json
+
+      # Get all machines from Defender for Endpoint
+      $headers = @{Authorization = "Bearer $token" }
+      $machines = Invoke-RestMethod -Method Get -Uri 'https://api.securitycenter.microsoft.com/api/machines' -Headers $headers
+      $machines = $machines.value
+      $machines = $machines | Select-Object id, computerDnsName
+
+      # Offboard machines
+      foreach ($originalHost in $originalSessionHosts) {
+        $vmName = $originalHost.Split(".")[0]
+        $machineIds = $machines | Where-Object { ($_.computerDnsName -eq $originalHost) -or ($_.computerDnsName -eq $vmName) }
+        foreach ($machineId in $machineIds) {
+          $id = $machineId.id
+          try {
+            Invoke-RestMethod -Method Post "https://api.securitycenter.microsoft.com/api/machines/$id/offboard" -Headers $offboardheaders -Body $offboardBody | Out-Null
+            Write-Output "Successfully requested offboarding of machine '$($machineId.computerDnsName)' with Id '$id' from Defender for Endpoint"
+          }
+          catch {
+            Write-Output "Error requesting offboarding of machine '$($machineId.computerDnsName)' with Id '$id' from Defender for Endpoint"
+            Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+            Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
+          }
+        }
+      }
+    }
 
     # Remove original session hosts from host pool & domain
     Write-Output "Starting removal of all original session hosts..."
