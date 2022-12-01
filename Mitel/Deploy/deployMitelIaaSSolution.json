@@ -89,127 +89,6 @@
         "description": "Set to 'true' if the customer has MiVB/MBGs in different locations for resiliency"
       }
     },
-    "useExistingVnet": {
-      "type": "string",
-      "defaultValue": "false",
-      "allowedValues": [
-        "true",
-        "false"
-      ],
-      "metadata": {
-        "description": "Set to 'true' to use existing Virtual Network"
-      }
-    },
-    "useExistingVnetResourceGroup": {
-      "type": "string",
-      "defaultValue": "false",
-      "allowedValues": [
-        "true",
-        "false"
-      ],
-      "metadata": {
-        "description": "Set to 'true' to use existing Virtual Network resource group"
-      }
-    },
-    "existingVirtualNetworkResourceGroup": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "If 'useExistingVnetResourceGroup' is true specify the name of the resource group to deploy the virtual network into"
-      }
-    },
-    "vnetAddressSpace": {
-      "type": "string",
-      "defaultValue": "10.200.0.0/16",
-      "metadata": {
-        "description": "If 'existingVnet' is false specify the address space to use for the virtual network"
-      }
-    },
-    "intAddressSubnet": {
-      "type": "string",
-      "defaultValue": "10.200.0.0/24",
-      "metadata": {
-        "description": "If 'existingVnet' is false specify the address space to use for the application/internal server subnet"
-      }
-    },
-    "dmzAddressSubnet": {
-      "type": "string",
-      "defaultValue": "10.200.200.0/24",
-      "metadata": {
-        "description": "If 'existingVnet' is false specify the address space to use for the DMZ server subnet"
-      }
-    },
-    "gatewayAddressSubnet": {
-      "type": "string",
-      "defaultValue": "10.200.255.0/24",
-      "metadata": {
-        "description": "If 'existingVnet' is false specify the address space to use for the gateway subnet"
-      }
-    },
-    "existingVirtualNetworkName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "If 'existingVnet' is true specify the name of the virtual network"
-      }
-    },
-    "existingIntSubnetName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "If 'existingVnet' is true specify the name of the existing internal subnet"
-      }
-    },
-    "existingDMZSubnetName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "If 'existingVnet' is true specify the name of the existing DMZ subnet"
-      }
-    },
-    "useExistingNSG": {
-      "type": "string",
-      "defaultValue": "false",
-      "allowedValues": [
-        "true",
-        "false"
-      ],
-      "metadata": {
-        "description": "Set to 'true' to use existing Network Security Groups"
-      }
-    },
-    "existingIntNSGName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "If 'existingNSG' is true specify the name of the existing internal network security group"
-      }
-    },
-    "existingDmzNSGName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "If 'existingNSG' is true specify the name of the existing DMZ network security group"
-      }
-    },
-    "useExistingVNG": {
-      "type": "string",
-      "defaultValue": "false",
-      "allowedValues": [
-        "true",
-        "false"
-      ],
-      "metadata": {
-        "description": "Set to 'true' to use an existing Virtual Network Gateway"
-      }
-    },
-    "existingVNGName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "If 'useExistingVNG' is true specify the name of the existing virtual network gateway"
-      }
-    },
     "fortigatePeering": {
       "type": "string",
       "allowedValues": [
@@ -225,24 +104,6 @@
       "type": "string",
       "metadata": {
         "description": "The name of the Private DNS Zone that either already exists or is to be created"
-      }
-    },
-    "useExistingStorageAccount": {
-      "type": "string",
-      "defaultValue": "false",
-      "allowedValues": [
-        "true",
-        "false"
-      ],
-      "metadata": {
-        "description": "Set to 'true' to use an existing storage account"
-      }
-    },
-    "existingStorageAccountName": {
-      "type": "string",
-      "defaultValue": "",
-      "metadata": {
-        "description": "If 'useExistingStorageAccount' is true specify the name of the storage account"
       }
     },
     "MSLTimezone": {
@@ -906,7 +767,7 @@
     },
     "mivbIpAddressAssignment": {
       "type": "string",
-      "defaultValue": "Dynamic",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
@@ -1001,7 +862,7 @@
     },
     "micollabIpAddressAssignment": {
       "type": "string",
-      "defaultValue": "Dynamic",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
@@ -1076,7 +937,7 @@
     },
     "miccIpAddressAssignment": {
       "type": "string",
-      "defaultValue": "Dynamic",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
@@ -1156,7 +1017,7 @@
     },
     "sqlIpAddressAssignment": {
       "type": "string",
-      "defaultValue": "Dynamic",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
@@ -1198,7 +1059,7 @@
     },
     "IVRIpAddressAssignment": {
       "type": "string",
-      "defaultValue": "Dynamic",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
@@ -1358,7 +1219,7 @@
     },
     "mivcrIpAddressAssignment": {
       "type": "string",
-      "defaultValue": "Dynamic",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
@@ -1436,7 +1297,7 @@
     },
     "teleworkerMBGIpAddressAssignment": {
       "type": "string",
-      "defaultValue": "Dynamic",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
@@ -1521,7 +1382,7 @@
     },
     "sipMBGIpAddressAssignment": {
       "type": "string",
-      "defaultValue": "Dynamic",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
@@ -1568,7 +1429,7 @@
     },
     "OIGIpAddressAssignment": {
       "type": "string",
-      "defaultValue": "Dynamic",
+      "defaultValue": "Static",
       "allowedValues": [
         "Dynamic",
         "Static"
@@ -1638,6 +1499,7 @@
     "locationShortName": "[variables('locationShorten')[parameters('location')]]",
     "applicationResourceGroupName": "[concat(variables('prefix'), 'mit-app-', variables('locationShortName'), '-rg')]",
     "DMZResourceGroupName": "[concat(variables('prefix'), 'mit-dmz-', variables('locationShortName'), '-rg')]",
+    "jumpboxResourceGroupName": "[concat(variables('prefix'), 'mit-jmp-', variables('locationShortName'), '-rg')]",
     "mivbName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-mivb-01')]",
     "mivbLanNicName": "[concat(variables('mivbName'), '-nic')]",
     "mivbOsDiskName": "[concat(variables('mivbName'), '-disk-os')]",
@@ -1691,31 +1553,36 @@
     "sipMBGOsDiskName": "[concat(variables('sipMBGName'), '-disk-os')]",
     "sipMBGDMZPublicIPAddressName": "[concat(variables('sipMBGName'), '-pip')]",
     "oigName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-oig')]",
-    "oigLanNicName": "[concat(variables('oigName'), '-nic-lan')]",
+    "oigLanNicName": "[concat(variables('oigName'), '-nic')]",
     "oigOsDiskName": "[concat(variables('oigName'), '-disk-os')]",
     "oigSize": {
       "name": "OIG",
       "vmSize": "Standard_F2s_v2",
       "diskSizeGB": 20
     },
-    "newVnetResourceGroup": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-rg')]",
-    "vnetResourceGroupName": "[if(equals(parameters('useExistingVnetResourceGroup'), 'true'), parameters('existingVirtualNetworkResourceGroup'), variables('newVnetResourceGroup'))]",
-    "newVnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-vnet')]",
-    "vnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingVirtualNetworkName'), variables('newVnetName'))]",
-    "newIntSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-snet')]",
-    "intSubnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingIntSubnetName'), variables('newIntSubnetName'))]",
-    "newDmzSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-snet')]",
-    "dmzSubnetName": "[if(equals(parameters('useExistingVnet'), 'true'), parameters('existingDMZSubnetName'), variables('newDmzSubnetName'))]",
-    "newIntNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-nsg')]",
-    "intNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingIntNSGName'), variables('newIntNSGName'))]",
-    "newDmzNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-nsg')]",
-    "dmzNSGName": "[if(equals(parameters('useExistingNSG'), 'true'), parameters('existingDmzNSGName'), variables('newDmzNSGName'))]",
-    "newStorageAccountName": "[concat(parameters('customerPrefix'), 'mitelsa')]",
-    "storageAccountName": "[if(equals(parameters('useExistingStorageAccount'), 'true'), parameters('existingStorageAccountName'), variables('newStorageAccountName'))]",
+    "jumpboxName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-jmp')]",
+    "jumpboxLanNicName": "[concat(variables('jumpboxName'), '-nic')]",
+    "jumpboxOsDiskName": "[concat(variables('jumpboxName'), '-disk-os')]",
+    "jumpboxPublicIPAddressName": "[concat(variables('jumpboxName'), '-pip')]",
+    "jumpboxSize": {
+      "name": "Jumpbox",
+      "vmSize": "Standard_D2as_v5",
+      "diskSizeGB": 128
+    },
+    "vnetResourceGroupName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-rg')]",
+    "vnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-vnet')]",
+    "intSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-snet')]",
+    "dmzSubnetName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-snet')]",
+    "intNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-app-nsg')]",
+    "dmzNSGName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-mit-dmz-nsg')]",
+    "storageAccountName": "[concat(parameters('customerPrefix'), 'mitelsa')]",
     "keyVaultName": "[concat(variables('prefix'), 'mit-', variables('locationShortName'), '-kvt')]",
     "customData": "[base64(concat('{\"domain-name\": \"', parameters('privateDnsZoneName'), '\", \"system-password\": \"', parameters('MSLPassword'), '\", \"remote-networks\": [',  parameters('MSLRemoteNetworks'), ']}'))]",
-    "newVngName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-vng-vpn')]",
-    "vngName": "[if(equals(parameters('useExistingVNG'), 'true'), parameters('existingVNGName'), variables('newVngName'))]"
+    "vngName": "[concat(variables('prefix'), 'net-', variables('locationShortName'), '-vng-vpn')]",
+    "vnetAddressSpace": "100.123.0.0/16",
+    "intAddressSubnet": "100.123.0.0/17",
+    "dmzAddressSubnet": "100.123.128.0/18",
+    "gatewayAddressSubnet": "100.123.255.0/24"
   },
   "functions": [],
   "resources": [
@@ -1836,7 +1703,7 @@
       "apiVersion": "2022-07-01",
       "name": "[format('{0}/{1}', variables('keyVaultName'), 'vnetAddressSpace')]",
       "properties": {
-        "value": "[parameters('vnetAddressSpace')]"
+        "value": "[variables('vnetAddressSpace')]"
       }
     },
     {
@@ -1847,7 +1714,7 @@
       "apiVersion": "2022-07-01",
       "name": "[format('{0}/{1}', variables('keyVaultName'), 'intAddressSubnet')]",
       "properties": {
-        "value": "[parameters('intAddressSubnet')]"
+        "value": "[variables('intAddressSubnet')]"
       }
     },
     {
@@ -1858,7 +1725,7 @@
       "apiVersion": "2022-07-01",
       "name": "[format('{0}/{1}', variables('keyVaultName'), 'dmzAddressSubnet')]",
       "properties": {
-        "value": "[parameters('dmzAddressSubnet')]"
+        "value": "[variables('dmzAddressSubnet')]"
       }
     },
     {
@@ -2793,7 +2660,7 @@
       "apiVersion": "2022-07-01",
       "name": "[format('{0}/{1}', variables('keyVaultName'), 'gatewayAddressSubnet')]",
       "properties": {
-        "value": "[parameters('gatewayAddressSubnet')]"
+        "value": "[variables('gatewayAddressSubnet')]"
       }
     },
     {
@@ -3168,6 +3035,83 @@
       "name": "[format('{0}/{1}', variables('keyVaultName'), 'customerNumber')]",
       "properties": {
         "value": "[parameters('customerNumber')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'jumpboxName')]",
+      "properties": {
+        "value": "[variables('jumpboxName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'jumpboxLanNicName')]",
+      "properties": {
+        "value": "[variables('jumpboxLanNicName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'jumpboxOsDiskName')]",
+      "properties": {
+        "value": "[variables('jumpboxOsDiskName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'jumpboxPublicIPAddressName')]",
+      "properties": {
+        "value": "[variables('jumpboxPublicIPAddressName')]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'jumpboxVMSize')]",
+      "properties": {
+        "value": "[variables('jumpboxSize').vmSize]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'jumpboxOSDiskSize')]",
+      "properties": {
+        "value": "[variables('jumpboxSize').diskSizeGB]"
+      }
+    },
+    {
+      "dependsOn": [
+        "[resourceId('Microsoft.KeyVault/vaults', variables('keyVaultName'))]"
+      ],
+      "type": "Microsoft.KeyVault/vaults/secrets",
+      "apiVersion": "2022-07-01",
+      "name": "[format('{0}/{1}', variables('keyVaultName'), 'jumpboxResourceGroupName')]",
+      "properties": {
+        "value": "[variables('jumpboxResourceGroupName')]"
       }
     }
   ],
