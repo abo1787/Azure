@@ -1,0 +1,684 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "customerPrefix": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 4,
+      "metadata": {
+        "description": "The Azure prefix for the customer for all resources"
+      }
+    },
+    "location": {
+      "type": "string",
+      "metadata": {
+        "description": "The location for all existing and new resources"
+      },
+      "defaultValue": "uksouth",
+      "allowedValues": [
+        "australiacentral",
+        "australiacentral2",
+        "australiaeast",
+        "australiasoutheast",
+        "brazilsouth",
+        "brazilsoutheast",
+        "canadacentral",
+        "canadaeast",
+        "centralindia",
+        "centralus",
+        "centraluseuap",
+        "eastasia",
+        "eastus",
+        "eastus2",
+        "eastus2euap",
+        "francecentral",
+        "francesouth",
+        "germanynorth",
+        "germanywestcentral",
+        "japaneast",
+        "japanwest",
+        "koreacentral",
+        "koreasouth",
+        "northcentralus",
+        "northeurope",
+        "norwayeast",
+        "norwaywest",
+        "southafricanorth",
+        "southafricawest",
+        "southcentralus",
+        "southeastasia",
+        "southindia",
+        "swedencentral",
+        "switzerlandnorth",
+        "switzerlandwest",
+        "uaecentral",
+        "uaenorth",
+        "uksouth",
+        "ukwest",
+        "westcentralus",
+        "westeurope",
+        "westindia",
+        "westus",
+        "westus2",
+        "westus3"
+      ]
+    },
+    "resilientCustomer": {
+      "type": "string",
+      "defaultValue": "false",
+      "allowedValues": [
+        "true",
+        "false"
+      ],
+      "metadata": {
+        "description": "Set to 'true' if the customer should have dual SBCs for resiliency"
+      }
+    },
+    "vnetResourceGroupName": {
+      "type": "String",
+      "metadata": {
+        "description": "The Azure prefix for the customer for all resources"
+      }
+    },
+    "sbcSize": {
+      "type": "String",
+      "defaultValue": "Standard_B1ms",
+      "allowedValues": [
+        "Standard_B1ms",
+        "Standard_B2s",
+        "Standard_DS1_v2",
+        "Standard_DS3_v2"
+      ],
+      "metadata": {
+        "description": "Choose the VM size for the SBC(s)"
+      }
+    },
+    "adminPassword": {
+      "type": "SecureString",
+      "minLength": 12,
+      "maxLength": 72,
+      "metadata": {
+        "description": "The admin password for the SBC. Password must have 3 of the following: 1 lower case character, 1 upper case character, 1 number, and 1 special character. The value must be between 12 and 72 characters long."
+      }
+    }
+  },
+  "variables": {
+    "locationShorten": {
+      "australiacentral": "acl",
+      "australiacentral2": "acl2",
+      "australiaeast": "ae",
+      "australiasoutheast": "ase",
+      "brazilsouth": "brs",
+      "brazilsoutheast": "bse",
+      "canadacentral": "cnc",
+      "canadaeast": "cne",
+      "centralindia": "inc",
+      "centralus": "cus",
+      "centraluseuap": "ccy",
+      "eastasia": "ea",
+      "eastus": "eus",
+      "eastus2": "eus2",
+      "eastus2euap": "ecy",
+      "francecentral": "frc",
+      "francesouth": "frs",
+      "germanynorth": "gn",
+      "germanywestcentral": "gwc",
+      "japaneast": "jpe",
+      "japanwest": "jpw",
+      "koreacentral": "krc",
+      "koreasouth": "krs",
+      "northcentralus": "ncus",
+      "northeurope": "ne",
+      "norwayeast": "nwe",
+      "norwaywest": "nww",
+      "southafricanorth": "san",
+      "southafricawest": "saw",
+      "southcentralus": "scus",
+      "southeastasia": "sea",
+      "southindia": "ins",
+      "swedencentral": "sdc",
+      "switzerlandnorth": "szn",
+      "switzerlandwest": "szw",
+      "uaecentral": "uac",
+      "uaenorth": "uan",
+      "uksouth": "uks",
+      "ukwest": "ukw",
+      "westcentralus": "wcus",
+      "westeurope": "we",
+      "westindia": "inw",
+      "westus": "wus",
+      "westus2": "wus2",
+      "westus3": "wus3"
+    },
+    "locationShortName": "[variables('locationShorten')[parameters('location')]]",
+    "vnetName": "[concat(parameters('customerPrefix'), '-net-', variables('locationShortName'), '-vnet')]",
+    "adminSubnetName": "[concat(parameters('customerPrefix'), '-net-', variables('locationShortName'), '-sbc-admin-snet')]",
+    "mediaSubnetName": "[concat(parameters('customerPrefix'), '-net-', variables('locationShortName'), '-sbc-media-snet')]",
+    "adminNSGName": "[concat(parameters('customerPrefix'), '-sbc-nsg-admin')]",
+    "mediaNSGName": "[concat(parameters('customerPrefix'), '-sbc-nsg-media')]",
+    "vm01Name": "[concat(parameters('customerPrefix'), '-sbc-swe-lite-01')]",
+    "vm01adminNicName": "[concat(variables('vm01Name'), '-nic-admin')]",
+    "vm01mediaNicName": "[concat(variables('vm01Name'), '-nic-media')]",
+    "vm01mediaNicPublicIpAddressName": "[concat(variables('vm01mediaNicName'), '-pip')]",
+    "vm01osDiskName": "[concat(variables('vm01Name'), '-disk-os')]",
+    "vm01dataDiskName": "[concat(variables('vm01Name'), '-disk-data')]",
+    "vm02Name": "[concat(parameters('customerPrefix'), '-sbc-swe-lite-02')]",
+    "vm02osDiskName": "[concat(variables('vm02Name'), '-disk-os')]",
+    "vm02dataDiskName": "[concat(variables('vm02Name'), '-disk-data')]",
+    "vm02adminNicName": "[concat(variables('vm02Name'), '-nic-admin')]",
+    "vm02mediaNicName": "[concat(variables('vm02Name'), '-nic-media')]",
+    "vm02mediaNicPublicIpAddressName": "[concat(variables('vm02mediaNicName'), '-pip')]",
+    "adminUsername": "bistechadmin"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2021-04-01",
+      "name": "[concat(parameters('customerPrefix'), 'sbc-networking')]",
+      "resourceGroup": "[parameters('vnetResourceGroupName')]",
+      "properties": {
+        "mode": "Incremental",
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {},
+          "variables": {},
+          "resources": [
+            {
+              "apiVersion": "2020-05-01",
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "name": "[variables('adminNSGName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "Bistech-AVD-HTTP",
+                    "properties": {
+                      "description": "Bistech AVD NAT Gateway Public IP HTTP",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "80",
+                      "sourceAddressPrefix": "20.68.12.245/32",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 200,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Bistech-AVD-HTTPS",
+                    "properties": {
+                      "description": "Bistech AVD NAT Gateway Public IP HTTPS",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "20.68.12.245/32",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 201,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Bistech-AVD-SSH",
+                    "properties": {
+                      "description": "Bistech AVD NAT Gateway Public IP SSH",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "22",
+                      "sourceAddressPrefix": "20.68.12.245/32",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 202,
+                      "direction": "Inbound"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "apiVersion": "2020-05-01",
+              "type": "Microsoft.Network/networkSecurityGroups",
+              "name": "[variables('mediaNSGName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "securityRules": [
+                  {
+                    "name": "SIP-TCP-TLS",
+                    "properties": {
+                      "description": "SIP TCP and SIP TLS Protocols",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "5060-5061",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 105,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "SIP-UDP",
+                    "properties": {
+                      "description": "SIP UDP protocol",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "5060",
+                      "sourceAddressPrefix": "*",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 110,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Gamma-Media",
+                    "properties": {
+                      "description": "Gamma Voice Traffic Range",
+                      "protocol": "Udp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "6000-40000",
+                      "sourceAddressPrefix": "151.2.128.0/19",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 115,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Bistech-AVD-HTTP",
+                    "properties": {
+                      "description": "Bistech AVD NAT Gateway Public IP HTTP",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "80",
+                      "sourceAddressPrefix": "20.68.12.245/32",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 200,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Bistech-AVD-HTTPS",
+                    "properties": {
+                      "description": "Bistech AVD NAT Gateway Public IP HTTPS",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "443",
+                      "sourceAddressPrefix": "20.68.12.245/32",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 205,
+                      "direction": "Inbound"
+                    }
+                  },
+                  {
+                    "name": "Bistech-AVD-SSH",
+                    "properties": {
+                      "description": "Bistech AVD NAT Gateway Public IP SSH",
+                      "protocol": "Tcp",
+                      "sourcePortRange": "*",
+                      "destinationPortRange": "22",
+                      "sourceAddressPrefix": "20.68.12.245/32",
+                      "destinationAddressPrefix": "*",
+                      "access": "Allow",
+                      "priority": 210,
+                      "direction": "Inbound"
+                    }
+                  }
+                ]
+              }
+            },
+            {
+              "apiVersion": "2020-11-01",
+              "type": "Microsoft.Network/virtualNetworks",
+              "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('adminNSGName'))]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', variables('mediaNSGName'))]"
+              ],
+              "name": "[variables('vnetName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "10.250.0.0/16"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "[variables('adminSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "10.250.0.0/29",
+                      "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('adminNSGName'))]"
+                      }
+                    }
+                  },
+                  {
+                    "name": "[variables('mediaSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "10.250.0.8/29",
+                      "networkSecurityGroup": {
+                        "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('mediaNSGName'))]"
+                      }
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('vm01mediaNicPublicIpAddressName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "zones": [ "1" ],
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "publicIPAddressVersion": "IPv4",
+        "idleTimeoutInMinutes": 4
+      }
+    },
+    {
+      "condition": "[equals(parameters('resilientCustomer'), 'true')]",
+      "apiVersion": "2020-11-01",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "name": "[variables('vm02mediaNicPublicIpAddressName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard"
+      },
+      "zones": [ "3" ],
+      "properties": {
+        "publicIPAllocationMethod": "Static",
+        "publicIPAddressVersion": "IPv4",
+        "idleTimeoutInMinutes": 4
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-11-01",
+      "name": "[variables('vm01adminNicName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('adminSubnetName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('adminSubnetName'))]"
+              },
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.250.0.4"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-11-01",
+      "name": "[variables('vm01mediaNicName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('mediaSubnetName'))]",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('vm01mediaNicPublicIpAddressName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('mediaSubnetName'))]"
+              },
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.250.0.12",
+              "publicIPAddress": {
+                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('vm01mediaNicPublicIpAddressName'))]",
+                "properties": {
+                  "deleteOption": "Detach"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[equals(parameters('resilientCustomer'), 'true')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-11-01",
+      "name": "[variables('vm02adminNicName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('adminSubnetName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('adminSubnetName'))]"
+              },
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.250.0.5"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "condition": "[equals(parameters('resilientCustomer'), 'true')]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2020-11-01",
+      "name": "[variables('vm02mediaNicName')]",
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('mediaSubnetName'))]",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('vm02mediaNicPublicIpAddressName'))]"
+      ],
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "subnet": {
+                "id": "[resourceId(parameters('vnetResourceGroupName'), 'Microsoft.Network/virtualNetworks/subnets', variables('vnetName'), variables('mediaSubnetName'))]"
+              },
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "10.250.0.13",
+              "publicIPAddress": {
+                "id": "[resourceId(resourceGroup().name, 'Microsoft.Network/publicIpAddresses', variables('vm02mediaNicPublicIpAddressName'))]",
+                "properties": {
+                  "deleteOption": "Detach"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('vm01Name')]",
+      "zones": [ "1" ],
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('vm01adminNicName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('vm01mediaNicName'))]"
+      ],
+      "plan": {
+        "name": "ribbon_sbc_swe-lite_vm_release",
+        "publisher": "ribboncommunications",
+        "product": "ribbon_sbc_swe-lite_vm"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('sbcSize')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "[variables('vm01osDiskName')]",
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            },
+            "deleteOption": "Detach"
+          },
+          "imageReference": {
+            "publisher": "ribboncommunications",
+            "offer": "ribbon_sbc_swe-lite_vm",
+            "sku": "ribbon_sbc_swe-lite_vm_release",
+            "version": "latest"
+          },
+          "dataDisks": [
+            {
+              "name": "[variables('vm01dataDiskName')]",
+              "lun": 0,
+              "createOption": "FromImage",
+              "caching": "None",
+              "managedDisk": {
+                "storageAccountType": "Premium_LRS"
+              },
+              "deleteOption": "Detach",
+              "writeAcceleratorEnabled": false
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vm01adminNicName'))]",
+              "properties": {
+                "deleteOption": "Detach"
+              }
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vm01mediaNicName'))]",
+              "properties": {
+                "deleteOption": "Detach"
+              }
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[variables('vm01Name')]",
+          "adminUsername": "[variables('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": {
+            "patchSettings": {
+              "patchMode": "ImageDefault"
+            }
+          }
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      }
+    },
+    {
+      "condition": "[equals(parameters('resilientCustomer'), 'true')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-03-01",
+      "name": "[variables('vm02Name')]",
+      "zones": [ "3" ],
+      "location": "[parameters('location')]",
+      "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('vm02adminNicName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('vm02mediaNicName'))]"
+      ],
+      "plan": {
+        "name": "ribbon_sbc_swe-lite_vm_release",
+        "publisher": "ribboncommunications",
+        "product": "ribbon_sbc_swe-lite_vm"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('sbcSize')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "name": "[variables('vm02osDiskName')]",
+            "createOption": "fromImage",
+            "managedDisk": {
+              "storageAccountType": "Premium_LRS"
+            },
+            "deleteOption": "Detach"
+          },
+          "imageReference": {
+            "publisher": "ribboncommunications",
+            "offer": "ribbon_sbc_swe-lite_vm",
+            "sku": "ribbon_sbc_swe-lite_vm_release",
+            "version": "latest"
+          },
+          "dataDisks": [
+            {
+              "name": "[variables('vm02dataDiskName')]",
+              "lun": 0,
+              "createOption": "FromImage",
+              "caching": "None",
+              "managedDisk": {
+                "storageAccountType": "Premium_LRS"
+              },
+              "deleteOption": "Detach",
+              "writeAcceleratorEnabled": false
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vm02adminNicName'))]",
+              "properties": {
+                "deleteOption": "Detach"
+              }
+            },
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', variables('vm02mediaNicName'))]",
+              "properties": {
+                "deleteOption": "Detach"
+              }
+            }
+          ]
+        },
+        "osProfile": {
+          "computerName": "[variables('vm02Name')]",
+          "adminUsername": "[variables('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]",
+          "linuxConfiguration": {
+            "patchSettings": {
+              "patchMode": "ImageDefault"
+            }
+          }
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true
+          }
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "adminUsername": {
+      "type": "String",
+      "value": "[variables('adminUsername')]"
+    }
+  }
+}
