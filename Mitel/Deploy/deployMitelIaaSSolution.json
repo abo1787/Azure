@@ -4,10 +4,10 @@
   "parameters": {
     "customerPrefix": {
       "type": "string",
-      "minLength": 3,
-      "maxLength": 3,
+      "minLength": 2,
+      "maxLength": 4,
       "metadata": {
-        "description": "The 3 character Azure prefix for the customer for all resources"
+        "description": "The Azure prefix for the customer for all resources"
       }
     },
     "customerNumber": {
