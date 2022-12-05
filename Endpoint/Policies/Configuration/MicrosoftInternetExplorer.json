@@ -674,7 +674,7 @@
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneshowsecuritywarningforpotentiallyunsafefiles_iz_partname1806",
               "choiceSettingValue": {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
-                "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneshowsecuritywarningforpotentiallyunsafefiles_iz_partname1806_3",
+                "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneshowsecuritywarningforpotentiallyunsafefiles_iz_partname1806_1",
                 "children": []
               }
             }
