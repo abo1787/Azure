@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.0.2
+    Version : 2.0.3
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -754,7 +754,7 @@ if ($poolAvailable -eq $true) {
         client_secret = "$dfeAppSecret"
         grant_type    = 'client_credentials'
       }
-      $authResponse = Invoke-RestMethod -Method Post -Uri $oAuthUri -Body $authBody -ErrorAction Stop
+      $authResponse = Invoke-RestMethod -Method Post -Uri $oAuthUri -Body $authBody -ErrorAction Continue
       $token = $authResponse.access_token
 
       # Create Offboarding headers
@@ -782,8 +782,8 @@ if ($poolAvailable -eq $true) {
           }
           catch {
             Write-Output "Error requesting offboarding of machine '$($machineId.computerDnsName)' with Id '$id' from Defender for Endpoint"
-            Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
-            Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
+            Write-Output "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+            Write-Output "StatusDescription:" $_.Exception.Response.StatusDescription
           }
         }
       }
