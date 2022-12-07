@@ -1,12 +1,8 @@
 {
   "name": "Device Guard",
   "description": "",
-  "platforms": [
-    "macOS"
-  ],
-  "technologies": [
-    "mdm,appleRemoteManagement"
-  ],
+  "platforms": "macOS",
+  "technologies": "mdm,appleRemoteManagement",
   "settings": [
     {
       "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
@@ -15,7 +11,6 @@
         "settingDefinitionId": "com.apple.mcx_com.apple.mcx-accounts",
         "groupSettingCollectionValue": [
           {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
@@ -38,7 +33,6 @@
         "settingDefinitionId": "com.apple.loginwindow_com.apple.loginwindow",
         "groupSettingCollectionValue": [
           {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
@@ -61,7 +55,6 @@
         "settingDefinitionId": "com.apple.preference.users_com.apple.preference.users",
         "groupSettingCollectionValue": [
           {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
@@ -84,7 +77,6 @@
         "settingDefinitionId": "com.apple.mobiledevice.passwordpolicy_com.apple.mobiledevice.passwordpolicy",
         "groupSettingCollectionValue": [
           {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
@@ -157,7 +149,6 @@
         "settingDefinitionId": "com.apple.preference.security_com.apple.preference.security",
         "groupSettingCollectionValue": [
           {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
@@ -180,7 +171,6 @@
         "settingDefinitionId": "com.apple.mcx_com.apple.mcx-energysaver",
         "groupSettingCollectionValue": [
           {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
@@ -203,7 +193,6 @@
         "settingDefinitionId": "com.apple.screensaver_com.apple.screensaver",
         "groupSettingCollectionValue": [
           {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationGroupSettingCollectionValue",
             "children": [
               {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
