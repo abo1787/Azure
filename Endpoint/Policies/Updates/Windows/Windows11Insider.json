@@ -24,7 +24,7 @@
   "deadlineForFeatureUpdatesInDays": 3,
   "deadlineForQualityUpdatesInDays": 3,
   "deadlineGracePeriodInDays": 2,
-  "postponeRebootUntilAfterDeadline": true,
+  "postponeRebootUntilAfterDeadline": false,
   "autoRestartNotificationDismissal": "notConfigured",
   "userPauseAccess": "enabled",
   "userWindowsUpdateScanAccess": "enabled",
