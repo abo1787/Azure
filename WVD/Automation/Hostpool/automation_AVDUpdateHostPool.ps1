@@ -11,7 +11,7 @@
 
 .NOTES
     Author  : Dave Pierson
-    Version : 2.0.3
+    Version : 2.0.4
 
     # THIS SOFTWARE IS PROVIDED "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, 
     # INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY 
@@ -777,13 +777,12 @@ if ($poolAvailable -eq $true) {
         foreach ($machineId in $machineIds) {
           $id = $machineId.id
           try {
-            Invoke-RestMethod -Method Post "https://api.securitycenter.microsoft.com/api/machines/$id/offboard" -Headers $offboardheaders -Body $offboardBody | Out-Null
+            $offboardUri = "https://api.securitycenter.microsoft.com/api/machines/$id/offboard"
+            Invoke-RestMethod -Method Post -Uri $offboardUri -Headers $offboardheaders -Body $offboardBody | Out-Null
             Write-Output "Successfully requested offboarding of machine '$($machineId.computerDnsName)' with Id '$id' from Defender for Endpoint"
           }
           catch {
-            Write-Output "Error requesting offboarding of machine '$($machineId.computerDnsName)' with Id '$id' from Defender for Endpoint"
-            Write-Output "StatusCode:" $_.Exception.Response.StatusCode.value__ 
-            Write-Output "StatusDescription:" $_.Exception.Response.StatusDescription
+            Write-Output "Error requesting offboarding of machine '$($machineId.computerDnsName)' with Id '$id' from Defender for Endpoint. Code: $($_.Exception.Response.StatusCode.value__), Description: $($_.Exception.Response.StatusDescription)"
           }
         }
       }
