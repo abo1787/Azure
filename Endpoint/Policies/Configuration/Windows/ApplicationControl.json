@@ -131,7 +131,7 @@
         "settingDefinitionId": "device_vendor_msft_policy_config_smartscreen_enableappinstallcontrol",
         "choiceSettingValue": {
           "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
-          "value": "device_vendor_msft_policy_config_smartscreen_enableappinstallcontrol_1",
+          "value": "device_vendor_msft_policy_config_smartscreen_enableappinstallcontrol_0",
           "children": []
         }
       }

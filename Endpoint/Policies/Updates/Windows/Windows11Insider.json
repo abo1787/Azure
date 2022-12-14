@@ -26,7 +26,7 @@
   "deadlineGracePeriodInDays": 2,
   "postponeRebootUntilAfterDeadline": false,
   "autoRestartNotificationDismissal": "notConfigured",
-  "userPauseAccess": "enabled",
+  "userPauseAccess": "disabled",
   "userWindowsUpdateScanAccess": "enabled",
   "updateNotificationLevel": "defaultNotifications",
   "allowWindows11Upgrade": true,
