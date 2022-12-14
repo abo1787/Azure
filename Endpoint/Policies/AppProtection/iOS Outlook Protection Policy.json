@@ -61,7 +61,7 @@
   "ProtectInboundDataFromUnknownSources": true,
   "SaveAsBlocked": true,
   "SimplePinBlocked": false,
-  "TargetedAppManagementLevels": "mdm",
+  "TargetedAppManagementLevels": "unspecified",
   "ThirdPartyKeyboardsBlocked": false,
   "AdditionalProperties": {}
 }
