@@ -1,0 +1,35 @@
+{
+  "@odata.type": "#microsoft.graph.iosDeviceFeaturesConfiguration",
+  "airPrintDestinations": [],
+  "homeScreenDockIcons": [],
+  "homeScreenPages": [],
+  "iosSingleSignOnExtension": {
+    "@odata.type": "#microsoft.graph.iosAzureAdSingleSignOnExtension",
+    "bundleIdAccessControlList": [],
+    "configurations": [
+      {
+        "@odata.type": "#microsoft.graph.keyIntegerValuePair",
+        "key": "browser_sso_disable_mfa",
+        "value": 0
+      },
+      {
+        "@odata.type": "#microsoft.graph.keyIntegerValuePair",
+        "key": "browser_sso_interaction_enabled",
+        "value": 1
+      },
+      {
+        "@odata.type": "#microsoft.graph.keyIntegerValuePair",
+        "key": "disable_explicit_app_prompt",
+        "value": 1
+      },
+      {
+        "@odata.type": "#microsoft.graph.keyStringValuePair",
+        "key": "AppPrefixAllowList",
+        "value": "com.microsoft."
+      }
+    ],
+    "enableSharedDeviceMode": false
+  },
+  "notificationSettings": [],
+  "wallpaperDisplayLocation": "notConfigured"
+}

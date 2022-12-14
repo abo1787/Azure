@@ -1,0 +1,66 @@
+{
+  "@odata.type": "#microsoft.graph.macOSDeviceFeaturesConfiguration",
+  "adminShowHostInfo": false,
+  "airPrintDestinations": [],
+  "appAssociatedDomains": [],
+  "associatedDomains": [],
+  "authorizedUsersListHidden": false,
+  "authorizedUsersListHideAdminUsers": false,
+  "authorizedUsersListHideLocalUsers": false,
+  "authorizedUsersListHideMobileAccounts": false,
+  "authorizedUsersListIncludeNetworkUsers": false,
+  "authorizedUsersListShowOtherManagedUsers": false,
+  "autoLaunchItems": [],
+  "consoleAccessDisabled": false,
+  "contentCachingBlockDeletion": false,
+  "contentCachingClientListenRanges": [],
+  "contentCachingClientPolicy": "notConfigured",
+  "contentCachingDisableConnectionSharing": false,
+  "contentCachingEnabled": false,
+  "contentCachingForceConnectionSharing": false,
+  "contentCachingKeepAwake": false,
+  "contentCachingLogClientIdentities": false,
+  "contentCachingParents": [],
+  "contentCachingParentSelectionPolicy": "notConfigured",
+  "contentCachingPeerFilterRanges": [],
+  "contentCachingPeerListenRanges": [],
+  "contentCachingPeerPolicy": "notConfigured",
+  "contentCachingPublicRanges": [],
+  "contentCachingShowAlerts": false,
+  "contentCachingType": "notConfigured",
+  "logOutDisabledWhileLoggedIn": false,
+  "macOSSingleSignOnExtension": {
+    "@odata.type": "#microsoft.graph.macOSAzureAdSingleSignOnExtension",
+    "bundleIdAccessControlList": [],
+    "configurations": [
+      {
+        "@odata.type": "#microsoft.graph.keyIntegerValuePair",
+        "key": "browser_sso_disable_mfa",
+        "value": 0
+      },
+      {
+        "@odata.type": "#microsoft.graph.keyIntegerValuePair",
+        "key": "browser_sso_interaction_enabled",
+        "value": 1
+      },
+      {
+        "@odata.type": "#microsoft.graph.keyIntegerValuePair",
+        "key": "disable_explicit_app_prompt",
+        "value": 1
+      },
+      {
+        "@odata.type": "#microsoft.graph.keyStringValuePair",
+        "key": "AppPrefixAllowList",
+        "value": "com.microsoft."
+      }
+    ],
+    "enableSharedDeviceMode": false
+  },
+  "powerOffDisabledWhileLoggedIn": false,
+  "restartDisabled": false,
+  "restartDisabledWhileLoggedIn": false,
+  "screenLockDisableImmediate": false,
+  "shutDownDisabled": false,
+  "shutDownDisabledWhileLoggedIn": false,
+  "sleepDisabled": false
+}
