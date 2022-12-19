@@ -68,7 +68,7 @@
                 "settingDefinitionId": "device_vendor_msft_passportforwork_{tenantid}_policies_pincomplexity_minimumpinlength",
                 "simpleSettingValue": {
                   "@odata.type": "#microsoft.graph.deviceManagementConfigurationIntegerSettingValue",
-                  "value": 6
+                  "value": 14
                 }
               },
               {
