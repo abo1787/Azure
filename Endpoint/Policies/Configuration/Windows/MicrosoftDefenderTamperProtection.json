@@ -1,7 +1,7 @@
 {
   "@odata.type": "#microsoft.graph.windows10EndpointProtectionConfiguration",
   "displayName": "Microsoft Defender Tamper Protection",
-  "description": null,
+  "description": "Controls Microsoft Tamper Protection for Microsoft Defender",
   "version": 1,
   "windowsDefenderTamperProtection": "enable"
 }

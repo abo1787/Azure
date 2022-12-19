@@ -1,6 +1,6 @@
 {
   "name": "Microsoft Defender Firewall",
-  "description": "",
+  "description": "Microsoft Defender Firewall",
   "platforms": "windows10",
   "technologies": "mdm",
   "settings": [
@@ -263,7 +263,7 @@
               "settingDefinitionId": "vendor_msft_firewall_mdmstore_publicprofile_allowlocalpolicymerge",
               "choiceSettingValue": {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
-                "value": "vendor_msft_firewall_mdmstore_publicprofile_allowlocalpolicymerge_true",
+                "value": "vendor_msft_firewall_mdmstore_publicprofile_allowlocalpolicymerge_false",
                 "children": []
               }
             },

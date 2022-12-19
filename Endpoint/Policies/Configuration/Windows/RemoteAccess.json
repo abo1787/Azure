@@ -1,6 +1,6 @@
 {
   "name": "Remote Access",
-  "description": "",
+  "description": "Remote Access Control",
   "platforms": "windows10",
   "technologies": "mdm",
   "settings": [

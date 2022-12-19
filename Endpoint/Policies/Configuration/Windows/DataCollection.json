@@ -1,7 +1,7 @@
 {
   "@odata.type": "#microsoft.graph.windowsHealthMonitoringConfiguration",
   "displayName": "Data Collection",
-  "description": null,
+  "description": "Data collection required for Endpoint Analytics and Windows Updates",
   "version": 1,
   "allowDeviceHealthMonitoring": "enabled",
   "configDeviceHealthMonitoringScope": "bootPerformance,windowsUpdates"

@@ -1,6 +1,6 @@
 {
   "name": "Application Control",
-  "description": "Application Control Settings",
+  "description": "Application Control",
   "platforms": "windows10",
   "technologies": "mdm",
   "settings": [

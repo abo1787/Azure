@@ -1,6 +1,6 @@
 {
   "name": "Device Guard",
-  "description": "",
+  "description": "This profile contains all settings concerning protection of the device when it is locked",
   "platforms": "macOS",
   "technologies": "mdm,appleRemoteManagement",
   "settings": [
