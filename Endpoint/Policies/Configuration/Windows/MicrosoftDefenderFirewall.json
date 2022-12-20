@@ -30,7 +30,7 @@
               "settingDefinitionId": "vendor_msft_firewall_mdmstore_domainprofile_allowlocalipsecpolicymerge",
               "choiceSettingValue": {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
-                "value": "vendor_msft_firewall_mdmstore_domainprofile_allowlocalipsecpolicymerge_true",
+                "value": "vendor_msft_firewall_mdmstore_domainprofile_allowlocalipsecpolicymerge_false",
                 "children": []
               }
             },
@@ -142,7 +142,7 @@
               "settingDefinitionId": "vendor_msft_firewall_mdmstore_privateprofile_allowlocalipsecpolicymerge",
               "choiceSettingValue": {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
-                "value": "vendor_msft_firewall_mdmstore_privateprofile_allowlocalipsecpolicymerge_true",
+                "value": "vendor_msft_firewall_mdmstore_privateprofile_allowlocalipsecpolicymerge_false",
                 "children": []
               }
             },
@@ -254,7 +254,7 @@
               "settingDefinitionId": "vendor_msft_firewall_mdmstore_publicprofile_allowlocalipsecpolicymerge",
               "choiceSettingValue": {
                 "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
-                "value": "vendor_msft_firewall_mdmstore_publicprofile_allowlocalipsecpolicymerge_true",
+                "value": "vendor_msft_firewall_mdmstore_publicprofile_allowlocalipsecpolicymerge_false",
                 "children": []
               }
             },
