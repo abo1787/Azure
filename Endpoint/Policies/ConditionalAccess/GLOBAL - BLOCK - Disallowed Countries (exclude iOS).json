@@ -1,48 +1,48 @@
 {
   "@odata.context": "https://graph.microsoft.com/beta/$metadata#identity/conditionalAccess/policies/$entity",
-  "DisplayName": "GLOBAL - BLOCK - Disallowed Countries (exclude iOS)",
-  "State": "enabledForReportingButNotEnforced",
-  "Conditions": {
-    "Applications": {
-      "ExcludeApplications": [
+  "displayName": "GLOBAL - BLOCK - Disallowed Countries (exclude iOS)",
+  "state": "enabledForReportingButNotEnforced",
+  "conditions": {
+    "applications": {
+      "excludeApplications": [
         "0000000a-0000-0000-c000-000000000000"
       ],
-      "IncludeApplications": [
-        "All"
+      "includeApplications": [
+        "all"
       ],
-      "IncludeAuthenticationContextClassReferences": [],
-      "IncludeUserActions": []
+      "includeAuthenticationContextClassReferences": [],
+      "includeUserActions": []
     },
-    "ClientAppTypes": [
-      "All"
+    "clientAppTypes": [
+      "all"
     ],
-    "Devices": {
-      "DeviceFilter": null
+    "devices": {
+      "deviceFilter": null
     },
-    "Locations": {
-      "ExcludeLocations": [],
-      "IncludeLocations": [
-        "All"
-      ]
-    },
-    "Platforms": {
-      "ExcludePlatforms": [
-        "iOS"
-      ],
-      "IncludePlatforms": [
+    "locations": {
+      "excludeLocations": [],
+      "includeLocations": [
         "all"
       ]
     },
-    "SignInRiskLevels": [],
-    "UserRiskLevels": [],
-    "Users": {
-      "IncludeGroups": [],
-      "ExcludeRoles": [
+    "platforms": {
+      "excludePlatforms": [
+        "iOS"
+      ],
+      "includePlatforms": [
+        "all"
+      ]
+    },
+    "signInRiskLevels": [],
+    "userRiskLevels": [],
+    "users": {
+      "includeGroups": [],
+      "excludeRoles": [
         "d29b2b05-8046-44ba-8758-1e26182fcf32"
       ],
-      "ExcludeUsers": [],
-      "IncludeRoles": [],
-      "ExcludeGroups": [],
+      "excludeUsers": [],
+      "includeRoles": [],
+      "excludeGroups": [],
       "excludeGuestsOrExternalUsers": {
         "externalTenants": {
           "@odata.type": "#microsoft.graph.conditionalAccessEnumeratedExternalTenants",
@@ -54,24 +54,23 @@
         },
         "guestOrExternalUserTypes": "serviceProvider"
       },
-      "IncludeUsers": [
-        "All"
+      "includeUsers": [
+        "all"
       ]
     }
   },
-  "GrantControls": {
-    "BuiltInControls": [
+  "grantControls": {
+    "builtInControls": [
       "block"
     ],
-    "CustomAuthenticationFactors": [],
-    "Operator": "OR",
-    "TermsOfUse": []
+    "customAuthenticationFactors": [],
+    "operator": "OR",
+    "termsOfUse": []
   },
-  "SessionControls": {
-    "ApplicationEnforcedRestrictions": null,
-    "CloudAppSecurity": null,
-    "PersistentBrowser": null,
-    "SignInFrequency": null
-  },
-  "AdditionalProperties": {}
+  "sessionControls": {
+    "applicationEnforcedRestrictions": null,
+    "cloudAppSecurity": null,
+    "persistentBrowser": null,
+    "signInFrequency": null
+  }
 }

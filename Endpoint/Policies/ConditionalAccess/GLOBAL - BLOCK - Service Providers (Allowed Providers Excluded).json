@@ -6,7 +6,7 @@
     "applications": {
       "excludeApplications": [],
       "includeApplications": [
-        "All"
+        "all"
       ],
       "includeAuthenticationContextClassReferences": [],
       "includeUserActions": []
