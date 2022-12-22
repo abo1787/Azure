@@ -1,63 +1,75 @@
 {
-   "DisplayName": "GLOBAL - BLOCK - Disallowed Countries iOS",
-   "State": "enabledForReportingButNotEnforced",
-   "Conditions": {
-      "Applications": {
-         "ExcludeApplications": [
-            "0000000a-0000-0000-c000-000000000000"
-         ],
-         "IncludeApplications": [
-            "All"
-         ],
-         "IncludeAuthenticationContextClassReferences": [],
-         "IncludeUserActions": []
-      },
-      "ClientAppTypes": [
-         "All"
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#identity/conditionalAccess/policies/$entity",
+  "DisplayName": "GLOBAL - BLOCK - Disallowed Countries iOS",
+  "State": "enabledForReportingButNotEnforced",
+  "Conditions": {
+    "Applications": {
+      "ExcludeApplications": [
+        "0000000a-0000-0000-c000-000000000000"
       ],
-      "Devices": {
-         "DeviceFilter": null
-      },
-      "Locations": {
-         "ExcludeLocations": [],
-         "IncludeLocations": [
-            "All"
-         ]
-      },
-      "Platforms": {
-         "ExcludePlatforms": [],
-         "IncludePlatforms": [
-            "iOS"
-         ]
-      },
-      "SignInRiskLevels": [],
-      "UserRiskLevels": [],
-      "Users": {
-         "IncludeGroups": [],
-         "ExcludeRoles": [
-            "d29b2b05-8046-44ba-8758-1e26182fcf32"
-         ],
-         "ExcludeUsers": [],
-         "IncludeRoles": [],
-         "ExcludeGroups": [],
-         "IncludeUsers": [
-            "All"
-         ]
-      }
-   },
-   "GrantControls": {
-      "BuiltInControls": [
-         "block"
+      "IncludeApplications": [
+        "All"
       ],
-      "CustomAuthenticationFactors": [],
-      "Operator": "OR",
-      "TermsOfUse": []
-   },
-   "SessionControls": {
-      "ApplicationEnforcedRestrictions": null,
-      "CloudAppSecurity": null,
-      "PersistentBrowser": null,
-      "SignInFrequency": null
-   },
-   "AdditionalProperties": {}
+      "IncludeAuthenticationContextClassReferences": [],
+      "IncludeUserActions": []
+    },
+    "ClientAppTypes": [
+      "All"
+    ],
+    "Devices": {
+      "DeviceFilter": null
+    },
+    "Locations": {
+      "ExcludeLocations": [],
+      "IncludeLocations": [
+        "All"
+      ]
+    },
+    "Platforms": {
+      "ExcludePlatforms": [],
+      "IncludePlatforms": [
+        "iOS"
+      ]
+    },
+    "SignInRiskLevels": [],
+    "UserRiskLevels": [],
+    "Users": {
+      "IncludeGroups": [],
+      "ExcludeRoles": [
+        "d29b2b05-8046-44ba-8758-1e26182fcf32"
+      ],
+      "ExcludeUsers": [],
+      "IncludeRoles": [],
+      "ExcludeGroups": [],
+      "excludeGuestsOrExternalUsers": {
+        "externalTenants": {
+          "@odata.type": "#microsoft.graph.conditionalAccessEnumeratedExternalTenants",
+          "members": [
+            "7fe14ab6-8f5d-4139-84bf-cd8aed0ee6b9",
+            "b12753fc-ed2c-4284-9161-4d563f9cb350"
+          ],
+          "membershipKind": "enumerated"
+        },
+        "guestOrExternalUserTypes": "serviceProvider"
+      },
+      "IncludeUsers": [
+        "All"
+      ]
+    }
+  },
+  "GrantControls": {
+    "BuiltInControls": [
+      "block"
+    ],
+    "CustomAuthenticationFactors": [],
+    "Operator": "OR",
+    "TermsOfUse": []
+  },
+  "SessionControls": {
+    "ApplicationEnforcedRestrictions": null,
+    "CloudAppSecurity": null,
+    "PersistentBrowser": null,
+    "SignInFrequency": null
+  },
+  "AdditionalProperties": {}
 }

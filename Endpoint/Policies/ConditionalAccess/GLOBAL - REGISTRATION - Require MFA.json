@@ -1,4 +1,5 @@
 {
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#identity/conditionalAccess/policies/$entity",
   "DisplayName": "GLOBAL - REGISTRATION - Require MFA",
   "State": "enabledForReportingButNotEnforced",
   "Conditions": {
@@ -28,6 +29,17 @@
     "UserRiskLevels": [],
     "Users": {
       "ExcludeGroups": [],
+      "excludeGuestsOrExternalUsers": {
+        "externalTenants": {
+          "@odata.type": "#microsoft.graph.conditionalAccessEnumeratedExternalTenants",
+          "members": [
+            "7fe14ab6-8f5d-4139-84bf-cd8aed0ee6b9",
+            "b12753fc-ed2c-4284-9161-4d563f9cb350"
+          ],
+          "membershipKind": "enumerated"
+        },
+        "guestOrExternalUserTypes": "serviceProvider"
+      },
       "ExcludeRoles": [
         "d29b2b05-8046-44ba-8758-1e26182fcf32"
       ],
