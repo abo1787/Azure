@@ -70,6 +70,5 @@
     "CloudAppSecurity": null,
     "PersistentBrowser": null,
     "SignInFrequency": null
-  },
-  "AdditionalProperties": {}
+  }
 }
