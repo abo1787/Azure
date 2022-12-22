@@ -16,9 +16,6 @@
     "clientAppTypes": [
       "all"
     ],
-    "devices": {
-      "deviceFilter": null
-    },
     "locations": {
       "excludeLocations": [],
       "includeLocations": [
