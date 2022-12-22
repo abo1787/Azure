@@ -1,69 +1,63 @@
 {
-  "DisplayName": "GLOBAL - BLOCK - Service Providers (Allowed Providers Excluded)",
-  "State": "enabledForReportingButNotEnforced",
-  "Conditions": {
-    "Applications": {
-      "ExcludeApplications": [],
-      "IncludeApplications": [
-        "All"
-      ],
-      "IncludeAuthenticationContextClassReferences": [],
-      "IncludeUserActions": []
-    },
-    "ClientAppTypes": [
+  "@odata.context": "https://graph.microsoft.com/beta/$metadata#identity/conditionalAccess/policies/$entity",
+  "displayName": "GLOBAL - BLOCK - Service Providers (Allowed Providers Excluded)",
+  "state": "enabledForReportingButNotEnforced",
+  "sessionControls": null,
+  "conditions": {
+    "userRiskLevels": [],
+    "signInRiskLevels": [],
+    "clientAppTypes": [
       "all"
     ],
-    "Devices": {
-      "DeviceFilter": null
+    "servicePrincipalRiskLevels": [],
+    "platforms": null,
+    "locations": null,
+    "times": null,
+    "deviceStates": null,
+    "devices": null,
+    "clientApplications": null,
+    "applications": {
+      "includeApplications": [
+        "All"
+      ],
+      "excludeApplications": [],
+      "includeUserActions": [],
+      "includeAuthenticationContextClassReferences": []
     },
-    "Locations": {
-      "ExcludeLocations": [],
-      "IncludeLocations": []
-    },
-    "Platforms": {
-      "ExcludePlatforms": [],
-      "IncludePlatforms": []
-    },
-    "SignInRiskLevels": [],
-    "UserRiskLevels": [],
-    "Users": {
-      "ExcludeGroups": [],
-      "ExcludeGuestsOrExternalUsers": {
-        "ExternalTenants": {
-          "Members": [
-            "7fe14ab6-8f5d-4139-84bf-cd8aed0ee6b9",
-            "b12753fc-ed2c-4284-9161-4d563f9cb350"
-          ],
-          "MembershipKind": "enumerated"
-        },
-        "GuestOrExternalUserTypes": "serviceProvider"
+    "users": {
+      "includeUsers": [],
+      "excludeUsers": [],
+      "includeGroups": [],
+      "excludeGroups": [],
+      "includeRoles": [],
+      "excludeRoles": [],
+      "includeGuestsOrExternalUsers": {
+        "guestOrExternalUserTypes": "internalGuest,b2bCollaborationMember,b2bDirectConnectUser,otherExternalUser,serviceProvider",
+        "externalTenants": {
+          "@odata.type": "#microsoft.graph.conditionalAccessAllExternalTenants",
+          "membershipKind": "all"
+        }
       },
-      "ExcludeRoles": [],
-      "ExcludeUsers": [],
-      "IncludeGroups": [],
-      "IncludeGuestsOrExternalUsers": {
-        "ExternalTenants": {
-          "MembershipKind": "all"
-        },
-        "GuestOrExternalUserTypes": "internalGuest,b2bCollaborationMember,b2bDirectConnectUser,otherExternalUser,serviceProvider"
-      },
-      "IncludeRoles": [],
-      "IncludeUsers": []
+      "excludeGuestsOrExternalUsers": {
+        "guestOrExternalUserTypes": "serviceProvider",
+        "externalTenants": {
+          "@odata.type": "#microsoft.graph.conditionalAccessEnumeratedExternalTenants",
+          "membershipKind": "enumerated",
+          "members": [
+            "b12753fc-ed2c-4284-9161-4d563f9cb350",
+            "7fe14ab6-8f5d-4139-84bf-cd8aed0ee6b9"
+          ]
+        }
+      }
     }
   },
-  "GrantControls": {
-    "BuiltInControls": [
+  "grantControls": {
+    "operator": "OR",
+    "builtInControls": [
       "block"
     ],
-    "CustomAuthenticationFactors": [],
-    "Operator": "OR",
-    "TermsOfUse": []
-  },
-  "SessionControls": {
-    "ApplicationEnforcedRestrictions": null,
-    "CloudAppSecurity": null,
-    "PersistentBrowser": null,
-    "SignInFrequency": null
-  },
-  "AdditionalProperties": {}
+    "customAuthenticationFactors": [],
+    "termsOfUse": [],
+    "authenticationStrength": null
+  }
 }
