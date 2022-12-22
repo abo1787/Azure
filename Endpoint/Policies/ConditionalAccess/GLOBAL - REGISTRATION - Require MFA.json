@@ -1,34 +1,26 @@
 {
   "@odata.context": "https://graph.microsoft.com/beta/$metadata#identity/conditionalAccess/policies/$entity",
-  "DisplayName": "GLOBAL - REGISTRATION - Require MFA",
-  "State": "enabledForReportingButNotEnforced",
-  "Conditions": {
-    "Applications": {
-      "ExcludeApplications": [],
-      "IncludeApplications": [],
-      "IncludeAuthenticationContextClassReferences": [],
-      "IncludeUserActions": [
+  "displayName": "GLOBAL - REGISTRATION - Require MFA",
+  "state": "enabledForReportingButNotEnforced",
+  "conditions": {
+    "applications": {
+      "excludeApplications": [],
+      "includeApplications": [],
+      "includeAuthenticationContextClassReferences": [],
+      "includeUserActions": [
         "urn:user:registerdevice"
       ]
     },
-    "ClientAppTypes": [
+    "clientAppTypes": [
       "all"
     ],
-    "Devices": {
-      "DeviceFilter": null
-    },
-    "Locations": {
-      "ExcludeLocations": null,
-      "IncludeLocations": null
-    },
-    "Platforms": {
-      "ExcludePlatforms": null,
-      "IncludePlatforms": null
-    },
-    "SignInRiskLevels": [],
-    "UserRiskLevels": [],
-    "Users": {
-      "ExcludeGroups": [],
+    "devices": null,
+    "locations": null,
+    "platforms": null,
+    "signInRiskLevels": [],
+    "userRiskLevels": [],
+    "users": {
+      "excludeGroups": [],
       "excludeGuestsOrExternalUsers": {
         "externalTenants": {
           "@odata.type": "#microsoft.graph.conditionalAccessEnumeratedExternalTenants",
@@ -40,29 +32,29 @@
         },
         "guestOrExternalUserTypes": "serviceProvider"
       },
-      "ExcludeRoles": [
+      "excludeRoles": [
         "d29b2b05-8046-44ba-8758-1e26182fcf32"
       ],
-      "ExcludeUsers": [],
-      "IncludeGroups": [],
-      "IncludeRoles": [],
-      "IncludeUsers": [
-        "All"
+      "excludeUsers": [],
+      "includeGroups": [],
+      "includeRoles": [],
+      "includeUsers": [
+        "all"
       ]
     }
   },
-  "GrantControls": {
-    "BuiltInControls": [
+  "grantControls": {
+    "builtInControls": [
       "mfa"
     ],
-    "CustomAuthenticationFactors": [],
-    "Operator": "OR",
-    "TermsOfUse": []
+    "customAuthenticationFactors": [],
+    "operator": "OR",
+    "termsOfUse": []
   },
-  "SessionControls": {
-    "ApplicationEnforcedRestrictions": null,
-    "CloudAppSecurity": null,
-    "PersistentBrowser": null,
-    "SignInFrequency": null
+  "sessionControls": {
+    "applicationEnforcedRestrictions": null,
+    "cloudAppSecurity": null,
+    "persistentBrowser": null,
+    "signInFrequency": null
   }
 }
