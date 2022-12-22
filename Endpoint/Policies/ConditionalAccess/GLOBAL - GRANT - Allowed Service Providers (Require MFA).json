@@ -1,0 +1,60 @@
+{
+  "DisplayName": "GLOBAL - GRANT - Allowed Service Providers (Require MFA)",
+  "State": "enabledForReportingButNotEnforced",
+  "Conditions": {
+    "Applications": {
+      "ExcludeApplications": [],
+      "IncludeApplications": [
+        "All"
+      ],
+      "IncludeAuthenticationContextClassReferences": [],
+      "IncludeUserActions": []
+    },
+    "ClientAppTypes": [
+      "all"
+    ],
+    "Devices": {
+      "DeviceFilter": null
+    },
+    "Locations": {
+      "ExcludeLocations": [],
+      "IncludeLocations": []
+    },
+    "Platforms": {
+      "ExcludePlatforms": [],
+      "IncludePlatforms": []
+    },
+    "SignInRiskLevels": [],
+    "UserRiskLevels": [],
+    "Users": {
+      "ExcludeGroups": [],
+      "ExcludeGuestsOrExternalUsers": null,
+      "ExcludeRoles": [],
+      "ExcludeUsers": [],
+      "IncludeGroups": [],
+      "IncludeGuestsOrExternalUsers": {
+        "ExternalTenants": {
+          "MembershipKind": "all"
+        },
+        "GuestOrExternalUserTypes": "serviceProvider"
+      },
+      "IncludeRoles": [],
+      "IncludeUsers": []
+    }
+  },
+  "GrantControls": {
+    "BuiltInControls": [
+      "mfa"
+    ],
+    "CustomAuthenticationFactors": [],
+    "Operator": "OR",
+    "TermsOfUse": []
+  },
+  "SessionControls": {
+    "ApplicationEnforcedRestrictions": null,
+    "CloudAppSecurity": null,
+    "PersistentBrowser": null,
+    "SignInFrequency": null
+  },
+  "AdditionalProperties": {}
+}
