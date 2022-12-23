@@ -1,46 +1,44 @@
 {
   "@odata.context": "https://graph.microsoft.com/beta/$metadata#identity/conditionalAccess/policies/$entity",
-  "DisplayName": "PREVIEW - BLOCK - Disallowed Countries iOS",
-  "State": "enabledForReportingButNotEnforced",
-  "Conditions": {
-    "Applications": {
-      "ExcludeApplications": [
+  "displayName": "PREVIEW - BLOCK - Disallowed Countries iOS",
+  "state": "enabledForReportingButNotEnforced",
+  "conditions": {
+    "applications": {
+      "excludeApplications": [
         "0000000a-0000-0000-c000-000000000000"
       ],
-      "IncludeApplications": [
-        "All"
+      "includeApplications": [
+        "all"
       ],
-      "IncludeAuthenticationContextClassReferences": [],
-      "IncludeUserActions": []
+      "includeAuthenticationContextClassReferences": [],
+      "includeUserActions": []
     },
-    "ClientAppTypes": [
-      "All"
+    "clientAppTypes": [
+      "all"
     ],
-    "Devices": {
-      "DeviceFilter": null
-    },
-    "Locations": {
-      "ExcludeLocations": [],
-      "IncludeLocations": [
-        "All"
+    "devices": null,
+    "locations": {
+      "excludeLocations": [],
+      "includeLocations": [
+        "all"
       ]
     },
-    "Platforms": {
-      "ExcludePlatforms": [],
-      "IncludePlatforms": [
+    "platforms": {
+      "excludePlatforms": [],
+      "includePlatforms": [
         "iOS"
       ]
     },
-    "SignInRiskLevels": [],
-    "UserRiskLevels": [],
-    "Users": {
-      "IncludeGroups": [],
-      "ExcludeRoles": [
+    "signInRiskLevels": [],
+    "userRiskLevels": [],
+    "users": {
+      "includeGroups": [],
+      "excludeRoles": [
         "d29b2b05-8046-44ba-8758-1e26182fcf32"
       ],
-      "ExcludeUsers": [],
-      "IncludeRoles": [],
-      "ExcludeGroups": [],
+      "excludeUsers": [],
+      "includeRoles": [],
+      "excludeGroups": [],
       "excludeGuestsOrExternalUsers": {
         "externalTenants": {
           "@odata.type": "#microsoft.graph.conditionalAccessEnumeratedExternalTenants",
@@ -52,21 +50,21 @@
         },
         "guestOrExternalUserTypes": "serviceProvider"
       },
-      "IncludeUsers": []
+      "includeUsers": []
     }
   },
-  "GrantControls": {
-    "BuiltInControls": [
+  "grantControls": {
+    "builtInControls": [
       "block"
     ],
-    "CustomAuthenticationFactors": [],
-    "Operator": "OR",
-    "TermsOfUse": []
+    "customAuthenticationFactors": [],
+    "operator": "OR",
+    "termsOfUse": []
   },
-  "SessionControls": {
-    "ApplicationEnforcedRestrictions": null,
-    "CloudAppSecurity": null,
-    "PersistentBrowser": null,
-    "SignInFrequency": null
+  "sessionControls": {
+    "applicationEnforcedRestrictions": null,
+    "cloudAppSecurity": null,
+    "persistentBrowser": null,
+    "signInFrequency": null
   }
 }
