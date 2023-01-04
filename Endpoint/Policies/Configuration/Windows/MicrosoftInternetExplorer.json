@@ -5,67 +5,68 @@
   "technologies": "mdm",
   "settings": [
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_allowsoftwarewhensignatureisinvalid",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_allowsoftwarewhensignatureisinvalid_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_checkservercertificaterevocation",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_checkservercertificaterevocation_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_checksignaturesondownloadedprograms",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_checksignaturesondownloadedprograms_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_donotallowactivexcontrolsinprotectedmode",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_donotallowactivexcontrolsinprotectedmode_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disableencryptionsupport",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disableencryptionsupport_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disableencryptionsupport_advanced_wininetprotocoloptions",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_disableencryptionsupport_advanced_wininetprotocoloptions_2048",
                 "children": []
               }
@@ -75,55 +76,56 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disableflipaheadfeature",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disableflipaheadfeature_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_allowenhancedprotectedmode",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_allowenhancedprotectedmode_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disableignoringcertificateerrors",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disableignoringcertificateerrors_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowaccesstodatasources",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowaccesstodatasources_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowaccesstodatasources_iz_partname1406",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowaccesstodatasources_iz_partname1406_3",
                 "children": []
               }
@@ -133,19 +135,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowcopypasteviascript",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowcopypasteviascript_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowcopypasteviascript_iz_partname1407",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowcopypasteviascript_iz_partname1407_1",
                 "children": []
               }
@@ -155,19 +158,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowdraganddropcopyandpastefiles",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowdraganddropcopyandpastefiles_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowdraganddropcopyandpastefiles_iz_partname1802",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowdraganddropcopyandpastefiles_iz_partname1802_1",
                 "children": []
               }
@@ -177,19 +181,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowloadingofxamlfiles",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowloadingofxamlfiles_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowloadingofxamlfiles_iz_partname2402",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowloadingofxamlfiles_iz_partname2402_3",
                 "children": []
               }
@@ -199,19 +204,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowonlyapproveddomainstouseactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowonlyapproveddomainstouseactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowonlyapproveddomainstouseactivexcontrols_iz_partname120b",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowonlyapproveddomainstouseactivexcontrols_iz_partname120b_3",
                 "children": []
               }
@@ -221,19 +227,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowonlyapproveddomainstousetdcactivexcontrol",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowonlyapproveddomainstousetdcactivexcontrol_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowonlyapproveddomainstousetdcactivexcontrol_iz_partname120c",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowonlyapproveddomainstousetdcactivexcontrol_iz_partname120c_3",
                 "children": []
               }
@@ -243,19 +250,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptinitiatedwindows",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptinitiatedwindows_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptinitiatedwindows_iz_partname2102",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptinitiatedwindows_iz_partname2102_3",
                 "children": []
               }
@@ -265,19 +273,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptingofinternetexplorerwebbrowsercontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptingofinternetexplorerwebbrowsercontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptingofinternetexplorerwebbrowsercontrols_iz_partname1206",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptingofinternetexplorerwebbrowsercontrols_iz_partname1206_3",
                 "children": []
               }
@@ -287,19 +296,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptlets",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptlets_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptlets_iz_partname1209",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowscriptlets_iz_partname1209_3",
                 "children": []
               }
@@ -309,19 +319,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowupdatestostatusbarviascript",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowupdatestostatusbarviascript_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowupdatestostatusbarviascript_iz_partname2103",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowupdatestostatusbarviascript_iz_partname2103_3",
                 "children": []
               }
@@ -331,19 +342,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowvbscripttorunininternetexplorer",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowvbscripttorunininternetexplorer_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowvbscripttorunininternetexplorer_iz_partname140c",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowvbscripttorunininternetexplorer_iz_partname140c_1",
                 "children": []
               }
@@ -353,19 +365,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowautomaticpromptingforfiledownloads",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowautomaticpromptingforfiledownloads_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowautomaticpromptingforfiledownloads_iz_partname2200",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowautomaticpromptingforfiledownloads_iz_partname2200_0",
                 "children": []
               }
@@ -375,19 +388,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonedonotrunantimalwareagainstactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzonedonotrunantimalwareagainstactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonedonotrunantimalwareagainstactivexcontrols_iz_partname270c",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzonedonotrunantimalwareagainstactivexcontrols_iz_partname270c_0",
                 "children": []
               }
@@ -397,19 +411,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonedownloadsignedactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzonedownloadsignedactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonedownloadsignedactivexcontrols_iz_partname1001",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzonedownloadsignedactivexcontrols_iz_partname1001_1",
                 "children": []
               }
@@ -419,19 +434,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonedownloadunsignedactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzonedownloadunsignedactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonedownloadunsignedactivexcontrols_iz_partname1004",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzonedownloadunsignedactivexcontrols_iz_partname1004_3",
                 "children": []
               }
@@ -441,19 +457,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneenabledraggingofcontentfromdifferentdomainsacrosswindows",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneenabledraggingofcontentfromdifferentdomainsacrosswindows_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneenabledraggingofcontentfromdifferentdomainsacrosswindows_iz_partname2709",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneenabledraggingofcontentfromdifferentdomainsacrosswindows_iz_partname2709_3",
                 "children": []
               }
@@ -463,19 +480,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneenabledraggingofcontentfromdifferentdomainswithinwindows",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneenabledraggingofcontentfromdifferentdomainswithinwindows_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneenabledraggingofcontentfromdifferentdomainswithinwindows_iz_partname2708",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneenabledraggingofcontentfromdifferentdomainswithinwindows_iz_partname2708_3",
                 "children": []
               }
@@ -485,19 +503,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneincludelocalpathwhenuploadingfilestoserver",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneincludelocalpathwhenuploadingfilestoserver_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneincludelocalpathwhenuploadingfilestoserver_iz_partname160a",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneincludelocalpathwhenuploadingfilestoserver_iz_partname160a_3",
                 "children": []
               }
@@ -507,19 +526,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneinitializeandscriptactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneinitializeandscriptactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneinitializeandscriptactivexcontrols_iz_partname1201",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneinitializeandscriptactivexcontrols_iz_partname1201_3",
                 "children": []
               }
@@ -529,19 +549,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonejavapermissions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzonejavapermissions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonejavapermissions_iz_partname1c00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzonejavapermissions_iz_partname1c00_65536",
                 "children": []
               }
@@ -551,19 +572,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonelaunchingapplicationsandfilesiniframe",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzonelaunchingapplicationsandfilesiniframe_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonelaunchingapplicationsandfilesiniframe_iz_partname1804",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzonelaunchingapplicationsandfilesiniframe_iz_partname1804_1",
                 "children": []
               }
@@ -573,19 +595,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonelogonoptions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzonelogonoptions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonelogonoptions_iz_partname1a00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzonelogonoptions_iz_partname1a00_65536",
                 "children": []
               }
@@ -595,19 +618,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonenavigatewindowsandframes",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzonenavigatewindowsandframes_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonenavigatewindowsandframes_iz_partname1607",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzonenavigatewindowsandframes_iz_partname1607_3",
                 "children": []
               }
@@ -617,19 +641,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallownetframeworkreliantcomponents",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallownetframeworkreliantcomponents_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallownetframeworkreliantcomponents_iz_partname2004",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallownetframeworkreliantcomponents_iz_partname2004_3",
                 "children": []
               }
@@ -639,19 +664,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonerunnetframeworkreliantcomponentssignedwithauthenticode",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzonerunnetframeworkreliantcomponentssignedwithauthenticode_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzonerunnetframeworkreliantcomponentssignedwithauthenticode_iz_partname2001",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzonerunnetframeworkreliantcomponentssignedwithauthenticode_iz_partname2001_3",
                 "children": []
               }
@@ -661,19 +687,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneshowsecuritywarningforpotentiallyunsafefiles",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneshowsecuritywarningforpotentiallyunsafefiles_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneshowsecuritywarningforpotentiallyunsafefiles_iz_partname1806",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneshowsecuritywarningforpotentiallyunsafefiles_iz_partname1806_1",
                 "children": []
               }
@@ -683,19 +710,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneenablecrosssitescriptingfilter",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneenablecrosssitescriptingfilter_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneenablecrosssitescriptingfilter_iz_partname1409",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneenablecrosssitescriptingfilter_iz_partname1409_0",
                 "children": []
               }
@@ -705,19 +733,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneenableprotectedmode",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneenableprotectedmode_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneenableprotectedmode_iz_partname2500",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneenableprotectedmode_iz_partname2500_0",
                 "children": []
               }
@@ -727,19 +756,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowsmartscreenie",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowsmartscreenie_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowsmartscreenie_iz_partname2301",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowsmartscreenie_iz_partname2301_0",
                 "children": []
               }
@@ -749,19 +779,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneusepopupblocker",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneusepopupblocker_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneusepopupblocker_iz_partname1809",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneusepopupblocker_iz_partname1809_0",
                 "children": []
               }
@@ -771,19 +802,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowuserdatapersistence",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowuserdatapersistence_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowuserdatapersistence_iz_partname1606",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowuserdatapersistence_iz_partname1606_0",
                 "children": []
               }
@@ -793,19 +825,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowlessprivilegedsites",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowlessprivilegedsites_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowlessprivilegedsites_iz_partname2101",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_internetzoneallowlessprivilegedsites_iz_partname2101_1",
                 "children": []
               }
@@ -815,31 +848,32 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_includeallnetworkpaths",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_includeallnetworkpaths_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_intranetzonedonotrunantimalwareagainstactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_intranetzonedonotrunantimalwareagainstactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_intranetzonedonotrunantimalwareagainstactivexcontrols_iz_partname270c",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_intranetzonedonotrunantimalwareagainstactivexcontrols_iz_partname270c_0",
                 "children": []
               }
@@ -849,19 +883,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_intranetzoneinitializeandscriptactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_intranetzoneinitializeandscriptactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_intranetzoneinitializeandscriptactivexcontrols_iz_partname1201",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_intranetzoneinitializeandscriptactivexcontrols_iz_partname1201_3",
                 "children": []
               }
@@ -871,19 +906,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_intranetzonejavapermissions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_intranetzonejavapermissions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_intranetzonejavapermissions_iz_partname1c00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_intranetzonejavapermissions_iz_partname1c00_65536",
                 "children": []
               }
@@ -893,19 +929,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_localmachinezonedonotrunantimalwareagainstactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_localmachinezonedonotrunantimalwareagainstactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_localmachinezonedonotrunantimalwareagainstactivexcontrols_iz_partname270c",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_localmachinezonedonotrunantimalwareagainstactivexcontrols_iz_partname270c_0",
                 "children": []
               }
@@ -915,19 +952,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_localmachinezonejavapermissions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_localmachinezonejavapermissions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_localmachinezonejavapermissions_iz_partname1c00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_localmachinezonejavapermissions_iz_partname1c00_65536",
                 "children": []
               }
@@ -937,19 +975,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddowninternetzoneallowsmartscreenie",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_lockeddowninternetzoneallowsmartscreenie_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddowninternetzoneallowsmartscreenie_iz_partname2301",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_lockeddowninternetzoneallowsmartscreenie_iz_partname2301_0",
                 "children": []
               }
@@ -959,19 +998,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddownlocalmachinezonejavapermissions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_lockeddownlocalmachinezonejavapermissions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddownlocalmachinezonejavapermissions_iz_partname1c00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_lockeddownlocalmachinezonejavapermissions_iz_partname1c00_0",
                 "children": []
               }
@@ -981,19 +1021,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddownlocalmachinezoneallowsmartscreenie",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_lockeddownlocalmachinezoneallowsmartscreenie_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddownlocalmachinezoneallowsmartscreenie_iz_partname2301",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_lockeddownlocalmachinezoneallowsmartscreenie_iz_partname2301_0",
                 "children": []
               }
@@ -1003,19 +1044,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddownrestrictedsiteszonejavapermissions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_lockeddownrestrictedsiteszonejavapermissions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddownrestrictedsiteszonejavapermissions_iz_partname1c00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_lockeddownrestrictedsiteszonejavapermissions_iz_partname1c00_0",
                 "children": []
               }
@@ -1025,19 +1067,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddownrestrictedsiteszoneallowsmartscreenie",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_lockeddownrestrictedsiteszoneallowsmartscreenie_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddownrestrictedsiteszoneallowsmartscreenie_iz_partname2301",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_lockeddownrestrictedsiteszoneallowsmartscreenie_iz_partname2301_0",
                 "children": []
               }
@@ -1047,19 +1090,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddowntrustedsiteszonejavapermissions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_lockeddowntrustedsiteszonejavapermissions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_lockeddowntrustedsiteszonejavapermissions_iz_partname1c00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_lockeddowntrustedsiteszonejavapermissions_iz_partname1c00_0",
                 "children": []
               }
@@ -1069,19 +1113,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowaccesstodatasources",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowaccesstodatasources_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowaccesstodatasources_iz_partname1406",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowaccesstodatasources_iz_partname1406_3",
                 "children": []
               }
@@ -1091,19 +1136,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowactivescripting",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowactivescripting_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowactivescripting_iz_partname1400",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowactivescripting_iz_partname1400_3",
                 "children": []
               }
@@ -1113,19 +1159,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowbinaryandscriptbehaviors",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowbinaryandscriptbehaviors_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowbinaryandscriptbehaviors_iz_partname2000",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowbinaryandscriptbehaviors_iz_partname2000_3",
                 "children": []
               }
@@ -1135,19 +1182,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowcopypasteviascript",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowcopypasteviascript_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowcopypasteviascript_iz_partname1407",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowcopypasteviascript_iz_partname1407_3",
                 "children": []
               }
@@ -1157,19 +1205,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowdraganddropcopyandpastefiles",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowdraganddropcopyandpastefiles_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowdraganddropcopyandpastefiles_iz_partname1802",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowdraganddropcopyandpastefiles_iz_partname1802_1",
                 "children": []
               }
@@ -1179,19 +1228,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowfiledownloads",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowfiledownloads_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowfiledownloads_iz_partname1803",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowfiledownloads_iz_partname1803_3",
                 "children": []
               }
@@ -1201,19 +1251,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowloadingofxamlfiles",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowloadingofxamlfiles_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowloadingofxamlfiles_iz_partname2402",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowloadingofxamlfiles_iz_partname2402_3",
                 "children": []
               }
@@ -1223,19 +1274,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowmetarefresh",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowmetarefresh_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowmetarefresh_iz_partname1608",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowmetarefresh_iz_partname1608_3",
                 "children": []
               }
@@ -1245,19 +1297,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowonlyapproveddomainstouseactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowonlyapproveddomainstouseactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowonlyapproveddomainstouseactivexcontrols_iz_partname120b",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowonlyapproveddomainstouseactivexcontrols_iz_partname120b_3",
                 "children": []
               }
@@ -1267,19 +1320,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowonlyapproveddomainstousetdcactivexcontrol",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowonlyapproveddomainstousetdcactivexcontrol_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowonlyapproveddomainstousetdcactivexcontrol_iz_partname120c",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowonlyapproveddomainstousetdcactivexcontrol_iz_partname120c_3",
                 "children": []
               }
@@ -1289,19 +1343,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptinitiatedwindows",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptinitiatedwindows_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptinitiatedwindows_iz_partname2102",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptinitiatedwindows_iz_partname2102_3",
                 "children": []
               }
@@ -1311,19 +1366,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptingofinternetexplorerwebbrowsercontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptingofinternetexplorerwebbrowsercontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptingofinternetexplorerwebbrowsercontrols_iz_partname1206",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptingofinternetexplorerwebbrowsercontrols_iz_partname1206_3",
                 "children": []
               }
@@ -1333,19 +1389,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptlets",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptlets_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptlets_iz_partname1209",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowscriptlets_iz_partname1209_3",
                 "children": []
               }
@@ -1355,19 +1412,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowupdatestostatusbarviascript",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowupdatestostatusbarviascript_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowupdatestostatusbarviascript_iz_partname2103",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowupdatestostatusbarviascript_iz_partname2103_3",
                 "children": []
               }
@@ -1377,19 +1435,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowvbscripttorunininternetexplorer",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowvbscripttorunininternetexplorer_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowvbscripttorunininternetexplorer_iz_partname140c",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowvbscripttorunininternetexplorer_iz_partname140c_3",
                 "children": []
               }
@@ -1399,19 +1458,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowautomaticpromptingforfiledownloads",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowautomaticpromptingforfiledownloads_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowautomaticpromptingforfiledownloads_iz_partname2200",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowautomaticpromptingforfiledownloads_iz_partname2200_3",
                 "children": []
               }
@@ -1421,19 +1481,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedonotrunantimalwareagainstactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedonotrunantimalwareagainstactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedonotrunantimalwareagainstactivexcontrols_iz_partname270c",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedonotrunantimalwareagainstactivexcontrols_iz_partname270c_0",
                 "children": []
               }
@@ -1443,19 +1504,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedownloadsignedactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedownloadsignedactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedownloadsignedactivexcontrols_iz_partname1001",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedownloadsignedactivexcontrols_iz_partname1001_3",
                 "children": []
               }
@@ -1465,19 +1527,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedownloadunsignedactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedownloadunsignedactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedownloadunsignedactivexcontrols_iz_partname1004",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonedownloadunsignedactivexcontrols_iz_partname1004_3",
                 "children": []
               }
@@ -1487,19 +1550,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenabledraggingofcontentfromdifferentdomainsacrosswindows",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenabledraggingofcontentfromdifferentdomainsacrosswindows_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenabledraggingofcontentfromdifferentdomainsacrosswindows_iz_partname2709",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenabledraggingofcontentfromdifferentdomainsacrosswindows_iz_partname2709_3",
                 "children": []
               }
@@ -1509,19 +1573,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenabledraggingofcontentfromdifferentdomainswithinwindows",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenabledraggingofcontentfromdifferentdomainswithinwindows_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenabledraggingofcontentfromdifferentdomainswithinwindows_iz_partname2708",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenabledraggingofcontentfromdifferentdomainswithinwindows_iz_partname2708_3",
                 "children": []
               }
@@ -1531,19 +1596,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneincludelocalpathwhenuploadingfilestoserver",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneincludelocalpathwhenuploadingfilestoserver_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneincludelocalpathwhenuploadingfilestoserver_iz_partname160a",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneincludelocalpathwhenuploadingfilestoserver_iz_partname160a_3",
                 "children": []
               }
@@ -1553,19 +1619,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneinitializeandscriptactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneinitializeandscriptactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneinitializeandscriptactivexcontrols_iz_partname1201",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneinitializeandscriptactivexcontrols_iz_partname1201_3",
                 "children": []
               }
@@ -1575,19 +1642,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonejavapermissions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonejavapermissions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonejavapermissions_iz_partname1c00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonejavapermissions_iz_partname1c00_0",
                 "children": []
               }
@@ -1597,19 +1665,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonelaunchingapplicationsandfilesiniframe",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonelaunchingapplicationsandfilesiniframe_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonelaunchingapplicationsandfilesiniframe_iz_partname1804",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonelaunchingapplicationsandfilesiniframe_iz_partname1804_3",
                 "children": []
               }
@@ -1619,19 +1688,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonelogonoptions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonelogonoptions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonelogonoptions_iz_partname1a00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonelogonoptions_iz_partname1a00_65536",
                 "children": []
               }
@@ -1641,19 +1711,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonenavigatewindowsandframes",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonenavigatewindowsandframes_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonenavigatewindowsandframes_iz_partname1607",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonenavigatewindowsandframes_iz_partname1607_3",
                 "children": []
               }
@@ -1663,19 +1734,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallownetframeworkreliantcomponents",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallownetframeworkreliantcomponents_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallownetframeworkreliantcomponents_iz_partname2004",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallownetframeworkreliantcomponents_iz_partname2004_3",
                 "children": []
               }
@@ -1685,19 +1757,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonerunnetframeworkreliantcomponentssignedwithauthenticode",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonerunnetframeworkreliantcomponentssignedwithauthenticode_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonerunnetframeworkreliantcomponentssignedwithauthenticode_iz_partname2001",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonerunnetframeworkreliantcomponentssignedwithauthenticode_iz_partname2001_3",
                 "children": []
               }
@@ -1707,19 +1780,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonerunactivexcontrolsandplugins",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonerunactivexcontrolsandplugins_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonerunactivexcontrolsandplugins_iz_partname1200",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonerunactivexcontrolsandplugins_iz_partname1200_3",
                 "children": []
               }
@@ -1729,19 +1803,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonescriptactivexcontrolsmarkedsafeforscripting",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonescriptactivexcontrolsmarkedsafeforscripting_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonescriptactivexcontrolsmarkedsafeforscripting_iz_partname1405",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonescriptactivexcontrolsmarkedsafeforscripting_iz_partname1405_3",
                 "children": []
               }
@@ -1751,19 +1826,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonescriptingofjavaapplets",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonescriptingofjavaapplets_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonescriptingofjavaapplets_iz_partname1402",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszonescriptingofjavaapplets_iz_partname1402_3",
                 "children": []
               }
@@ -1773,19 +1849,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneshowsecuritywarningforpotentiallyunsafefiles",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneshowsecuritywarningforpotentiallyunsafefiles_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneshowsecuritywarningforpotentiallyunsafefiles_iz_partname1806",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneshowsecuritywarningforpotentiallyunsafefiles_iz_partname1806_3",
                 "children": []
               }
@@ -1795,19 +1872,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenablecrosssitescriptingfilter",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenablecrosssitescriptingfilter_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenablecrosssitescriptingfilter_iz_partname1409",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneenablecrosssitescriptingfilter_iz_partname1409_0",
                 "children": []
               }
@@ -1817,19 +1895,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneturnonprotectedmode",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneturnonprotectedmode_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneturnonprotectedmode_iz_partname2500",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneturnonprotectedmode_iz_partname2500_0",
                 "children": []
               }
@@ -1839,19 +1918,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowsmartscreenie",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowsmartscreenie_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowsmartscreenie_iz_partname2301",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowsmartscreenie_iz_partname2301_0",
                 "children": []
               }
@@ -1861,19 +1941,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneusepopupblocker",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneusepopupblocker_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneusepopupblocker_iz_partname1809",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneusepopupblocker_iz_partname1809_0",
                 "children": []
               }
@@ -1883,19 +1964,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowuserdatapersistence",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowuserdatapersistence_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowuserdatapersistence_iz_partname1606",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowuserdatapersistence_iz_partname1606_3",
                 "children": []
               }
@@ -1905,19 +1987,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowlessprivilegedsites",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowlessprivilegedsites_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowlessprivilegedsites_iz_partname2101",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_restrictedsiteszoneallowlessprivilegedsites_iz_partname2101_3",
                 "children": []
               }
@@ -1927,19 +2010,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszonedonotrunantimalwareagainstactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszonedonotrunantimalwareagainstactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszonedonotrunantimalwareagainstactivexcontrols_iz_partname270c",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszonedonotrunantimalwareagainstactivexcontrols_iz_partname270c_0",
                 "children": []
               }
@@ -1949,19 +2033,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszoneinitializeandscriptactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszoneinitializeandscriptactivexcontrols_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszoneinitializeandscriptactivexcontrols_iz_partname1201",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszoneinitializeandscriptactivexcontrols_iz_partname1201_3",
                 "children": []
               }
@@ -1971,19 +2056,20 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszonejavapermissions",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszonejavapermissions_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszonejavapermissions_iz_partname1c00",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_trustedsiteszonejavapermissions_iz_partname1c00_65536",
                 "children": []
               }
@@ -1993,67 +2079,68 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_allowcertificateaddressmismatchwarning",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_allowcertificateaddressmismatchwarning_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disablebypassofsmartscreenwarnings",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disablebypassofsmartscreenwarnings_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disablebypassofsmartscreenwarningsaboutuncommonfiles",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disablebypassofsmartscreenwarningsaboutuncommonfiles_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disableproxychange",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disableproxychange_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_preventmanagingsmartscreenfilter",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_preventmanagingsmartscreenfilter_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_preventmanagingsmartscreenfilter_ie9safetyfilteroptions",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_preventmanagingsmartscreenfilter_ie9safetyfilteroptions_1",
                 "children": []
               }
@@ -2063,43 +2150,44 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disablecustomerexperienceimprovementprogramparticipation",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disablecustomerexperienceimprovementprogramparticipation_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_preventperuserinstallationofactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_preventperuserinstallationofactivexcontrols_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disablefirstrunwizard",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disablefirstrunwizard_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disablefirstrunwizard_firstrunoptions",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_disablefirstrunwizard_firstrunoptions_1",
                 "children": []
               }
@@ -2109,43 +2197,44 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_removerunthistimebuttonforoutdatedactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_removerunthistimebuttonforoutdatedactivexcontrols_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_donotblockoutdatedactivexcontrols",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_donotblockoutdatedactivexcontrols_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_allowfallbacktossl3",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_allowfallbacktossl3_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_allowfallbacktossl3_advanced_enablessl3fallbackoptions",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_internetexplorer_allowfallbacktossl3_advanced_enablessl3fallbackoptions_0",
                 "children": []
               }
@@ -2155,192 +2244,192 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_consistentmimehandlinginternetexplorerprocesses",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_consistentmimehandlinginternetexplorerprocesses_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_mimesniffingsafetyfeatureinternetexplorerprocesses",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_mimesniffingsafetyfeatureinternetexplorerprocesses_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_mkprotocolsecurityrestrictioninternetexplorerprocesses",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_mkprotocolsecurityrestrictioninternetexplorerprocesses_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_notificationbarinternetexplorerprocesses",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_notificationbarinternetexplorerprocesses_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_protectionfromzoneelevationinternetexplorerprocesses",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_protectionfromzoneelevationinternetexplorerprocesses_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictactivexinstallinternetexplorerprocesses",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictactivexinstallinternetexplorerprocesses_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_restrictfiledownloadinternetexplorerprocesses",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_restrictfiledownloadinternetexplorerprocesses_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_scriptedwindowsecurityrestrictionsinternetexplorerprocesses",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_scriptedwindowsecurityrestrictionsinternetexplorerprocesses_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_donotallowuserstoaddsites",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_donotallowuserstoaddsites_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_donotallowuserstochangepolicies",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_donotallowuserstochangepolicies_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_securityzonesuseonlymachinesettings",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_securityzonesuseonlymachinesettings_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_specifyuseofactivexinstallerservice",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_specifyuseofactivexinstallerservice_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disablecrashdetection",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disablecrashdetection_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disablesecuritysettingscheck",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disablesecuritysettingscheck_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_allowsuggestedsites",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_allowsuggestedsites_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_internetexplorer_disableenclosuredownloading",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_internetexplorer_disableenclosuredownloading_1",
           "children": []
         }

@@ -5,84 +5,167 @@
   "technologies": "mdm",
   "settings": [
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_mssecurityguide_applyuacrestrictionstolocalaccountsonnetworklogon",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_mssecurityguide_applyuacrestrictionstolocalaccountsonnetworklogon_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "device_vendor_msft_policy_config_admx_credssp_allowencryptionoracle",
+        "settingInstanceTemplateReference": null,
+        "choiceSettingValue": {
+          "settingValueTemplateReference": null,
+          "value": "device_vendor_msft_policy_config_admx_credssp_allowencryptionoracle_1",
+          "children": [
+            {
+              "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+              "settingDefinitionId": "device_vendor_msft_policy_config_admx_credssp_allowencryptionoracle_allowencryptionoracledrop",
+              "settingInstanceTemplateReference": null,
+              "choiceSettingValue": {
+                "settingValueTemplateReference": null,
+                "value": "device_vendor_msft_policy_config_admx_credssp_allowencryptionoracle_allowencryptionoracledrop_0",
+                "children": []
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_credentialsdelegation_remotehostallowsdelegationofnonexportablecredentials",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_credentialsdelegation_remotehostallowsdelegationofnonexportablecredentials_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "device_vendor_msft_policy_config_remoteassistance_unsolicitedremoteassistance",
+        "settingInstanceTemplateReference": null,
+        "choiceSettingValue": {
+          "settingValueTemplateReference": null,
+          "value": "device_vendor_msft_policy_config_remoteassistance_unsolicitedremoteassistance_0",
+          "children": []
+        }
+      }
+    },
+    {
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remoteassistance_solicitedremoteassistance",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remoteassistance_solicitedremoteassistance_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "device_vendor_msft_policy_config_remoteprocedurecall_rpcendpointmapperclientauthentication",
+        "settingInstanceTemplateReference": null,
+        "choiceSettingValue": {
+          "settingValueTemplateReference": null,
+          "value": "device_vendor_msft_policy_config_remoteprocedurecall_rpcendpointmapperclientauthentication_1",
+          "children": []
+        }
+      }
+    },
+    {
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotedesktopservices_donotallowpasswordsaving",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotedesktopservices_donotallowpasswordsaving_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "device_vendor_msft_policy_config_admx_terminalserver_ts_client_com",
+        "settingInstanceTemplateReference": null,
+        "choiceSettingValue": {
+          "settingValueTemplateReference": null,
+          "value": "device_vendor_msft_policy_config_admx_terminalserver_ts_client_com_1",
+          "children": []
+        }
+      }
+    },
+    {
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotedesktopservices_donotallowdriveredirection",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotedesktopservices_donotallowdriveredirection_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "device_vendor_msft_policy_config_admx_terminalserver_ts_client_lpt",
+        "settingInstanceTemplateReference": null,
+        "choiceSettingValue": {
+          "settingValueTemplateReference": null,
+          "value": "device_vendor_msft_policy_config_admx_terminalserver_ts_client_lpt_1",
+          "children": []
+        }
+      }
+    },
+    {
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "device_vendor_msft_policy_config_admx_terminalserver_ts_client_pnp",
+        "settingInstanceTemplateReference": null,
+        "choiceSettingValue": {
+          "settingValueTemplateReference": null,
+          "value": "device_vendor_msft_policy_config_admx_terminalserver_ts_client_pnp_1",
+          "children": []
+        }
+      }
+    },
+    {
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotedesktopservices_promptforpassworduponconnection",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotedesktopservices_promptforpassworduponconnection_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotedesktopservices_requiresecurerpccommunication",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotedesktopservices_requiresecurerpccommunication_1",
           "children": []
         }
@@ -92,15 +175,17 @@
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_admx_terminalserver_ts_security_layer_policy",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_admx_terminalserver_ts_security_layer_policy_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_admx_terminalserver_ts_security_layer_policy_ts_security_layer",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_admx_terminalserver_ts_security_layer_policy_ts_security_layer_2",
                 "children": []
               }
@@ -113,27 +198,29 @@
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_admx_terminalserver_ts_user_authentication_policy",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_admx_terminalserver_ts_user_authentication_policy_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotedesktopservices_clientconnectionencryptionlevel",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotedesktopservices_clientconnectionencryptionlevel_1",
           "children": [
             {
               "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
               "settingDefinitionId": "device_vendor_msft_policy_config_remotedesktopservices_clientconnectionencryptionlevel_ts_encryption_level",
+              "settingInstanceTemplateReference": null,
               "choiceSettingValue": {
-                "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+                "settingValueTemplateReference": null,
                 "value": "device_vendor_msft_policy_config_remotedesktopservices_clientconnectionencryptionlevel_ts_encryption_level_3",
                 "children": []
               }
@@ -143,72 +230,84 @@
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "device_vendor_msft_policy_config_admx_terminalserver_ts_temp_delete",
+        "settingInstanceTemplateReference": null,
+        "choiceSettingValue": {
+          "settingValueTemplateReference": null,
+          "value": "device_vendor_msft_policy_config_admx_terminalserver_ts_temp_delete_0",
+          "children": []
+        }
+      }
+    },
+    {
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotemanagement_allowbasicauthentication_client",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotemanagement_allowbasicauthentication_client_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotemanagement_allowunencryptedtraffic_client",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotemanagement_allowunencryptedtraffic_client_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotemanagement_disallowdigestauthentication",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotemanagement_disallowdigestauthentication_1",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotemanagement_allowbasicauthentication_service",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotemanagement_allowbasicauthentication_service_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotemanagement_allowunencryptedtraffic_service",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotemanagement_allowunencryptedtraffic_service_0",
           "children": []
         }
       }
     },
     {
-      "@odata.type": "#microsoft.graph.deviceManagementConfigurationSetting",
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_remotemanagement_disallowstoringofrunascredentials",
+        "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
-          "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingValue",
+          "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_remotemanagement_disallowstoringofrunascredentials_1",
           "children": []
         }
