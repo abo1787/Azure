@@ -78,6 +78,18 @@
     {
       "settingInstance": {
         "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "user_vendor_msft_policy_config_admx_startmenu_showrunasdifferentuserinstart",
+        "settingInstanceTemplateReference": null,
+        "choiceSettingValue": {
+          "settingValueTemplateReference": null,
+          "value": "user_vendor_msft_policy_config_admx_startmenu_showrunasdifferentuserinstart_0",
+          "children": []
+        }
+      }
+    },
+    {
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
         "settingDefinitionId": "device_vendor_msft_policy_config_deviceinstallation_preventinstallationofmatchingdeviceids",
         "settingInstanceTemplateReference": null,
         "choiceSettingValue": {
@@ -415,6 +427,18 @@
         "choiceSettingValue": {
           "settingValueTemplateReference": null,
           "value": "device_vendor_msft_policy_config_admx_windowsexplorer_shellprotocolprotectedmodetitle_2_0",
+          "children": []
+        }
+      }
+    },
+    {
+      "settingInstance": {
+        "@odata.type": "#microsoft.graph.deviceManagementConfigurationChoiceSettingInstance",
+        "settingDefinitionId": "device_vendor_msft_policy_config_admx_iis_preventiisinstall",
+        "settingInstanceTemplateReference": null,
+        "choiceSettingValue": {
+          "settingValueTemplateReference": null,
+          "value": "device_vendor_msft_policy_config_admx_iis_preventiisinstall_1",
           "children": []
         }
       }
