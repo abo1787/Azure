@@ -1,10 +1,11 @@
 {
+  "displayName": "Microsoft Enterprise SSO Plug-In",
+  "description": "Microsoft Enterprise SSO Plug-In",
+  "version": 1,
   "@odata.type": "#microsoft.graph.iosDeviceFeaturesConfiguration",
-  "airPrintDestinations": [],
-  "homeScreenDockIcons": [],
-  "homeScreenPages": [],
   "iosSingleSignOnExtension": {
     "@odata.type": "#microsoft.graph.iosAzureAdSingleSignOnExtension",
+    "enableSharedDeviceMode": false,
     "bundleIdAccessControlList": [],
     "configurations": [
       {
@@ -27,9 +28,6 @@
         "key": "AppPrefixAllowList",
         "value": "com.microsoft."
       }
-    ],
-    "enableSharedDeviceMode": false
-  },
-  "notificationSettings": [],
-  "wallpaperDisplayLocation": "notConfigured"
+    ]
+  }
 }
