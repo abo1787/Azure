@@ -13,12 +13,12 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Remote Desktop Users"
+            "value": "*S-1-5-32-555"
           }
         ]
       }
@@ -32,12 +32,12 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Users"
+            "value": "*S-1-5-32-545"
           }
         ]
       }
@@ -51,7 +51,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -65,17 +65,12 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "LOCAL SERVICE"
-          },
-          {
-            "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
-            "settingValueTemplateReference": null,
-            "value": "NT SERVICE\\autotimesvc"
+            "value": "*S-1-5-19"
           }
         ]
       }
@@ -89,22 +84,22 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "LOCAL SERVICE"
+            "value": "*S-1-5-19"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "NETWORK SERVICE"
+            "value": "*S-1-5-20"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "SERVICE"
+            "value": "*S-1-5-6"
           }
         ]
       }
@@ -118,7 +113,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -132,7 +127,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -146,7 +141,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -160,12 +155,12 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Guests"
+            "value": "*S-1-5-32-546"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Local Account"
+            "value": "*S-1-5-113"
           }
         ]
       }
@@ -179,7 +174,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Guests"
+            "value": "*S-1-5-32-546"
           }
         ]
       }
@@ -193,12 +188,12 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Guests"
+            "value": "*S-1-5-32-546"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Local Account"
+            "value": "*S-1-5-113"
           }
         ]
       }
@@ -212,12 +207,12 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "LOCAL SERVICE"
+            "value": "*S-1-5-19"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "NETWORK SERVICE"
+            "value": "*S-1-5-20"
           }
         ]
       }
@@ -231,22 +226,22 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "LOCAL SERVICE"
+            "value": "*S-1-5-19"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "NETWORK SERVICE"
+            "value": "*S-1-5-20"
           },
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "SERVICE"
+            "value": "*S-1-5-6"
           }
         ]
       }
@@ -260,7 +255,12 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
+          },
+          {
+            "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
+            "settingValueTemplateReference": null,
+            "value": "Window Manager\\Window Manager Group"
           }
         ]
       }
@@ -274,7 +274,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -288,7 +288,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -302,7 +302,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -316,7 +316,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -330,7 +330,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -344,7 +344,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -358,7 +358,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
@@ -372,7 +372,7 @@
           {
             "@odata.type": "#microsoft.graph.deviceManagementConfigurationStringSettingValue",
             "settingValueTemplateReference": null,
-            "value": "Administrators"
+            "value": "*S-1-5-32-544"
           }
         ]
       }
