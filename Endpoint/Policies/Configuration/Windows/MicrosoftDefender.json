@@ -1,6 +1,6 @@
 {
-  "name": "Microsoft Defender Antivirus",
-  "description": "Microsoft Defender Antivirus",
+  "name": "Microsoft Defender",
+  "description": "Microsoft Defender",
   "platforms": "windows10",
   "technologies": "mdm",
   "settings": [

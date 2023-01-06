@@ -1,6 +1,6 @@
 {
   "name": "Device Hardening",
-  "description": "",
+  "description": "Device Hardening for Attack Surface Reduction",
   "platforms": "macOS",
   "technologies": "mdm,appleRemoteManagement",
   "settings": [

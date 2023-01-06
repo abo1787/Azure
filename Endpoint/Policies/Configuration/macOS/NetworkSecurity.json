@@ -1,6 +1,6 @@
 {
   "name": "Network Security",
-  "description": "",
+  "description": "Protection of the devices network",
   "platforms": "macOS",
   "technologies": "mdm,appleRemoteManagement",
   "settings": [

@@ -1,6 +1,6 @@
 {
   "name": "Device Hardening",
-  "description": "This profile contains all settings that don't fall into any other categories concerning protection of the device",
+  "description": "Device Hardening for Attack Surface Reduction",
   "platforms": "windows10",
   "technologies": "mdm",
   "settings": [

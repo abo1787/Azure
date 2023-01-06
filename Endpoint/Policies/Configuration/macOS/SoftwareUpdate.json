@@ -1,6 +1,6 @@
 {
   "name": "Software Update",
-  "description": "",
+  "description": "Software Update",
   "platforms": "macOS",
   "technologies": "mdm,appleRemoteManagement",
   "settings": [

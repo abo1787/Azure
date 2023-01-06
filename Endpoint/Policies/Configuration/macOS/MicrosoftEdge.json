@@ -1,6 +1,6 @@
 {
   "name": "Microsoft Edge",
-  "description": "",
+  "description": "Microsoft Edge",
   "platforms": "macOS",
   "technologies": "mdm,appleRemoteManagement",
   "settings": [

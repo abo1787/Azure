@@ -1,6 +1,6 @@
 {
-  "name": "Microsoft Defender Antivirus",
-  "description": "",
+  "name": "Microsoft Defender",
+  "description": "Microsoft Defender",
   "platforms": "macOS",
   "technologies": "mdm,appleRemoteManagement",
   "settings": [

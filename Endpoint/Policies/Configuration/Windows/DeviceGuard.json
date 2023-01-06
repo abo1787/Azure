@@ -1,6 +1,6 @@
 {
   "name": "Device Guard",
-  "description": "This profile contains all settings concerning protection of the device when it is locked",
+  "description": "Protection of the device when it is locked",
   "platforms": "windows10",
   "technologies": "mdm",
   "settings": [

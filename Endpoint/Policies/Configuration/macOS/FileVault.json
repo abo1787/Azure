@@ -1,6 +1,6 @@
 {
   "name": "File Vault",
-  "description": "",
+  "description": "File Vault",
   "platforms": "macOS",
   "technologies": "mdm,appleRemoteManagement",
   "settings": [

@@ -1,6 +1,6 @@
 {
   "name": "Application Control",
-  "description": "",
+  "description": "Application Control Settings",
   "platforms": "macOS",
   "technologies": "mdm,appleRemoteManagement",
   "settings": [

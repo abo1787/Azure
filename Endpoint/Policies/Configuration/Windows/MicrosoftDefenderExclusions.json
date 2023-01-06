@@ -1,6 +1,6 @@
 {
-  "name": "Microsoft Defender Antivirus Exclusions",
-  "description": "Microsoft Defender Antivirus Exclusions",
+  "name": "Microsoft Defender Exclusions",
+  "description": "Microsoft Defender Exclusions",
   "platforms": "windows10",
   "technologies": "mdm",
   "settings": [
